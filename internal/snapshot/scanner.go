@@ -158,6 +158,10 @@ func (sc *Scanner) Save(snap *timeline.Snapshot) (string, error) {
 		return "", fmt.Errorf("snapshot.Save: store snapshot JSON: %w", err)
 	}
 
+	if err := sc.saveSidecar(snap.Hash, snapHash); err != nil {
+		return "", fmt.Errorf("snapshot.Save: save sidecar: %w", err)
+	}
+
 	// The canonical hash is embedded in the struct; the object store hash is
 	// used purely as a content-addressed lookup key.
 	log.Info().Str("snapshot_hash", snap.Hash).Str("object_hash", snapHash).Msg("snapshot saved")

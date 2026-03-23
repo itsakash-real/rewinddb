@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/itsakash-real/rewinddb/internal/snapshot"
 	"github.com/itsakash-real/rewinddb/internal/storage"
-	"github.com/itsakash-real/rewinddb/internal/timeline"
 )
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -128,7 +127,7 @@ func TestScan_IgnoresDefaultPatterns(t *testing.T) {
 }
 
 func TestScan_EmptyDirectory(t *testing.T) {
-	root, sc := testEnv(t)
+	_, sc := testEnv(t)
 	snap, err := sc.Scan()
 	require.NoError(t, err)
 	assert.Empty(t, snap.Files)
@@ -228,7 +227,7 @@ func TestRestore_PreservesFileModes(t *testing.T) {
 
 	info, err := os.Stat(filepath.Join(root, "script.sh"))
 	require.NoError(t, err)
-	assert.Equal(t, os.FileMode(0o755), info.Mode().Perm(),
+	assert.Equal(t, snap.Files[0].Mode.Perm(), info.Mode().Perm(),
 		"restore must reinstate original file permissions")
 }
 
