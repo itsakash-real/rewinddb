@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/yourusername/rewinddb/internal/timeline"
+	"github.com/itsakash-real/rewinddb/internal/timeline"
 )
 
 // ─── NewCheckpoint ────────────────────────────────────────────────────────────
