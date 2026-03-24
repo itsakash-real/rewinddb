@@ -1,6 +1,6 @@
 ## 🤝 Contributing
 
-First of all — thank you for considering contributing to **RewindDB**.  
+First of all — thank you for considering contributing to **RewindDB**.
 Every bug fix, feature, idea, or improvement genuinely makes this project better.
 
 ---
@@ -9,10 +9,11 @@ Every bug fix, feature, idea, or improvement genuinely makes this project better
 
 This project follows the [Contributor Covenant v2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
 
-In short:
-- Be respectful  
-- Assume good intent  
-- Do not harass or escalate conflicts  
+**In short:**
+
+* Be respectful
+* Assume good intent
+* Avoid harassment or escalation
 
 Everyone here is contributing their time — treat others accordingly.
 
@@ -22,25 +23,30 @@ Everyone here is contributing their time — treat others accordingly.
 
 A little coordination upfront prevents wasted effort.
 
-**Check existing issues**
-- Your idea or bug may already be reported  
-- If yes, comment before starting work  
+#### 🔎 Check Existing Issues
 
-**Bug Fix vs Feature**
-- 🐛 Bug fix → Open a PR directly (include a failing test if possible)  
-- ✨ Feature → Open an issue first to align on direction  
+* Your idea or bug may already be reported
+* If it exists, comment before starting work
 
-**Understand the architecture**
-- Read `ARCHITECTURE.md` before modifying core components  
-- RewindDB relies on:
-  - Content-addressable storage  
-  - Atomic writes  
-  - DAG-based structure  
+#### 🐛 Bug Fix vs ✨ Feature
 
-Breaking these guarantees = PR will not be merged
+* **Bug fix** → Open a PR directly (include a failing test if possible)
+* **Feature** → Open an issue first to align on direction
 
-**Core philosophy**
-> Simple → Correct → Fast (in that order)
+#### 🧠 Understand the Architecture
+
+* Read `ARCHITECTURE.md` before modifying core components
+* RewindDB relies on:
+
+  * Content-addressable storage
+  * Atomic writes
+  * DAG-based structure
+
+Breaking these guarantees means the PR will not be merged.
+
+#### 🎯 Core Philosophy
+
+> **Simple → Correct → Fast (in that order)**
 
 ---
 
@@ -59,116 +65,149 @@ go test ./...
 
 # Build project
 make build
+```
 
-✔ If tests pass and build succeeds, you're ready.
+✔ If tests pass and the build succeeds, you're ready.
 
-Requirements
+**Requirements:**
 
-Go 1.22+
+* Go 1.22+
+
+```bash
 go version
-🛠️ Making Changes
+```
 
-One feature per PR
+---
 
-Avoid bundling multiple changes
-Smaller PRs = faster review + safer merges
+### 🛠️ Making Changes
 
-Write tests (mandatory)
+#### 📌 One Feature per PR
 
-No test → No merge
-Bug fix → include failing test
-Feature → include meaningful coverage
+* Avoid bundling multiple changes
+* Smaller PRs = faster review and safer merges
 
-Format before committing
+#### 🧪 Write Tests (Mandatory)
 
+* No test → No merge
+* Bug fix → include failing test
+* Feature → include meaningful coverage
+
+#### 🧹 Format Before Committing
+
+```bash
 go fmt ./...
 go vet ./...
+```
 
-Zero output required.
+Zero output is expected.
 
-✍️ Commit Message Guidelines
+---
 
-Good examples
+### ✍️ Commit Message Guidelines
 
-Fix: race condition in TimelineEngine.Save
-Feature: add rw export command with --format flag
-Refactor: move SnapshotScanner to worker pool
+#### ✅ Good Examples
 
-Bad examples
+* `Fix: race condition in TimelineEngine.Save`
+* `Feature: add rw export command with --format flag`
+* `Refactor: move SnapshotScanner to worker pool`
 
-fixed stuff
-wip
-misc changes
+#### ❌ Bad Examples
+
+* `fixed stuff`
+* `wip`
+* `misc changes`
 
 Your commit message is the first thing reviewers see — make it clear.
 
-🧪 Testing
+---
+
+### 🧪 Testing
 
 Run this before every push:
 
+```bash
 go test ./... -race -cover
 go fmt ./...
 go vet ./...
--race → detects concurrency issues
--cover → highlights missing test coverage
+```
+
+* `-race` → detects concurrency issues
+* `-cover` → highlights missing test coverage
 
 If any of these fail, the PR will not be reviewed.
 
-📚 Documentation
+---
+
+### 📚 Documentation
 
 Documentation is part of the codebase.
 
-New feature → update GETTING_STARTED.md
-Behavior change → update README.md
-Exported functions → must include Go doc comments
+* New feature → update `GETTING_STARTED.md`
+* Behavior change → update `README.md`
+* Exported functions → include Go doc comments
 
-If users notice it → document it.
+If users notice it, document it.
 
-🔁 Opening a Pull Request
+---
 
-Title format
+### 🔁 Opening a Pull Request
 
-Fix: race condition in SaveCheckpoint
-Feature: add rw export command
-Refactor: extract worker pool
-Docs: update usage examples
+#### 📝 Title Format
 
-Description must include
+* `Fix: race condition in SaveCheckpoint`
+* `Feature: add rw export command`
+* `Refactor: extract worker pool`
+* `Docs: update usage examples`
 
-Why the change is needed
-Trade-offs or alternatives considered
-Related issue (e.g., Closes #42)
-Screenshots / CLI output (if applicable)
-✅ PR Checklist
+#### 📄 Description Must Include
+
+* Why the change is needed
+* Trade-offs or alternatives considered
+* Related issue (e.g., `Closes #42`)
+* Screenshots or CLI output (if applicable)
+
+---
+
+### ✅ PR Checklist
 
 Before submitting:
 
- Tests pass (go test ./... -race)
- Code formatted (go fmt ./...)
- No vet issues (go vet ./...)
- Tests added for new logic
- Documentation updated (if needed)
-👀 Review Process
-Reviews typically happen within 3–5 days
-If no response in a week → politely follow up
+* Tests pass (`go test ./... -race`)
+* Code formatted (`go fmt ./...`)
+* No vet issues (`go vet ./...`)
+* Tests added for new logic
+* Documentation updated (if needed)
+
+---
+
+### 👀 Review Process
+
+* Reviews typically happen within **3–5 days**
+* If no response in a week → politely follow up
 
 Expect:
 
-Feedback focused on code quality
-At least one round of changes
-Collaborative discussion
+* Feedback focused on code quality
+* At least one round of changes
+* Collaborative discussion
 
-Once approved → your contribution will be merged 🎉
+Once approved, your contribution will be merged 🎉
 
-❓ Need Help?
+---
+
+### ❓ Need Help?
 
 If you're unsure, ask before investing time:
 
-💬 GitHub Discussions → ideas & open questions
-🐛 Issues → technical queries ([QUESTION])
-📩 Direct message → quick clarifications
+* 💬 GitHub Discussions → ideas & questions
+* 🐛 Issues → technical queries (`[QUESTION]`)
+* 📩 Direct message → quick clarifications
 
-There are no bad questions — confusion often means docs can improve.
+There are no bad questions — confusion often means documentation can improve.
 
-Thanks again for contributing to RewindDB 🚀
-Every contribution moves the project forward.
+---
+
+### 🚀 Final Note
+
+Every contribution moves **RewindDB** forward.
+Thank you for being part of the project.
