@@ -1,1 +1,26 @@
-".cloude/" 
+# RewindDB test artifacts
+.rewind/
+.rewind-test/
+
+# Go build artifacts
+*.o
+*.a
+*.so
+.DS_Store
+*.exe
+dist/
+bin/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test coverage
+*.out
+coverage.html
+
+# Environment
+.env
+.env.local
