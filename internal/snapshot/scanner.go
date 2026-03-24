@@ -1,64 +1,61 @@
 package snapshot
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/rs/zerolog/log"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/itsakash-real/rewinddb/internal/storage"
 	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/rs/zerolog/log"
 )
-
-// DefaultIgnores contains patterns that are always skipped during scanning.
-// Patterns ending with "/" are treated as directory prefix matches;
-// others are matched against the file's base name via filepath.Match [web:48].
-var DefaultIgnores = []string{
-	".rewind/",
-	".git/",
-	"node_modules/",
-	"__pycache__/",
-	"dist/",
-	"build/",
-	"*.pyc",
-	".DS_Store",
-	"*.exe",
-}
 
 // Scanner walks a project directory, hashes every non-ignored file, and
 // produces Snapshot values. It delegates object persistence to an ObjectStore.
 type Scanner struct {
 	ProjectRoot string
 	Store       *storage.ObjectStore
-	Ignores     []string
+	Workers     int
 }
 
-// New returns a Scanner with DefaultIgnores pre-loaded.
+// New returns a Scanner.
 func New(projectRoot string, store *storage.ObjectStore) *Scanner {
-	ignores := make([]string, len(DefaultIgnores))
-	copy(ignores, DefaultIgnores)
 	return &Scanner{
 		ProjectRoot: projectRoot,
 		Store:       store,
-		Ignores:     ignores,
 	}
 }
 
 // ─── Scan ─────────────────────────────────────────────────────────────────────
 
-// Scan walks ProjectRoot, hashes every non-ignored file, and returns a
-// Snapshot. File content is NOT written to the object store yet — call Save
-// to persist. The snapshot Hash is derived from sorted "path:filehash\n"
-// pairs so it changes only when file content or names change.
+// Scan walks ProjectRoot in parallel and produces a Snapshot.
+// Files are hashed concurrently using a bounded worker pool.
+// File content is NOT written to the object store yet — call Save to persist.
 func (sc *Scanner) Scan() (*timeline.Snapshot, error) {
-	var entries []timeline.FileEntry
+	workers := runtime.NumCPU()
+	if sc.Workers > 0 {
+		workers = sc.Workers
+	}
+
+	// ── Phase 1: collect paths (single-threaded walk) ─────────────────────────
+	type pending struct {
+		relPath string
+		absPath string
+		info    fs.FileInfo
+	}
+	var files []pending
+	ignores := loadIgnoreList(sc.ProjectRoot)
 
 	err := filepath.WalkDir(sc.ProjectRoot, func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
@@ -73,19 +70,20 @@ func (sc *Scanner) Scan() (*timeline.Snapshot, error) {
 		// Normalise to forward slashes so snapshots are cross-platform.
 		rel = filepath.ToSlash(rel)
 
-		if d.IsDir() {
-			if rel == "." {
-				return nil
-			}
-			if sc.shouldIgnoreDir(rel) {
+		if rel != "." && ignores.matches(rel) {
+			if d.IsDir() {
 				log.Debug().Str("dir", rel).Msg("scanner: skipping ignored directory")
-				return filepath.SkipDir // prunes the entire subtree [web:46]
+				return filepath.SkipDir
 			}
+			log.Debug().Str("file", rel).Msg("scanner: skipping ignored file")
 			return nil
 		}
 
-		if sc.shouldIgnoreFile(rel) {
-			log.Debug().Str("file", rel).Msg("scanner: skipping ignored file")
+		if d.IsDir() {
+			return nil
+		}
+
+		if !d.Type().IsRegular() {
 			return nil
 		}
 
@@ -94,35 +92,65 @@ func (sc *Scanner) Scan() (*timeline.Snapshot, error) {
 			return fmt.Errorf("snapshot: stat %s: %w", path, err)
 		}
 
-		hash, err := hashFile(path)
-		if err != nil {
-			return fmt.Errorf("snapshot: hash %s: %w", path, err)
-		}
-
-		entries = append(entries, timeline.FileEntry{
-			Path: rel,
-			Hash: hash,
-			Size: info.Size(),
-			Mode: info.Mode(),
-		})
+		files = append(files, pending{relPath: rel, absPath: path, info: info})
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("snapshot.Scan: walk failed: %w", err)
+		return nil, fmt.Errorf("scanner.Scan: walk failed: %w", err)
 	}
 
-	// Sort by path for deterministic snapshot hashes [web:48].
+	// ── Phase 2: hash concurrently ───────────────────────────────────────────
+	entries := make([]timeline.FileEntry, len(files))
+
+	g, ctx := errgroup.WithContext(context.Background())
+	g.SetLimit(workers)
+
+	for i, f := range files {
+		i, f := i, f // loop-var capture
+		g.Go(func() error {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			default:
+			}
+
+			hash, err := hashFile(f.absPath)
+			if err != nil {
+				return fmt.Errorf("scanner.Scan: hash %s: %w", f.relPath, err)
+			}
+			entries[i] = timeline.FileEntry{
+				Path: f.relPath,
+				Hash: hash,
+				Size: f.info.Size(),
+				Mode: f.info.Mode(),
+			}
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, fmt.Errorf("scanner.Scan: parallel hash: %w", err)
+	}
+
+	// Sort for deterministic snapshot JSON.
 	sort.Slice(entries, func(i, j int) bool {
 		return entries[i].Path < entries[j].Path
 	})
 
 	snapshotHash := computeSnapshotHash(entries)
 
-	return &timeline.Snapshot{
+	snap := &timeline.Snapshot{
 		Hash:      snapshotHash,
 		Files:     entries,
 		CreatedAt: time.Now().UTC(),
-	}, nil
+	}
+
+	log.Debug().
+		Int("files", len(entries)).
+		Int("workers", workers).
+		Msg("scanner.Scan: complete")
+
+	return snap, nil
 }
 
 // ─── Save ─────────────────────────────────────────────────────────────────────
@@ -148,7 +176,7 @@ func (sc *Scanner) Save(snap *timeline.Snapshot) (string, error) {
 		log.Debug().Str("file", entry.Path).Str("hash", storedHash).Msg("stored object")
 	}
 
-	data, err := json.MarshalIndent(snap, "", "  ")
+	data, err := marshalSnapshot(snap)
 	if err != nil {
 		return "", fmt.Errorf("snapshot.Save: marshal snapshot: %w", err)
 	}
@@ -184,20 +212,22 @@ func (sc *Scanner) Save(snap *timeline.Snapshot) (string, error) {
 // In practice the canonical approach is to store a separate index mapping
 // snapshot.Hash → objectHash. We implement that via a lightweight sidecar file.
 func (sc *Scanner) Load(snapshotHash string) (*timeline.Snapshot, error) {
-	// Fast path: try the hash directly (works when caller passes the object hash).
-	if snap, err := sc.readSnapshotObject(snapshotHash); err == nil {
-		return snap, nil
-	}
+	return sc.LoadCached(snapshotHash, func(hash string) (*timeline.Snapshot, error) {
+		// Fast path: try the hash directly (works when caller passes the object hash).
+		if snap, err := sc.readSnapshotObject(hash); err == nil {
+			return snap, nil
+		}
 
-	// Fallback: look up via sidecar index stored in the object store.
-	// The sidecar key is deterministic: SHA-256("snapshot-index:" + snapshotHash).
-	sidecarKey := sidecarObjectKey(snapshotHash)
-	data, err := sc.Store.Read(sidecarKey)
-	if err != nil {
-		return nil, fmt.Errorf("snapshot.Load: no sidecar for hash %s: %w", snapshotHash, err)
-	}
-	objectHash := strings.TrimSpace(string(data))
-	return sc.readSnapshotObject(objectHash)
+		// Fallback: look up via sidecar index stored in the object store.
+		// The sidecar key is deterministic: SHA-256("snapshot-index:" + hash).
+		sidecarKey := sidecarObjectKey(hash)
+		data, err := sc.Store.ReadRaw(sidecarKey)
+		if err != nil {
+			return nil, fmt.Errorf("snapshot.Load: no sidecar for hash %s: %w", hash, err)
+		}
+		objectHash := strings.TrimSpace(string(data))
+		return sc.readSnapshotObject(objectHash)
+	})
 }
 
 // readSnapshotObject reads and unmarshals a Snapshot JSON blob by its object hash.
@@ -206,34 +236,54 @@ func (sc *Scanner) readSnapshotObject(objectHash string) (*timeline.Snapshot, er
 	if err != nil {
 		return nil, err
 	}
-	var snap timeline.Snapshot
-	if err := json.Unmarshal(data, &snap); err != nil {
+	snap, err := unmarshalSnapshot(data)
+	if err != nil {
 		return nil, fmt.Errorf("snapshot.Load: unmarshal: %w", err)
 	}
-	return &snap, nil
+	return snap, nil
 }
 
-// saveSidecar writes a mapping snapshotHash → objectHash into the object store
-// so Load can resolve snapshot hashes back to object hashes.
+// saveSidecar atomically writes a mapping snapshotHash → objectHash into the
+// object store so Load can resolve snapshot hashes back to object hashes.
 func (sc *Scanner) saveSidecar(snapshotHash, objectHash string) error {
 	key := sidecarObjectKey(snapshotHash)
 	// Only write the sidecar if the object store doesn't already have this key.
-	// We abuse Write for idempotency; the content is just the objectHash string.
 	existing, err := sc.Store.Read(key)
 	if err == nil && strings.TrimSpace(string(existing)) == objectHash {
 		return nil // already correct
 	}
-	// Temporarily chmod the sidecar key to allow overwrite for mappings.
-	// Since sidecars point to immutable objects, idempotency is fine.
+
 	sidecarData := []byte(objectHash)
 	h := sha256.Sum256([]byte("snapshot-index:" + snapshotHash))
 	hexKey := hex.EncodeToString(h[:])
 	path := filepath.Join(sc.Store.RootDir, hexKey[:2], hexKey[2:])
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return err
+		return fmt.Errorf("saveSidecar: mkdir: %w", err)
 	}
-	return os.WriteFile(path, sidecarData, 0o644)
+
+	// Atomic write via temp file + rename (H1 fix).
+	tmp, err := os.CreateTemp(dir, ".sidecar-*.tmp")
+	if err != nil {
+		return fmt.Errorf("saveSidecar: create temp: %w", err)
+	}
+	tmpName := tmp.Name()
+
+	if _, err := tmp.Write(sidecarData); err != nil {
+		tmp.Close()
+		os.Remove(tmpName)
+		return fmt.Errorf("saveSidecar: write: %w", err)
+	}
+	if err := tmp.Sync(); err != nil {
+		tmp.Close()
+		os.Remove(tmpName)
+		return fmt.Errorf("saveSidecar: sync: %w", err)
+	}
+	if err := tmp.Close(); err != nil {
+		os.Remove(tmpName)
+		return fmt.Errorf("saveSidecar: close: %w", err)
+	}
+	return os.Rename(tmpName, path)
 }
 
 // sidecarObjectKey returns the object store key for the sidecar index entry.
@@ -256,6 +306,8 @@ func (sc *Scanner) Restore(snap *timeline.Snapshot) error {
 		targetPaths[entry.Path] = struct{}{}
 	}
 
+	ignores := loadIgnoreList(sc.ProjectRoot)
+
 	// Phase 1: write/restore every file in the snapshot.
 	for _, entry := range snap.Files {
 		absPath := filepath.Join(sc.ProjectRoot, filepath.FromSlash(entry.Path))
@@ -269,7 +321,7 @@ func (sc *Scanner) Restore(snap *timeline.Snapshot) error {
 			return fmt.Errorf("snapshot.Restore: mkdir for %s: %w", entry.Path, err)
 		}
 
-		// Write with a temp+rename for atomicity [web:36].
+		// Write with a temp+rename for atomicity.
 		dir := filepath.Dir(absPath)
 		tmp, err := os.CreateTemp(dir, ".restore-*.tmp")
 		if err != nil {
@@ -311,7 +363,8 @@ func (sc *Scanner) Restore(snap *timeline.Snapshot) error {
 			return err
 		}
 		rel = filepath.ToSlash(rel)
-		if sc.shouldIgnoreFile(rel) {
+		// Skip ignored files (C5 fix: use ignores.matches instead of undefined shouldIgnoreFile).
+		if ignores.matches(rel) {
 			return nil
 		}
 		if _, keep := targetPaths[rel]; !keep {
@@ -333,46 +386,6 @@ func (sc *Scanner) Restore(snap *timeline.Snapshot) error {
 	return nil
 }
 
-// ─── Ignore logic ─────────────────────────────────────────────────────────────
-
-// shouldIgnoreDir returns true if the directory (rel path) matches any
-// ignore pattern that ends with "/" [web:48].
-func (sc *Scanner) shouldIgnoreDir(rel string) bool {
-	dirWithSlash := rel + "/"
-	for _, pattern := range sc.Ignores {
-		if !strings.HasSuffix(pattern, "/") {
-			continue
-		}
-		trimmed := strings.TrimSuffix(pattern, "/")
-		// Exact segment match or prefix (e.g. node_modules inside a subdir).
-		base := filepath.Base(rel)
-		if base == trimmed {
-			return true
-		}
-		// prefix: node_modules/something
-		if strings.HasPrefix(dirWithSlash, pattern) {
-			return true
-		}
-	}
-	return false
-}
-
-// shouldIgnoreFile returns true if the file's base name matches any non-dir
-// ignore pattern via filepath.Match [web:53].
-func (sc *Scanner) shouldIgnoreFile(rel string) bool {
-	base := filepath.Base(rel)
-	for _, pattern := range sc.Ignores {
-		if strings.HasSuffix(pattern, "/") {
-			continue
-		}
-		matched, err := filepath.Match(pattern, base)
-		if err == nil && matched {
-			return true
-		}
-	}
-	return false
-}
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 // hashFile computes the SHA-256 of a file's content without buffering the
@@ -385,35 +398,10 @@ func hashFile(path string) (string, error) {
 	defer f.Close()
 
 	h := sha256.New()
-	if _, err := copyBuffer(h, f); err != nil {
+	if _, err := io.Copy(h, f); err != nil {
 		return "", err
 	}
 	return hex.EncodeToString(h.Sum(nil)), nil
-}
-
-// copyBuffer wraps the io.Copy call; separated for testability.
-func copyBuffer(dst interface{ Write([]byte) (int, error) }, src interface {
-	Read([]byte) (int, error)
-}) (int64, error) {
-	buf := make([]byte, 32*1024)
-	var total int64
-	for {
-		nr, er := src.Read(buf)
-		if nr > 0 {
-			nw, ew := dst.Write(buf[:nr])
-			total += int64(nw)
-			if ew != nil {
-				return total, ew
-			}
-		}
-		if er != nil {
-			if er.Error() == "EOF" {
-				break
-			}
-			return total, er
-		}
-	}
-	return total, nil
 }
 
 // computeSnapshotHash produces a single SHA-256 over all "path:hash\n" lines,
@@ -424,4 +412,31 @@ func computeSnapshotHash(entries []timeline.FileEntry) string {
 		fmt.Fprintf(h, "%s:%s\n", e.Path, e.Hash)
 	}
 	return hex.EncodeToString(h.Sum(nil))
+}
+
+// hashAndSize computes the SHA-256 of a file and returns the hash and file size.
+// Used by FastScan and restore's scanCurrent.
+func hashAndSize(path string) (hash string, size int64, err error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", 0, err
+	}
+	defer f.Close()
+
+	info, err := f.Stat()
+	if err != nil {
+		return "", 0, err
+	}
+
+	h := sha256.New()
+	if _, err := io.Copy(h, f); err != nil {
+		return "", 0, err
+	}
+	return hex.EncodeToString(h.Sum(nil)), info.Size(), nil
+}
+
+// isIgnored checks whether a relative path matches the project ignore list.
+func (sc *Scanner) isIgnored(rel string) bool {
+	ignores := loadIgnoreList(sc.ProjectRoot)
+	return ignores.matches(rel)
 }

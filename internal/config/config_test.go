@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/itsakash-real/rewinddb/internal/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/itsakash-real/rewinddb/internal/config"
 )
 
 func TestInit_CreatesExpectedLayout(t *testing.T) {
@@ -63,11 +63,9 @@ func TestLoad_FindsRepoInParentDirectory(t *testing.T) {
 }
 
 func TestLoad_ReturnsErrWhenNoRepo(t *testing.T) {
+	// Use LoadFrom with an isolated temp dir to avoid walking into parent
+	// directories that might contain a real .rewind/ repo on the test machine.
 	tmp := t.TempDir()
-	orig, _ := os.Getwd()
-	require.NoError(t, os.Chdir(tmp))
-	t.Cleanup(func() { os.Chdir(orig) })
-
-	_, err := config.Load()
+	_, err := config.LoadStrict(tmp)
 	assert.ErrorIs(t, err, config.ErrNotInitialized)
 }

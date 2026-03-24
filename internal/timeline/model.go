@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/google/uuid"
@@ -27,11 +28,11 @@ type Checkpoint struct {
 // Branch is a named pointer to a linear chain within the DAG.
 // HeadCheckpointID advances with every new save on this branch.
 type Branch struct {
-	ID                string    `json:"id"`
-	Name              string    `json:"name"`
-	RootCheckpointID  string    `json:"root_checkpoint_id"`
-	HeadCheckpointID  string    `json:"head_checkpoint_id"`
-	CreatedAt         time.Time `json:"created_at"`
+	ID               string    `json:"id"`
+	Name             string    `json:"name"`
+	RootCheckpointID string    `json:"root_checkpoint_id"`
+	HeadCheckpointID string    `json:"head_checkpoint_id"`
+	CreatedAt        time.Time `json:"created_at"`
 }
 
 // Snapshot is a complete picture of the filesystem at a point in time.
@@ -97,34 +98,50 @@ func NewIndex() *Index {
 
 // ─── Index: Persistence ───────────────────────────────────────────────────────
 
-// Save serializes the Index to a JSON file at the given path.
-// The file is written atomically via a temp file + rename to avoid corruption.
+// Save atomically writes the index to path via temp-file + fsync + rename.
+// Writing directly to path is never done, so a crash cannot leave a
+// half-written index [web:40].
 func (idx *Index) Save(path string) error {
 	data, err := json.MarshalIndent(idx, "", "  ")
 	if err != nil {
-		return fmt.Errorf("index.Save: marshal failed: %w", err)
+		return fmt.Errorf("index.Save: marshal: %w", err)
 	}
 
-	// Write to a temp file in the same directory, then atomically rename.
-	dir := pathDir(path)
+	dir := filepath.Dir(path)
 	tmp, err := os.CreateTemp(dir, ".index-*.tmp")
 	if err != nil {
-		return fmt.Errorf("index.Save: create temp file: %w", err)
+		return fmt.Errorf("index.Save: create temp: %w", err)
 	}
 	tmpName := tmp.Name()
 
+	// Write data.
 	if _, err := tmp.Write(data); err != nil {
-		tmp.Close()
-		os.Remove(tmpName)
-		return fmt.Errorf("index.Save: write temp file: %w", err)
+		tmp.Close(); os.Remove(tmpName)
+		return fmt.Errorf("index.Save: write: %w", err)
+	}
+
+	// fsync the temp file — without this, rename may produce a 0-byte file
+	// on crash [web:113][web:116].
+	if err := tmp.Sync(); err != nil {
+		tmp.Close(); os.Remove(tmpName)
+		return fmt.Errorf("index.Save: fsync: %w", err)
 	}
 	if err := tmp.Close(); err != nil {
 		os.Remove(tmpName)
-		return fmt.Errorf("index.Save: close temp file: %w", err)
+		return fmt.Errorf("index.Save: close: %w", err)
 	}
+
+	// Atomic rename [web:40].
 	if err := os.Rename(tmpName, path); err != nil {
 		os.Remove(tmpName)
-		return fmt.Errorf("index.Save: rename to %s: %w", path, err)
+		return fmt.Errorf("index.Save: rename: %w", err)
+	}
+
+	// fsync the containing directory so the rename is durable [web:113].
+	df, err := os.Open(dir)
+	if err == nil {
+		_ = df.Sync()
+		df.Close()
 	}
 
 	return nil
@@ -187,17 +204,4 @@ func (idx *Index) AddCheckpoint(c Checkpoint) {
 		b.HeadCheckpointID = c.ID
 		idx.Branches[c.BranchID] = b
 	}
-}
-
-// ─── Internal helpers ─────────────────────────────────────────────────────────
-
-// pathDir returns the directory of a file path without importing path/filepath
-// at top level just for this one call.
-func pathDir(p string) string {
-	for i := len(p) - 1; i >= 0; i-- {
-		if p[i] == '/' || p[i] == '\\' {
-			return p[:i]
-		}
-	}
-	return "."
 }

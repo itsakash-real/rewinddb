@@ -1,0 +1,25 @@
+{
+  "current_branch_id": "6747c36d-3d26-428f-9d3c-42b5971fc6a1",
+  "current_checkpoint_id": "9f2781df-e3f3-4618-8b22-45e561adbce3",
+  "branches": {
+    "6747c36d-3d26-428f-9d3c-42b5971fc6a1": {
+      "id": "6747c36d-3d26-428f-9d3c-42b5971fc6a1",
+      "name": "main",
+      "root_checkpoint_id": "9f2781df-e3f3-4618-8b22-45e561adbce3",
+      "head_checkpoint_id": "9f2781df-e3f3-4618-8b22-45e561adbce3",
+      "created_at": "2026-03-24T06:22:21.8675762Z"
+    }
+  },
+  "checkpoints": {
+    "9f2781df-e3f3-4618-8b22-45e561adbce3": {
+      "id": "9f2781df-e3f3-4618-8b22-45e561adbce3",
+      "branch_id": "",
+      "snapshot_ref": "",
+      "message": "(root)",
+      "created_at": "2026-03-24T06:22:21.8675762Z",
+      "tags": [
+        "root"
+      ]
+    }
+  }
+}

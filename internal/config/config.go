@@ -14,7 +14,7 @@ const (
 	ObjectsDirName   = "objects"
 	SnapshotsDirName = "snapshots"
 	BranchesDirName  = "branches"
-	IndexFileName    = "index"
+	IndexFileName    = "index.json"
 )
 
 // Config holds all resolved paths for a RewindDB repository.
@@ -42,8 +42,25 @@ func Load() (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("config: cannot determine working directory: %w", err)
 	}
+	return LoadFrom(cwd)
+}
 
-	dir := cwd
+// LoadStrict checks only startDir itself for a .rewind/ directory (no upward
+// walk). Returns ErrNotInitialized if startDir does not contain .rewind/.
+// Useful in tests and tools that must not inherit a parent repo.
+func LoadStrict(startDir string) (*Config, error) {
+	candidate := filepath.Join(startDir, RewindDirName)
+	if fi, err := os.Stat(candidate); err == nil && fi.IsDir() {
+		log.Debug().Str("rewind_dir", candidate).Msg("found existing repository")
+		return buildConfig(candidate), nil
+	}
+	return nil, ErrNotInitialized
+}
+
+// LoadFrom locates an existing .rewind/ directory by walking up from startDir.
+// Returns ErrNotInitialized if no repository is found.
+func LoadFrom(startDir string) (*Config, error) {
+	dir := startDir
 	for {
 		candidate := filepath.Join(dir, RewindDirName)
 		if fi, err := os.Stat(candidate); err == nil && fi.IsDir() {

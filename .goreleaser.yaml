@@ -1,0 +1,149 @@
+# .goreleaser.yaml — GoReleaser v2 configuration
+# Docs: https://goreleaser.com
+version: 2
+
+project_name: rewinddb
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: rw
+    main: ./cmd/rw
+    binary: rw
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ignore:
+      - goos: windows
+        goarch: arm64
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.BuildTime={{.Date}}
+      - -X main.GoVersion={{.Env.GOVERSION}}
+
+archives:
+  - id: default
+    builds: [rw]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "arm64" }}arm64
+      {{- else }}{{ .Arch }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+      - completions/*
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "Merge pull request"
+      - "Merge branch"
+  groups:
+    - title: "New Features"
+      regexp: "^feat"
+      order: 0
+    - title: "Bug Fixes"
+      regexp: "^fix"
+      order: 1
+    - title: "Performance"
+      regexp: "^perf"
+      order: 2
+    - title: "Other"
+      order: 999
+
+release:
+  github:
+    owner: yourusername
+    name: rewinddb
+  name_template: "RewindDB {{.Tag}}"
+  draft: false
+  prerelease: auto
+  footer: |
+    ## Installation
+    ```bash
+    brew install yourusername/tap/rewinddb
+    # or
+    curl -sSfL https://raw.githubusercontent.com/yourusername/rewinddb/main/install.sh | sh
+    ```
+
+# Homebrew tap
+brews:
+  - name: rewinddb
+    ids: [default]
+    repository:
+      owner: yourusername
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    directory: Formula
+    homepage: "https://github.com/yourusername/rewinddb"
+    description: "A time-travel state engine for codebases — checkpoint, diff, and restore your project in milliseconds"
+    license: "MIT"
+    skip_upload: auto
+    test: |
+      system "#{bin}/rw", "version"
+    install: |
+      bin.install "rw"
+      bash_completion.install "completions/rw.bash" => "rw"
+      zsh_completion.install "completions/_rw"
+      fish_completion.install "completions/rw.fish"
+
+# Debian + RPM via nFPM [web:146]
+nfpms:
+  - id: packages
+    package_name: rewinddb
+    builds: [rw]
+    vendor: yourusername
+    homepage: "https://github.com/yourusername/rewinddb"
+    maintainer: "Your Name <you@example.com>"
+    description: "A time-travel state engine for codebases"
+    license: MIT
+    formats: [deb, rpm, apk]
+    bindir: /usr/bin
+    section: utils
+    priority: optional
+    contents:
+      - src: completions/rw.bash
+        dst: /usr/share/bash-completion/completions/rw
+      - src: completions/_rw
+        dst: /usr/share/zsh/vendor-completions/_rw
+      - src: completions/rw.fish
+        dst: /usr/share/fish/completions/rw.fish
+      - src: man/man1/
+        dst: /usr/share/man/man1/
+        type: tree
+
+signs:
+  - artifacts: checksum
+    args:
+      - "--batch"
+      - "--local-user={{ .Env.GPG_FINGERPRINT }}"
+      - "--output=${signature}"
+      - "--detach-sign=${artifact}"
+
+sboms:
+  - artifacts: archive
+
+announce:
+  skip: "{{gt .Patch 0}}"

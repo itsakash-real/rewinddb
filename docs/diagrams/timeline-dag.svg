@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360">
+<defs>
+  <marker id="arr-b" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L9,3 z" fill="#58a6ff"/>
+  </marker>
+  <marker id="arr-o" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L9,3 z" fill="#f0883e"/>
+  </marker>
+  <marker id="arr-g" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L9,3 z" fill="#8b949e"/>
+  </marker>
+</defs>
+<rect width="800" height="360" fill="#0d1117"/>
+<text x="16" y="20" font-family="monospace" font-size="11" fill="#8b949e">timeline-dag.svg</text>
+<text x="80" y="48" font-family="monospace" font-size="11" fill="#8b949e">&#x2500;&#x2500;&#x2500; time </text>
+<line x1="80" y1="42" x2="730" y2="42" stroke="#30363d" stroke-width="1.5" marker-end="url(#arr-g)"/>
+<text x="16" y="116" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="start">main</text>
+<text x="16" y="210" font-family="monospace" font-size="10" fill="#f0883e" text-anchor="start">branch-</text>
+<text x="16" y="222" font-family="monospace" font-size="10" fill="#f0883e" text-anchor="start">17031234</text>
+<line x1="118" y1="112" x2="278" y2="112" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arr-b)"/>
+<line x1="318" y1="112" x2="458" y2="112" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arr-b)"/>
+<line x1="498" y1="112" x2="638" y2="112" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arr-b)"/>
+<circle cx="100" cy="112" r="20" fill="#1c2433" stroke="#58a6ff" stroke-width="2.5"/>
+<text x="100" y="117" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="700">T1</text>
+<text x="100" y="142" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">init</text>
+<text x="100" y="156" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">b7c3a291</text>
+<circle cx="300" cy="112" r="20" fill="#1c2433" stroke="#58a6ff" stroke-width="2.5"/>
+<text x="300" y="117" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="700">T2</text>
+<text x="300" y="142" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">auth added</text>
+<text x="300" y="156" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">a3f2b1c8</text>
+<circle cx="480" cy="112" r="20" fill="#1c2433" stroke="#58a6ff" stroke-width="2.5"/>
+<text x="480" y="117" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="700">T3</text>
+<text x="480" y="142" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">db fixed</text>
+<text x="480" y="156" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">9d1e4f72</text>
+<circle cx="660" cy="112" r="22" fill="#1c2433" stroke="#58a6ff" stroke-width="3"/>
+<circle cx="660" cy="112" r="14" fill="#1c2433" stroke="#58a6ff" stroke-width="1" stroke-dasharray="3,2"/>
+<text x="660" y="117" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="700">T4</text>
+<text x="660" y="142" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">api done</text>
+<text x="660" y="156" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">c2e7d9a1</text>
+<line x1="660" y1="84" x2="660" y2="90" stroke="#58a6ff" stroke-width="1.5"/>
+<rect x="630" y="62" width="60" height="22" rx="4" fill="#1c2433" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="660" y="77" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="700">HEAD</text>
+<line x1="315" y1="126" x2="375" y2="188" stroke="#f0883e" stroke-width="2" marker-end="url(#arr-o)"/>
+<circle cx="300" cy="112" r="5" fill="#f0883e"/>
+<line x1="415" y1="204" x2="545" y2="204" stroke="#f0883e" stroke-width="2.5" marker-end="url(#arr-o)"/>
+<circle cx="395" cy="204" r="20" fill="#1c2433" stroke="#f0883e" stroke-width="2.5"/>
+<text x="395" y="209" font-family="monospace" font-size="11" fill="#f0883e" text-anchor="middle" font-weight="700">T2'</text>
+<text x="395" y="234" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">try parser</text>
+<text x="395" y="248" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">4a1c8d03</text>
+<circle cx="565" cy="204" r="20" fill="#1c2433" stroke="#f0883e" stroke-width="2.5"/>
+<text x="565" y="209" font-family="monospace" font-size="11" fill="#f0883e" text-anchor="middle" font-weight="700">T3'</text>
+<text x="565" y="234" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">parser v2</text>
+<text x="565" y="248" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">7f2e5b19</text>
+<line x1="100" y1="168" x2="300" y2="168" stroke="#30363d" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="200" y="180" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">shared ancestors</text>
+<text x="330" y="165" font-family="sans-serif" font-size="10" fill="#f0883e">branch point</text>
+<rect x="60" y="274" width="680" height="52" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<text x="400" y="294" font-family="sans-serif" font-size="12" fill="#e6edf3" text-anchor="middle">When you <tspan font-family="monospace" fill="#58a6ff">rw goto T2</tspan> and save, RewindDB auto-creates a new branch.</text>
+<text x="400" y="314" font-family="sans-serif" font-size="12" fill="#8b949e" text-anchor="middle">Your main timeline stays untouched. No manual branching required.</text>
+</svg>

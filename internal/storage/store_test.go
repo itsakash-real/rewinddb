@@ -10,9 +10,9 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/itsakash-real/rewinddb/internal/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/itsakash-real/rewinddb/internal/storage"
 )
 
 // newStore creates an ObjectStore backed by a fresh temp directory.

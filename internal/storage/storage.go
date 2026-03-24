@@ -5,12 +5,15 @@ import (
 	"compress/gzip"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"github.com/rs/zerolog/log"
 )
 
 // ObjectStore is a content-addressable file store modelled after Git's
@@ -24,6 +27,9 @@ type ObjectStore struct {
 	// the underlying file is immutable once written.
 	mu sync.Mutex
 }
+
+// ErrCorruptObject is returned by Read when stored bytes do not match the hash.
+var ErrCorruptObject = errors.New("storage: corrupt object")
 
 // New returns an ObjectStore rooted at rootDir. The directory must already
 // exist (created by config.Init).
@@ -143,7 +149,80 @@ func (s *ObjectStore) writeObject(hash string, data []byte) error {
 // ─── Read ─────────────────────────────────────────────────────────────────────
 
 // Read returns the raw bytes stored for the given hash.
+// After reading, the content is re-hashed and compared to the requested hash.
+// A mismatch returns ErrCorruptObject [web:40].
 func (s *ObjectStore) Read(hash string) ([]byte, error) {
+	path, err := s.objectPath(hash)
+	if err != nil {
+		return nil, err
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("storage: object not found: %s", hash)
+		}
+		return nil, fmt.Errorf("storage: read object %s: %w", hash, err)
+	}
+
+	// Validate integrity: recompute SHA-256 and compare to the requested hash.
+	actual := hashBytes(data)
+	if actual != hash {
+		log.Error().
+			Str("expected", hash).
+			Str("actual", actual).
+			Str("path", path).
+			Msg("storage: CORRUPT OBJECT detected")
+		return nil, fmt.Errorf("%w: expected %s got %s (path: %s)",
+			ErrCorruptObject, hash[:16]+"...", actual[:16]+"...", path)
+	}
+
+	return data, nil
+}
+
+// ReadCompressed reads a gzip-compressed object and returns the decompressed
+// bytes. Pair with WriteCompressed.
+//
+// Note: the object is stored at the hash of the ORIGINAL (uncompressed) content
+// but the on-disk bytes are compressed, so we cannot use Read() (which validates
+// the hash of the stored bytes). Instead we read raw, decompress, then validate
+// the decompressed hash against the filename hash.
+func (s *ObjectStore) ReadCompressed(hash string) ([]byte, error) {
+	path, err := s.objectPath(hash)
+	if err != nil {
+		return nil, err
+	}
+	compressed, err := os.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("storage: object not found: %s", hash)
+		}
+		return nil, fmt.Errorf("storage: read object %s: %w", hash, err)
+	}
+	decompressed, err := gzipDecompress(compressed)
+	if err != nil {
+		return nil, fmt.Errorf("storage: decompress object %s: %w", hash, err)
+	}
+	// Validate integrity against the original-content hash (the filename).
+	actual := hashBytes(decompressed)
+	if actual != hash {
+		log.Error().
+			Str("expected", hash).
+			Str("actual", actual).
+			Str("path", path).
+			Msg("storage: CORRUPT OBJECT detected")
+		return nil, fmt.Errorf("%w: expected %s got %s (path: %s)",
+			ErrCorruptObject, hash[:16]+"...", actual[:16]+"...", path)
+	}
+	return decompressed, nil
+}
+
+// ─── Exists ───────────────────────────────────────────────────────────────────
+
+// ReadRaw returns the raw bytes stored at the given hash path without
+// validating the content hash. Use this only for non-content-addressed
+// metadata (e.g. sidecar index files) where the stored bytes are not
+// expected to hash to the key.
+func (s *ObjectStore) ReadRaw(hash string) ([]byte, error) {
 	path, err := s.objectPath(hash)
 	if err != nil {
 		return nil, err
@@ -157,22 +236,6 @@ func (s *ObjectStore) Read(hash string) ([]byte, error) {
 	}
 	return data, nil
 }
-
-// ReadCompressed reads a gzip-compressed object and returns the decompressed
-// bytes. Pair with WriteCompressed.
-func (s *ObjectStore) ReadCompressed(hash string) ([]byte, error) {
-	compressed, err := s.Read(hash)
-	if err != nil {
-		return nil, err
-	}
-	decompressed, err := gzipDecompress(compressed)
-	if err != nil {
-		return nil, fmt.Errorf("storage: decompress object %s: %w", hash, err)
-	}
-	return decompressed, nil
-}
-
-// ─── Exists ───────────────────────────────────────────────────────────────────
 
 // Exists returns true if an object with the given hash is present in the store.
 func (s *ObjectStore) Exists(hash string) bool {

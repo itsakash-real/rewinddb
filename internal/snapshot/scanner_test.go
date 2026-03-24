@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/itsakash-real/rewinddb/internal/snapshot"
 	"github.com/itsakash-real/rewinddb/internal/storage"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -251,7 +251,7 @@ func TestRestore_CreatesSubdirectories(t *testing.T) {
 
 func TestScanner_CustomIgnore(t *testing.T) {
 	root, sc := testEnv(t)
-	sc.Ignores = append(sc.Ignores, "*.log")
+	writeFile(t, root, ".rewindignore", "*.log\n")
 
 	writeFile(t, root, "app.go", `package main`)
 	writeFile(t, root, "debug.log", `log output`)

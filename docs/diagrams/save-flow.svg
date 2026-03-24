@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 680" width="800" height="680">
+<defs>
+  <marker id="arr-b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#58a6ff"/>
+  </marker>
+  <marker id="arr-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#3fb950"/>
+  </marker>
+  <marker id="arr-o" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#f0883e"/>
+  </marker>
+  <marker id="arr-m" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#8b949e"/>
+  </marker>
+</defs>
+<rect width="800" height="680" fill="#0d1117"/>
+<text x="16" y="20" font-family="monospace" font-size="11" fill="#8b949e">save-flow.svg</text>
+<rect x="250" y="30" width="300" height="48" rx="6" fill="#1c2433" stroke="#58a6ff" stroke-width="2"/>
+<text x="400" y="51" font-family="monospace" font-size="14" fill="#58a6ff" text-anchor="middle" font-weight="700">&#x25B6; rw save "auth working"</text>
+<text x="400" y="68" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">acquire LOCK file · load index</text>
+<line x1="400" y1="78" x2="400" y2="106" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr-b)"/>
+<rect x="250" y="108" width="300" height="48" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="400" y="127" font-family="sans-serif" font-size="13" fill="#e6edf3" text-anchor="middle" font-weight="600">&#x1F4C1; Scan project files</text>
+<text x="400" y="145" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">walk directory · skip .rewindignore</text>
+<line x1="400" y1="156" x2="400" y2="184" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr-b)"/>
+<rect x="250" y="186" width="300" height="48" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="400" y="205" font-family="sans-serif" font-size="13" fill="#e6edf3" text-anchor="middle" font-weight="600">&#x1F511; Hash each file (SHA-256)</text>
+<text x="400" y="223" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">parallel workers · runtime.NumCPU()</text>
+<line x1="400" y1="234" x2="400" y2="262" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr-b)"/>
+<rect x="250" y="264" width="300" height="48" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="400" y="283" font-family="sans-serif" font-size="13" fill="#e6edf3" text-anchor="middle" font-weight="600">&#x1F50D; Compare with HEAD snapshot</text>
+<text x="400" y="301" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">diff hashes · identify new objects</text>
+<line x1="400" y1="312" x2="400" y2="336" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr-b)"/>
+<polygon points="400,338 480,368 400,398 320,368" fill="#161b22" stroke="#8b949e" stroke-width="1.5"/>
+<text x="400" y="366" font-family="sans-serif" font-size="12" fill="#e6edf3" text-anchor="middle">Changed?</text>
+<text x="400" y="381" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">any hash differs?</text>
+<text x="294" y="384" font-family="sans-serif" font-size="10" fill="#3fb950">YES</text>
+<line x1="320" y1="368" x2="200" y2="368" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
+<line x1="200" y1="368" x2="200" y2="420" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
+<text x="496" y="362" font-family="sans-serif" font-size="10" fill="#f85149">NO</text>
+<line x1="480" y1="368" x2="620" y2="368" stroke="#f85149" stroke-width="1.5" marker-end="url(#arr-m)"/>
+<rect x="560" y="346" width="180" height="44" rx="6" fill="#161b22" stroke="#f85149" stroke-width="1.5"/>
+<text x="650" y="364" font-family="sans-serif" font-size="12" fill="#f85149" text-anchor="middle">&#x21A9; Nothing changed</text>
+<text x="650" y="380" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">exit 0, no checkpoint</text>
+<rect x="80" y="422" width="240" height="48" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+<text x="200" y="441" font-family="sans-serif" font-size="12" fill="#3fb950" text-anchor="middle" font-weight="600">&#x1F4BE; Write new objects</text>
+<text x="200" y="458" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">store only changed files · dedup</text>
+<line x1="200" y1="470" x2="200" y2="498" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
+<rect x="80" y="500" width="240" height="48" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="200" y="519" font-family="sans-serif" font-size="12" fill="#e6edf3" text-anchor="middle" font-weight="600">&#x1F4F8; Create snapshot JSON</text>
+<text x="200" y="536" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">refs all file hashes · gzip</text>
+<line x1="200" y1="548" x2="200" y2="576" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+<polygon points="200,578 285,604 200,630 115,604" fill="#161b22" stroke="#8b949e" stroke-width="1.5"/>
+<text x="200" y="601" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">At branch</text>
+<text x="200" y="616" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">head?</text>
+<text x="88" y="600" font-family="sans-serif" font-size="10" fill="#3fb950">YES</text>
+<line x1="115" y1="604" x2="80" y2="604" stroke="#3fb950" stroke-width="1.5"/>
+<line x1="80" y1="604" x2="80" y2="640" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
+<rect x="30" y="642" width="100" height="28" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1.2"/>
+<text x="80" y="660" font-family="sans-serif" font-size="10" fill="#3fb950" text-anchor="middle">Append to branch</text>
+<text x="272" y="600" font-family="sans-serif" font-size="10" fill="#f0883e">NO</text>
+<line x1="285" y1="604" x2="340" y2="604" stroke="#f0883e" stroke-width="1.5"/>
+<line x1="340" y1="604" x2="340" y2="640" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arr-o)"/>
+<rect x="285" y="642" width="110" height="28" rx="6" fill="#161b22" stroke="#f0883e" stroke-width="1.2"/>
+<text x="340" y="660" font-family="sans-serif" font-size="10" fill="#f0883e" text-anchor="middle">Create new branch</text>
+<rect x="420" y="616" width="250" height="52" rx="6" fill="#1c2433" stroke="#3fb950" stroke-width="2"/>
+<text x="545" y="636" font-family="sans-serif" font-size="13" fill="#3fb950" text-anchor="middle" font-weight="700">&#x2705; Update index.json</text>
+<text x="545" y="652" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">tmp &#x2192; fsync &#x2192; rename (atomic)</text>
+<text x="545" y="664" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">release LOCK · print checkpoint ID</text>
+<line x1="200" y1="630" x2="200" y2="636" stroke="#58a6ff" stroke-width="1.5"/>
+<line x1="200" y1="636" x2="418" y2="636" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+</svg>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480">
+<rect width="800" height="480" fill="#0d1117"/>
+<text x="16" y="20" font-family="monospace" font-size="11" fill="#8b949e">use-cases.svg</text>
+<rect x="20" y="32" width="370" height="200" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<rect x="20" y="32" width="370" height="5" rx="3" fill="#58a6ff"/>
+<text x="40" y="60" font-family="sans-serif" font-size="20">&#x1F9EA;</text>
+<text x="68" y="58" font-family="sans-serif" font-size="14" fill="#e6edf3" font-weight="700">Safe Experimentation</text>
+<text x="40" y="76" font-family="sans-serif" font-size="11" fill="#8b949e">Trying a risky refactor? Save first.</text>
+<rect x="30" y="88" width="350" height="130" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="44" y="108" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="54" y="108" font-family="monospace" font-size="11" fill="#e6edf3"> rw save "before refactor"</text>
+<text x="44" y="126" font-family="monospace" font-size="11" fill="#3fb950">&#x2713;</text>
+<text x="54" y="126" font-family="monospace" font-size="11" fill="#3fb950"> a3f2b1c8  before refactor</text>
+<text x="44" y="148" font-family="monospace" font-size="11" fill="#6e7681"># ... break things ...</text>
+<text x="44" y="168" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="54" y="168" font-family="monospace" font-size="11" fill="#e6edf3"> rw goto a3f2b1c8</text>
+<text x="44" y="186" font-family="monospace" font-size="11" fill="#58a6ff">&#x2713;</text>
+<text x="54" y="186" font-family="monospace" font-size="11" fill="#58a6ff"> Restored 3 files, skipped 44</text>
+<text x="44" y="206" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="54" y="206" font-family="monospace" font-size="11" fill="#e6edf3"> rw diff a3f2b1c8 HEAD</text>
+<rect x="410" y="32" width="370" height="200" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<rect x="410" y="32" width="370" height="5" rx="3" fill="#bc8cff"/>
+<text x="430" y="60" font-family="sans-serif" font-size="20">&#x1F916;</text>
+<text x="458" y="58" font-family="sans-serif" font-size="14" fill="#e6edf3" font-weight="700">AI Code Rollback</text>
+<text x="430" y="76" font-family="sans-serif" font-size="11" fill="#8b949e">AI generated bad code? One command back.</text>
+<rect x="420" y="88" width="350" height="130" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="434" y="108" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="444" y="108" font-family="monospace" font-size="11" fill="#e6edf3"> rw save "before AI changes"</text>
+<text x="434" y="126" font-family="monospace" font-size="11" fill="#3fb950">&#x2713;</text>
+<text x="444" y="126" font-family="monospace" font-size="11" fill="#3fb950"> 9d1e4f72  before AI changes</text>
+<text x="434" y="148" font-family="monospace" font-size="11" fill="#6e7681"># accept AI suggestion...</text>
+<text x="434" y="168" font-family="monospace" font-size="11" fill="#6e7681"># three prompts later: disaster</text>
+<text x="434" y="188" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="444" y="188" font-family="monospace" font-size="11" fill="#e6edf3"> rw goto 9d1e4f72</text>
+<text x="434" y="208" font-family="monospace" font-size="11" fill="#58a6ff">&#x2713;</text>
+<text x="444" y="208" font-family="monospace" font-size="11" fill="#58a6ff"> back in &lt; 1 second</text>
+<rect x="20" y="252" width="370" height="210" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<rect x="20" y="252" width="370" height="5" rx="3" fill="#f0883e"/>
+<text x="40" y="280" font-family="sans-serif" font-size="20">&#x1F33F;</text>
+<text x="68" y="278" font-family="sans-serif" font-size="14" fill="#e6edf3" font-weight="700">Parallel Experiments</text>
+<text x="40" y="296" font-family="sans-serif" font-size="11" fill="#8b949e">Try two approaches, keep both.</text>
+<rect x="30" y="308" width="350" height="140" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="44" y="326" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="54" y="326" font-family="monospace" font-size="11" fill="#e6edf3"> rw save "base — before split"</text>
+<text x="44" y="348" font-family="monospace" font-size="11" fill="#6e7681"># implement approach A</text>
+<text x="44" y="368" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="54" y="368" font-family="monospace" font-size="11" fill="#e6edf3"> rw save "approach A — goroutines"</text>
+<text x="44" y="390" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="54" y="390" font-family="monospace" font-size="11" fill="#e6edf3"> rw goto &lt;base id&gt;</text>
+<text x="44" y="410" font-family="monospace" font-size="11" fill="#6e7681"># implement approach B</text>
+<text x="44" y="430" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="54" y="430" font-family="monospace" font-size="11" fill="#e6edf3"> rw save "approach B — channels"</text>
+<text x="44" y="450" font-family="monospace" font-size="11" fill="#f0883e">  &#x21B3; new branch auto-created</text>
+<rect x="410" y="252" width="370" height="210" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<rect x="410" y="252" width="370" height="5" rx="3" fill="#f85149"/>
+<text x="430" y="280" font-family="sans-serif" font-size="20">&#x1F41B;</text>
+<text x="458" y="278" font-family="sans-serif" font-size="14" fill="#e6edf3" font-weight="700">Debug Time Travel</text>
+<text x="430" y="296" font-family="sans-serif" font-size="11" fill="#8b949e">Find exactly when a bug appeared.</text>
+<rect x="420" y="308" width="350" height="140" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="434" y="326" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="444" y="326" font-family="monospace" font-size="11" fill="#e6edf3"> rw list</text>
+<text x="444" y="344" font-family="monospace" font-size="10" fill="#6e7681">  c2e7d9a1  api done (HEAD)</text>
+<text x="444" y="360" font-family="monospace" font-size="10" fill="#6e7681">  9d1e4f72  db fixed</text>
+<text x="444" y="376" font-family="monospace" font-size="10" fill="#6e7681">* a3f2b1c8  auth added  &lt;-- worked here</text>
+<text x="434" y="398" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="444" y="398" font-family="monospace" font-size="11" fill="#e6edf3"> rw goto a3f2b1c8</text>
+<text x="434" y="418" font-family="monospace" font-size="11" fill="#3fb950">&#x2713;</text>
+<text x="444" y="418" font-family="monospace" font-size="11" fill="#3fb950"> confirmed: works at this point</text>
+<text x="434" y="438" font-family="monospace" font-size="11" fill="#8b949e">$</text>
+<text x="444" y="438" font-family="monospace" font-size="11" fill="#e6edf3"> rw diff a3f2b1c8 c2e7d9a1</text>
+<text x="444" y="456" font-family="monospace" font-size="10" fill="#f85149">  Modified: auth/middleware.go +182B</text>
+</svg>

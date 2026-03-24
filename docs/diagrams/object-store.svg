@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" width="800" height="420">
+<defs>
+  <marker id="arr-b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#58a6ff"/>
+  </marker>
+  <marker id="arr-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#3fb950"/>
+  </marker>
+  <marker id="arr-y" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#f0883e"/>
+  </marker>
+</defs>
+<rect width="800" height="420" fill="#0d1117"/>
+<text x="16" y="20" font-family="monospace" font-size="11" fill="#8b949e">object-store.svg</text>
+<text x="40" y="46" font-family="sans-serif" font-size="12" fill="#8b949e" font-weight="600">Your Project Files</text>
+<rect x="30" y="54" width="160" height="38" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<text x="48" y="69" font-family="monospace" font-size="12" fill="#e6edf3">auth.js</text>
+<text x="48" y="84" font-family="monospace" font-size="9" fill="#8b949e">1.4 KB · modified</text>
+<rect x="30" y="104" width="160" height="38" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<text x="48" y="119" font-family="monospace" font-size="12" fill="#e6edf3">index.js</text>
+<text x="48" y="134" font-family="monospace" font-size="9" fill="#8b949e">2.1 KB · unchanged</text>
+<rect x="30" y="154" width="160" height="38" rx="6" fill="#161b22" stroke="#f0883e" stroke-width="2"/>
+<text x="48" y="169" font-family="monospace" font-size="12" fill="#e6edf3">utils.js</text>
+<text x="48" y="184" font-family="monospace" font-size="9" fill="#f0883e">identical content to auth.js</text>
+<rect x="30" y="204" width="160" height="38" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<text x="48" y="219" font-family="monospace" font-size="12" fill="#e6edf3">config.js</text>
+<text x="48" y="234" font-family="monospace" font-size="9" fill="#8b949e">0.8 KB</text>
+<text x="196" y="76" font-family="monospace" font-size="10" fill="#58a6ff">a3f2b1...</text>
+<text x="196" y="122" font-family="monospace" font-size="10" fill="#58a6ff">7c9d4e...</text>
+<text x="196" y="172" font-family="monospace" font-size="10" fill="#f0883e">a3f2b1...</text>
+<text x="196" y="222" font-family="monospace" font-size="10" fill="#58a6ff">b8f1a2...</text>
+<rect x="280" y="120" width="180" height="60" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5" stroke-dasharray="5,3"/>
+<text x="370" y="142" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle" font-weight="600">SHA-256 decides</text>
+<text x="370" y="158" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">same content</text>
+<text x="370" y="172" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">= same hash = stored once</text>
+<line x1="192" y1="73" x2="278" y2="145" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+<line x1="192" y1="122" x2="278" y2="148" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+<line x1="192" y1="172" x2="278" y2="158" stroke="#f0883e" stroke-width="1.8" marker-end="url(#arr-y)"/>
+<line x1="192" y1="222" x2="278" y2="166" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+<line x1="462" y1="145" x2="510" y2="102" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+<line x1="462" y1="148" x2="510" y2="176" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+<line x1="462" y1="155" x2="510" y2="100" stroke="#f0883e" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arr-y)"/>
+<line x1="462" y1="162" x2="510" y2="250" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+<text x="510" y="46" font-family="monospace" font-size="12" fill="#3fb950" font-weight="600">.rewind/objects/</text>
+<rect x="510" y="54" width="250" height="74" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+<text x="528" y="72" font-family="monospace" font-size="11" fill="#3fb950">a3/</text>
+<rect x="536" y="78" width="210" height="40" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="550" y="96" font-family="monospace" font-size="11" fill="#e6edf3">f2b1c84d9a0e3f72...</text>
+<rect x="550" y="103" width="180" height="14" rx="2" fill="#f0883e" fill-opacity="0.15"/>
+<text x="640" y="114" font-family="sans-serif" font-size="9" fill="#f0883e" text-anchor="middle">&#x2191; used by auth.js AND utils.js</text>
+<rect x="510" y="140" width="250" height="58" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+<text x="528" y="158" font-family="monospace" font-size="11" fill="#3fb950">7c/</text>
+<rect x="536" y="164" width="210" height="26" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="550" y="181" font-family="monospace" font-size="11" fill="#e6edf3">9d4e7a2b1c8f0e3...</text>
+<rect x="510" y="210" width="250" height="58" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+<text x="528" y="228" font-family="monospace" font-size="11" fill="#3fb950">b8/</text>
+<rect x="536" y="234" width="210" height="26" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="550" y="251" font-family="monospace" font-size="11" fill="#e6edf3">f1a2c4d8e9b03f1...</text>
+<text x="635" y="290" font-family="sans-serif" font-size="11" fill="#f0883e" text-anchor="middle" font-weight="600">2 files, 1 object — zero duplication</text>
+<rect x="510" y="310" width="250" height="80" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<text x="635" y="330" font-family="sans-serif" font-size="11" fill="#8b949e" text-anchor="middle">storage stats</text>
+<line x1="520" y1="335" x2="750" y2="335" stroke="#30363d" stroke-width="1"/>
+<text x="528" y="352" font-family="sans-serif" font-size="12" fill="#e6edf3">4 project files</text>
+<text x="528" y="370" font-family="monospace" font-size="12" fill="#3fb950">3 objects stored</text>
+<text x="528" y="387" font-family="sans-serif" font-size="11" fill="#8b949e">storage saved: <tspan fill="#f0883e" font-weight="600">25%</tspan></text>
+<rect x="30" y="310" width="220" height="80" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+<text x="140" y="330" font-family="sans-serif" font-size="11" fill="#8b949e" text-anchor="middle">deduplication in action</text>
+<line x1="40" y1="335" x2="240" y2="335" stroke="#30363d" stroke-width="1"/>
+<text x="48" y="355" font-family="sans-serif" font-size="12" fill="#e6edf3">auth.js <tspan fill="#f0883e">= </tspan>utils.js</text>
+<text x="48" y="373" font-family="monospace" font-size="11" fill="#8b949e">both hash: <tspan fill="#f0883e">a3f2b1...</tspan></text>
+<text x="48" y="389" font-family="sans-serif" font-size="11" fill="#3fb950">written to disk once</text>
+</svg>
