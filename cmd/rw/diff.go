@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	diffpkg "github.com/itsakash-real/rewinddb/internal/diff"
 	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/spf13/cobra"
 )
 
 func diffCmd() *cobra.Command {
@@ -49,10 +49,12 @@ against the current HEAD. Supports 8-char prefix matching.`,
 
 			// ── Guard: root checkpoints have no snapshot ──────────────────────
 			if cpA.SnapshotRef == "" {
-				return fmt.Errorf("checkpoint %s has no snapshot (it is the root checkpoint)", shortID(cpA.ID))
+				return fmt.Errorf("checkpoint %s is the root checkpoint and has no files to compare\n"+
+					"try: rw diff <id> <other-id>   (pick a non-root checkpoint)", shortID(cpA.ID))
 			}
 			if cpB.SnapshotRef == "" {
-				return fmt.Errorf("checkpoint %s has no snapshot (it is the root checkpoint)", shortID(cpB.ID))
+				return fmt.Errorf("checkpoint %s is the root checkpoint and has no files to compare\n"+
+					"try: rw diff <id> <other-id>   (pick a non-root checkpoint)", shortID(cpB.ID))
 			}
 
 			// ── Load snapshots ────────────────────────────────────────────────

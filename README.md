@@ -1,10 +1,10 @@
 <div align="center">
 
-# 🔁 RewindDB
+# RewindDB
 
 ### Save your project state. Instantly rewind. Explore alternate timelines.
 
-[![Go Version](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat-square&logo=go)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/go-1.22+-00ADD8?style=flat-square&logo=go)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/itsakash-real/rewinddb?style=flat-square)](https://goreportcard.com/report/github.com/itsakash-real/rewinddb)
 
@@ -75,55 +75,101 @@ It's not trying to replace git. Git is for collaboration and code history. Rewin
 
 ## Quick Demo
 
-```bash
+```
 # Start fresh in your project
 $ rw init
-Initialized RewindDB repository on branch 'main'
 
-# You've got auth working. Save it.
+  ◆  initialized  ──────────────────────────────
+
+     directory      /your/project/.rewind
+     branch         main
+```
+
+```
+# Save a checkpoint — message is optional, RewindDB writes one for you
 $ rw save "auth working"
-✓ Checkpoint a3f2b1c  auth working
-  Branch: main · 5 files tracked
 
-# Try something risky. Break things. Save that state too.
-$ echo "// experiment" >> src/auth.go
-$ rw save "trying JWT rewrite"
-✓ Checkpoint b2e1a0f  trying JWT rewrite
-  Branch: main · 1 file changed
+  ◆  checkpoint saved  ─────────────────────────
+
+     id             a3f2b1c8
+     message        "auth working"
+     branch         main
+     files          12 tracked  ·  0 changed
+     saved          just now
 ```
 
-```bash
-# See what you've got
+```
+# Make changes, save again — or just run rw save with no message
+$ rw save
+
+  ◆  checkpoint saved  ─────────────────────────
+
+     id             b2e1a0f4
+     message        "auto: auth.go (1 file(s) changed)"
+     branch         main
+     files          12 tracked  ·  1 changed
+     saved          just now
+```
+
+```
+# Browse your history
 $ rw list
-● main  (2 checkpoints)
 
-  ◉ b2e1a0f  [HEAD]   1 minute ago   "trying JWT rewrite"
-  ○ a3f2b1c            3 minutes ago  "auth working"
+  ◆  main  ·  2 checkpoints  ──────────────────
+
+  ◆  b2e1a0f4  HEAD   just now            "auto: auth.go (1 file(s) changed)"
+  ○  a3f2b1c8            3 minutes ago    "auth working"
 ```
 
-```bash
-# The JWT rewrite is a disaster. Go back.
-$ rw goto a3f2b1c
-Restore to a3f2b1c: "auth working"? [y/N]: y
-✓ Restored  1 file written · 0 removed
+```
+# Something broke — go back
+$ rw goto a3f2b1c8
+Restore to: "auth working"? [y/N]: y
+
+  ◆  restored  ─────────────────────────────────
+
+     checkpoint     a3f2b1c8
+     message        "auth working"
+     branch         main
+     written        1 file(s)
+     removed        0 file(s)
 ```
 
-```bash
-# See exactly what changed between two checkpoints
-$ rw diff a3f2b1c b2e1a0f
-[~] src/auth.go   +1 −0
+```
+# Or just undo the last save — no IDs needed
+$ rw undo
 
---- src/auth.go
-+++ src/auth.go
-@@ -10,3 +10,4 @@
- func main() {
-     // ...
- }
-+// experiment
+  ◆  undo  ·  1 step(s) back  ─────────────────
+
+     restoring to   a3f2b1c8
+     message        "auth working"
+
+  ✓  restored to a3f2b1c8
 ```
 
-```bash
-# Before a risky script, auto-checkpoint and roll back on failure
+```
+# See what's changed since your last checkpoint
+$ rw status
+
+  ╭────────────────────────────────────────────────────╮
+  │   ◆  rewinddb                                      │
+  │                                                    │
+  │   main  ·  a3f2b1c8  ·  5 minutes ago              │
+  ╰────────────────────────────────────────────────────╯
+
+     checkpoints    2 on branch  ·  2 total
+     storage        6 objects  ·  4.2 KB
+
+  ◆  working directory  ────────────────────────
+
+  ~  src/auth.go
+  +  src/newfile.go
+
+  →  run rw save "message" to checkpoint
+```
+
+```
+# Before running a risky command — checkpoint before, rollback on failure
 $ rw run "npm run build"
 ✓ Saved pre-run checkpoint: c1d0e9f
   running: npm run build
@@ -176,7 +222,7 @@ make build
 <details>
 <summary><strong>Windows</strong></summary>
 
-Download the `.exe` from [Releases](https://github.com/itsakash-real/rewinddb/releases) or use `go install`.
+Download the `.exe` from [Releases](https://github.com/itsakash-real/rewinddb/releases) or use `go install`. Colors work in Windows Terminal — not in the legacy CMD prompt.
 
 </details>
 
@@ -185,7 +231,7 @@ Download the `.exe` from [Releases](https://github.com/itsakash-real/rewinddb/re
 ## Core Concepts
 
 ### Checkpoint
-A snapshot of your entire project at a point in time — not a diff, a full capture. Each checkpoint gets a short ID like `a3f2b1c`. Create one whenever you reach something worth keeping: tests pass, a feature works, before you try something dangerous.
+A snapshot of your entire project at a point in time — not a diff, a full capture. Each checkpoint gets a short ID like `a3f2b1c8`. Create one whenever you reach something worth keeping: tests pass, a feature works, before you try something dangerous. If you don't provide a message, RewindDB generates one from what changed.
 
 ### Branch
 Branches work automatically. If you restore an old checkpoint and save from there, RewindDB creates a new branch instead of overwriting your history. You end up with a forked timeline — both paths preserved, no manual branching required.
@@ -194,39 +240,63 @@ Branches work automatically. If you restore an old checkpoint and save from ther
 The timeline is a DAG (directed acyclic graph) — the same structure git uses internally. Each checkpoint points to its parent. Branches are named pointers to specific checkpoints. `rw list --all` shows the full picture.
 
 ### Object Store
-Only changed files get stored. If 100 files haven't changed since the last checkpoint, they take zero extra space. Everything is deduplicated by content hash.
+Only changed files get stored. If 100 files haven't changed since the last checkpoint, they take zero extra space. Everything is deduplicated by content hash. Snapshots are gzip-compressed.
 
 ---
 
 ## Commands
 
+### Core
+
 | Command | What it does | Example |
 |---|---|---|
 | `rw init` | Set up a repo in the current directory | `rw init` |
-| `rw save [msg]` | Save a checkpoint (message optional) | `rw save "login works"` |
-| `rw goto <id>` | Restore to a checkpoint | `rw goto a3f2b1c` |
-| `rw undo [--n N]` | Go back N checkpoints (default 1) | `rw undo --n 3` |
+| `rw save [msg]` | Save a checkpoint (message optional — auto-generated if omitted) | `rw save "login works"` |
+| `rw goto <id>` | Restore to a checkpoint (warns if you have unsaved changes) | `rw goto a3f2b1c` |
+| `rw undo [--n N]` | Go back N checkpoints without needing to know the ID | `rw undo --n 3` |
 | `rw list` | List checkpoints on the current branch | `rw list` |
-| `rw list --all` | Show all branches and checkpoints | `rw list --all` |
-| `rw diff <id1> [id2]` | Compare two checkpoints | `rw diff a3f2b1c b2e1a0f` |
-| `rw status` | Show what's changed since last checkpoint | `rw status` |
-| `rw branches` | List branches | `rw branches` |
+| `rw list --all` | Show all branches and their checkpoints | `rw list --all` |
+| `rw diff <id1> [id2]` | Compare two checkpoints (supports `HEAD~N` syntax) | `rw diff HEAD HEAD~2` |
+| `rw status` | Show branch, HEAD, and what's changed on disk | `rw status` |
+
+### Branching
+
+| Command | What it does | Example |
+|---|---|---|
+| `rw branches` | List all branches | `rw branches` |
 | `rw branches branch <name>` | Create a new branch at HEAD | `rw branches branch experiment` |
-| `rw branches switch <name>` | Switch to a branch | `rw branches switch experiment` |
-| `rw tag <name> [id]` | Label a checkpoint with a human name | `rw tag v1.0` |
-| `rw gc` | Remove unreferenced objects | `rw gc` |
-| `rw gc --dry-run` | Preview what GC would delete | `rw gc --dry-run` |
-| `rw run "cmd"` | Checkpoint before, rollback on failure | `rw run "npm run build"` |
-| `rw watch` | Auto-save on file changes | `rw watch --interval 5m` |
-| `rw bisect start` | Binary-search for a bad checkpoint | `rw bisect start` |
+| `rw branches switch <name>` | Switch to a branch and restore its state | `rw branches switch experiment` |
+| `rw tag <name> [id]` | Label a checkpoint with a human-readable name | `rw tag v1.0` |
+
+### Power Features
+
+| Command | What it does | Example |
+|---|---|---|
+| `rw run "cmd"` | Auto-checkpoint before running, rollback if it fails | `rw run "npm run build"` |
+| `rw watch [--interval]` | Auto-save checkpoints in the background on file change | `rw watch --interval 5m` |
+| `rw bisect start` | Binary-search your timeline to find when a bug appeared | `rw bisect start` |
+| `rw bisect good [id]` | Mark a checkpoint as bug-free | `rw bisect good` |
+| `rw bisect bad [id]` | Mark a checkpoint as broken | `rw bisect bad` |
+| `rw bisect reset` | End bisect session and restore original HEAD | `rw bisect reset` |
 | `rw search <text>` | Search checkpoint messages and tags | `rw search "JWT"` |
-| `rw session start` | Begin a named work session | `rw session start "auth feature"` |
+| `rw session start "name"` | Begin a named work session | `rw session start "auth feature"` |
 | `rw session end` | End the current session | `rw session end` |
-| `rw stats` | Show storage stats and timeline summary | `rw stats` |
-| `rw export <id>` | Export a checkpoint to a `.rwdb` file | `rw export a3f2b1c` |
-| `rw import <file>` | Import a `.rwdb` file | `rw import state.rwdb` |
-| `rw ignore auto` | Add ignore patterns based on project type | `rw ignore auto` |
-| `rw version` | Print version | `rw version` |
+| `rw session list` | List all sessions | `rw session list` |
+| `rw session restore "name"` | Restore to a session's starting checkpoint | `rw session restore "auth feature"` |
+
+### Storage & Export
+
+| Command | What it does | Example |
+|---|---|---|
+| `rw gc` | Remove objects no checkpoint references | `rw gc` |
+| `rw gc --dry-run` | Preview what GC would delete | `rw gc --dry-run` |
+| `rw stats` | Show timeline and storage statistics | `rw stats` |
+| `rw export <id>` | Export a checkpoint to a portable `.rwdb` file | `rw export a3f2b1c` |
+| `rw import <file>` | Import a `.rwdb` file into the current repo | `rw import state.rwdb` |
+| `rw ignore add "pattern"` | Add a pattern to `.rewindignore` | `rw ignore add "dist/"` |
+| `rw ignore auto` | Auto-add ignore patterns based on project type | `rw ignore auto` |
+| `rw ignore list` | Show current `.rewindignore` contents | `rw ignore list` |
+| `rw version` | Print version, build time, Go version | `rw version` |
 
 ---
 
@@ -263,15 +333,32 @@ rw save "approach B: JWT"
 rw list --all   # see both timelines side by side
 ```
 
-**Debugging — rewinding to when it worked**
+**Debugging — find exactly when a bug appeared**
 ```bash
 rw bisect start
 rw bisect good <last-known-good-id>
 rw bisect bad HEAD
 # RewindDB jumps you to the midpoint checkpoint
-# test it, then:
+# test your code, then:
 rw bisect good   # or: rw bisect bad
-# repeat until it pinpoints exactly which checkpoint broke things
+# repeat until it pinpoints the exact checkpoint that broke things
+```
+
+**Grouping work into a named session**
+```bash
+rw session start "feature: payment flow"
+# work for 2 hours, save checkpoints freely...
+rw session end
+# later, jump back to the start of that session:
+rw session restore "feature: payment flow"
+```
+
+**Sharing a broken state with a teammate**
+```bash
+# export the exact state where the bug is reproducible
+rw export a3f2b1c --output bug-repro.rwdb
+# teammate imports it:
+rw import bug-repro.rwdb
 ```
 
 **Cleaning up old checkpoints**
@@ -300,6 +387,7 @@ func main() {
         panic(err)
     }
 
+    // checkpoint before anything risky
     _, err = client.Save("before payment processing")
     if err != nil {
         panic(err)
@@ -329,6 +417,13 @@ fmt.Printf("modified: %d  added: %d  removed: %d\n",
 )
 ```
 
+**CI/CD — checkpoint before deploying**
+```yaml
+# .github/workflows/deploy.yml
+- name: Checkpoint before deploy
+  run: rw save "pre-deploy: ${{ github.sha }}"
+```
+
 ---
 
 ## How It Works
@@ -338,7 +433,9 @@ fmt.Printf("modified: %d  added: %d  removed: %d\n",
 | **Content-addressable storage** | Every file stored by SHA-256 hash. Same content = same hash = zero duplication across checkpoints. |
 | **DAG timeline** | Checkpoints form a directed graph. Each one points to its parent. Branching happens automatically when you save from a non-HEAD checkpoint. |
 | **Delta restore** | Restoring only writes files that actually changed. If 90% of files are identical, 90% of the disk work is skipped. |
-| **Atomic writes** | Everything goes to a temp file first, then gets renamed into place. A crash mid-save leaves nothing corrupted. |
+| **Atomic writes** | Everything goes to a temp file first, fsynced, then renamed into place. A crash mid-save leaves nothing corrupted. |
+| **mtime cache** | `rw status` skips re-hashing files whose mtime and size haven't changed. Fast even on large projects. |
+| **Crash recovery** | On startup, RewindDB checks for leftover temp files and incomplete renames from a previous crash and cleans them up. |
 
 ---
 
@@ -359,13 +456,16 @@ fmt.Printf("modified: %d  added: %d  removed: %d\n",
 
 | Feature | Git | RewindDB |
 |---|---|---|
-| Tracks binary files | Poor (no delta compression) | ✅ Yes, same as text |
-| Requires a message to save | Yes | ✅ No — auto-generates one |
+| Tracks binary files | Poor (no delta compression) | ✅ Same as text files |
+| Message required to save | Yes | ✅ No — auto-generates one |
 | Tracks runtime artifacts | No | ✅ Yes |
+| Works outside an editor | Yes | ✅ Yes — any terminal, CI/CD, scripts |
 | Auto-branches on time-travel | No | ✅ Yes |
+| Rollback on command failure | No | ✅ `rw run "cmd"` |
+| Background auto-save daemon | No | ✅ `rw watch` |
+| Binary search through history | `git bisect` | ✅ `rw bisect` |
 | Collaboration / push / pull | ✅ Yes | No (local only) |
-| Line-level history | ✅ Yes | File-level (line diffs in viewer) |
-| Speed for full project snapshot | Slow for large binaries | ✅ Fast (parallel hashing) |
+| Line-level history | ✅ Yes | File-level |
 
 Use git for collaboration, code review, and sharing history with your team. Use RewindDB for local experiments, mid-session safety nets, and anything git wouldn't track. **Use both — they solve different problems.**
 
@@ -373,12 +473,12 @@ Use git for collaboration, code review, and sharing history with your team. Use 
 
 ## Roadmap
 
-### ✅ Done
+### Done
 
 - Content-addressable object store with deduplication
 - DAG timeline with automatic branching
 - Delta restore (only writes changed files)
-- mtime-based fast status (skips re-hashing unchanged files)
+- mtime-based fast status check
 - Gzip compression for snapshots
 - File locking with stale-lock detection
 - Crash recovery (atomic writes + fsync)
@@ -397,8 +497,13 @@ Use git for collaboration, code review, and sharing history with your team. Use 
 - Auto-message generation when no message is given
 - Auto-stash prompt before destructive restores
 - Background GC every 10 saves
+- Purple terminal UI with `◆` markers and box-drawing layout
+- `--debug` flag for verbose logging (debug output hidden by default)
+- Human-readable auto-branch names (`branch-2024-01-15-1423`)
+- ANSI color detection (disabled on non-TTY, `NO_COLOR`, and Windows CMD)
+- `rw diff HEAD~N HEAD` — relative refs work everywhere
 
-### 🔜 Planned
+### Planned
 
 - [ ] Remote storage backend (S3, R2, local NAS)
 - [ ] `rw interactive` — TUI checkpoint browser with arrow-key navigation

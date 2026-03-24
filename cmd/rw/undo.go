@@ -39,17 +39,16 @@ func undoCmd() *cobra.Command {
 					return fmt.Errorf("undo: target checkpoint %s has no snapshot (it may be the root checkpoint)", shortID(target.ID))
 				}
 
-				steps := "step"
-				if n != 1 {
-					steps = "steps"
-				}
-				fmt.Printf("Restoring to %s: %q (%d %s back)\n",
-					shortID(target.ID), target.Message, n, steps)
+				sectionTitle(fmt.Sprintf("undo  \u00b7  %d step(s) back", n))
+				fmt.Println()
+				kv("restoring to", colorCyan+shortID(target.ID)+colorReset)
+				kv("message",      fmt.Sprintf("%q", target.Message))
+				fmt.Println()
 
 				// Ask confirmation unless --force.
 				if !force {
 					if !askConfirm("This will overwrite your working directory. Continue? [y/N]") {
-						fmt.Println("Aborted.")
+						printDim("aborted")
 						return nil
 					}
 				}
@@ -70,8 +69,8 @@ func undoCmd() *cobra.Command {
 					return fmt.Errorf("undo: restore files: %w", err)
 				}
 
-				fmt.Printf("%s✓ Restored to %s (%d checkpoint(s) back)%s\n",
-					colorGreen, shortID(target.ID), n, colorReset)
+				printSuccess("restored to %s", shortID(target.ID))
+				fmt.Println()
 				return nil
 			})
 		},

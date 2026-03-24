@@ -34,6 +34,8 @@ func runCmd() *cobra.Command {
 
 			// ── Pre-run checkpoint ────────────────────────────────────────────
 			var preRunID string
+			// Record the original branch ID before any save (which may auto-fork).
+			originalBranchID := r.engine.Index.CurrentBranchID
 			err = fl.WithLock(func() error {
 				preMsg := "pre-run: " + userCmd
 				cp, err := saveCheckpointNow(r, preMsg)
@@ -112,6 +114,16 @@ func runCmd() *cobra.Command {
 				}
 				if _, err := r2.engine.GotoCheckpoint(preCP.ID); err != nil {
 					return fmt.Errorf("goto pre-run checkpoint: %w", err)
+				}
+				// Restore the original branch the user was on before the pre-run save,
+				// in case the pre-run checkpoint auto-forked a new branch.
+				if originalBranchID != "" {
+					if _, exists := r2.engine.Index.Branches[originalBranchID]; exists {
+						r2.engine.Index.CurrentBranchID = originalBranchID
+						if persistErr := r2.engine.ForceFlush(); persistErr != nil {
+							return fmt.Errorf("restore original branch: %w", persistErr)
+						}
+					}
 				}
 				if err := r2.scanner.Restore(targetSnap); err != nil {
 					return fmt.Errorf("restore pre-run state: %w", err)

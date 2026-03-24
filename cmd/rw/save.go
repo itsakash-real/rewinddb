@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/itsakash-real/rewinddb/internal/diff"
 	"github.com/itsakash-real/rewinddb/internal/storage"
@@ -86,7 +85,7 @@ func saveCmd() *cobra.Command {
 
 				branch, _ := r.engine.Index.CurrentBranch()
 
-				// ── Background GC every 10 saves (Feature 14) ───────────────────
+				// ── Background GC every 10 saves ─────────────────────────────────
 				go maybeBackgroundGC(r)
 
 				// ── Output ────────────────────────────────────────────────────────
@@ -95,15 +94,20 @@ func saveCmd() *cobra.Command {
 					return nil
 				}
 
-				fmt.Printf("✓ Checkpoint saved\n")
-				fmt.Printf("  ID:      %s\n", cp.ID)
-				fmt.Printf("  Message: %q\n", cp.Message)
-				fmt.Printf("  Branch:  %s\n", branch.Name)
-				fmt.Printf("  Files:   %d tracked, %d changed\n", len(snap.Files), changedCount)
-				fmt.Printf("  Time:    %s\n", cp.CreatedAt.Local().Format(time.DateTime))
+				sectionTitle("checkpoint saved")
+				fmt.Println()
+				kv("id", colorCyan+shortID(cp.ID)+colorReset)
+				kv("message", fmt.Sprintf("%q", cp.Message))
+				kv("branch", colorPurple+branch.Name+colorReset)
+				kv("files", fmt.Sprintf("%s%d tracked%s  \u00b7  %s%d changed%s",
+					colorDim, len(snap.Files), colorReset,
+					colorBold, changedCount, colorReset,
+				))
+				kv("saved", dimP.Sprint("just now"))
 				if tag != "" {
-					fmt.Printf("  Tag:     %s\n", tag)
+					kv("tag", colorCyan+tag+colorReset)
 				}
+				fmt.Println()
 
 				return nil
 			})

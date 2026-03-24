@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -26,9 +24,6 @@ func statsCmd() *cobra.Command {
 
 			objectCount, totalBytes, _ := r.store.Stats()
 
-			// Count sessions (unique branches minus "main").
-			sessionCount := len(r.engine.Index.Branches)
-
 			// First and latest checkpoint times.
 			var firstTime, latestTime time.Time
 			for _, cp := range r.engine.Index.Checkpoints {
@@ -40,57 +35,46 @@ func statsCmd() *cobra.Command {
 				}
 			}
 
-			bold := color.New(color.Bold)
-			header := color.New(color.Bold, color.FgCyan)
-
-			// ── Header ──────────────────────────────────────────────────────
-			bold.Println("RewindDB Statistics")
-			fmt.Println(strings.Repeat("═", 42))
+			sectionTitle("rewinddb stats")
 			fmt.Println()
-
-			// ── Repository ──────────────────────────────────────────────────
-			fmt.Printf("  %-18s %s\n", "Repository:", projectRoot)
-			fmt.Printf("  %-18s %s\n", "Branch:", branch.Name)
+			kv("repository", projectRoot)
+			kv("branch",     colorPurple+branch.Name+colorReset)
 			if hasHead {
-				fmt.Printf("  %-18s %s  %q\n", "Head:", shortID(headCP.ID), headCP.Message)
-			} else {
-				fmt.Printf("  %-18s (none)\n", "Head:")
+				kv("head", colorCyan+shortID(headCP.ID)+colorReset+"  "+dimP.Sprint(fmt.Sprintf("%q", headCP.Message)))
 			}
-
 			fmt.Println()
-			header.Println("  Timeline")
-			fmt.Println("  " + strings.Repeat("─", 38))
-			fmt.Printf("  %-28s %d\n", "Total checkpoints:", len(r.engine.Index.Checkpoints))
-			fmt.Printf("  %-28s %d\n", "Total branches:", len(r.engine.Index.Branches))
-			fmt.Printf("  %-28s %d\n", "Sessions:", sessionCount)
-
+			hrule(40)
 			fmt.Println()
-			header.Println("  Storage")
-			fmt.Println("  " + strings.Repeat("─", 38))
-			fmt.Printf("  %-28s %d\n", "Objects stored:", objectCount)
-			fmt.Printf("  %-28s %s\n", "Total size:", formatBytes(totalBytes))
 
-			// Compression ratio: estimate raw size vs stored size.
-			// (We report stored vs estimated raw; stored is compressed.)
-			fmt.Printf("  %-28s %s\n", "Compression:", "stored (gzip compressed)")
-
+			boldP.Println("  timeline")
+			hrule(40)
+			kv("checkpoints", fmt.Sprintf("%s%d%s", colorBold, len(r.engine.Index.Checkpoints), colorReset))
+			kv("branches",    fmt.Sprintf("%s%d%s", colorBold, len(r.engine.Index.Branches), colorReset))
 			fmt.Println()
-			header.Println("  Activity")
-			fmt.Println("  " + strings.Repeat("─", 38))
+
+			boldP.Println("  storage")
+			hrule(40)
+			kv("objects",     fmt.Sprintf("%s%d%s", colorBold, objectCount, colorReset))
+			kv("size",        fmt.Sprintf("%s%s%s", colorBold, formatBytes(totalBytes), colorReset))
+			kv("compression", dimP.Sprint("gzip compressed"))
+			fmt.Println()
+
+			boldP.Println("  activity")
+			hrule(40)
 			if !firstTime.IsZero() {
 				elapsed := int64(time.Since(firstTime.Local()).Seconds())
-				fmt.Printf("  %-28s %s\n", "First checkpoint:", humanTime(elapsed))
+				kv("first save", dimP.Sprint(humanTime(elapsed)))
 			} else {
-				fmt.Printf("  %-28s %s\n", "First checkpoint:", "(none)")
+				kv("first save", dimP.Sprint("none"))
 			}
 			if !latestTime.IsZero() {
 				elapsed := int64(time.Since(latestTime.Local()).Seconds())
-				fmt.Printf("  %-28s %s\n", "Latest checkpoint:", humanTime(elapsed))
+				kv("last save", dimP.Sprint(humanTime(elapsed)))
 			} else {
-				fmt.Printf("  %-28s %s\n", "Latest checkpoint:", "(none)")
+				kv("last save", dimP.Sprint("none"))
 			}
-
 			fmt.Println()
+
 			return nil
 		},
 	}

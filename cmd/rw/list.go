@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fatih/color"
 	"github.com/itsakash-real/rewinddb/internal/timeline"
 	"github.com/spf13/cobra"
 )
@@ -50,13 +49,29 @@ func listCmd() *cobra.Command {
 			branch := r.engine.Index.Branches[branchID]
 			headID := r.engine.Index.CurrentCheckpointID
 
-			color.New(color.Bold).Printf("● %s", branch.Name)
-		fmt.Printf("  (%d checkpoints)\n", len(checkpoints))
+			sectionTitle(fmt.Sprintf("%s  \u00b7  %d checkpoints", branch.Name, len(checkpoints)))
+			fmt.Println()
 			for _, cp := range checkpoints {
 				printCheckpointLine(cp, headID)
 			}
 			if len(checkpoints) == 0 {
 				fmt.Println("  (no checkpoints)")
+			}
+
+			// Note when HEAD is not at the branch tip (user has restored to an older checkpoint).
+			if len(checkpoints) > 0 && headID != branch.HeadCheckpointID {
+				newerCount := 0
+				for _, cp := range checkpoints {
+					if cp.ID == headID {
+						break
+					}
+					newerCount++
+				}
+				if newerCount > 0 {
+					fmt.Printf("\nNote: HEAD is not at the branch tip. You have %d newer checkpoint(s) above.\n",
+						newerCount)
+					fmt.Println("      Use 'rw goto HEAD' or 'rw list' to see your position.")
+				}
 			}
 			return nil
 		},
@@ -68,48 +83,33 @@ func listCmd() *cobra.Command {
 	return cmd
 }
 
-// printCheckpointLine renders one checkpoint entry in git-log style.
-//
-//	◉ a3f2b1c  [HEAD]  2 minutes ago   "working auth"    [v1.2]
+// printCheckpointLine renders one checkpoint entry in the new purple style.
 func printCheckpointLine(cp *timeline.Checkpoint, headID string) {
-	now := time.Now()
-	elapsed := int64(now.Sub(cp.CreatedAt.Local()).Seconds())
-	relTime := humanTime(elapsed)
-
-	short := shortID(cp.ID)
-	msg := truncate(cp.Message, 48)
-
+	elapsed := int64(time.Now().Sub(cp.CreatedAt.Local()).Seconds())
 	isHead := cp.ID == headID
 
-	// Circle marker: ◉ for HEAD, ○ for others.
-	marker := "  ○"
-	if isHead {
-		marker = "  " + color.New(color.FgGreen, color.Bold).Sprint("◉")
-	}
-
-	headLabel := ""
-	if isHead {
-		headLabel = "  " + color.New(color.FgYellow, color.Bold).Sprint("[HEAD]")
-	}
-
-	idStr := color.New(color.Bold).Sprint(short)
-	timeStr := color.New(color.Faint).Sprint(relTime)
-	msgStr := fmt.Sprintf("%q", msg)
+	idStr := shortID(cp.ID)
+	timeStr := humanTime(elapsed)
+	msg := truncate(cp.Message, 46)
 
 	tags := ""
 	if len(cp.Tags) > 0 && !(len(cp.Tags) == 1 && cp.Tags[0] == "root") {
-		tags = "  " + color.New(color.FgCyan).Sprint("["+strings.Join(cp.Tags, ", ")+"]")
+		tags = "  " + cyanP.Sprint("["+strings.Join(cp.Tags, ", ")+"]")
 	}
 
-	fmt.Printf("%s %s%s  %-18s  %-50s%s%s\n",
-		marker,
-		idStr,
-		headLabel,
-		timeStr,
-		msgStr,
-		tags,
-		"",
-	)
+	if isHead {
+		marker := purpleBoldP.Sprint("\u25c6")
+		id := cyanP.Sprint(idStr)
+		headTag := purpleBoldP.Sprint(" HEAD ")
+		t := dimP.Sprint(fmt.Sprintf("%-18s", timeStr))
+		fmt.Printf("  %s  %s %s  %s  %s%s\n", marker, id, headTag, t, msg, tags)
+	} else {
+		marker := dimP.Sprint("\u25cb")
+		id := dimP.Sprint(idStr)
+		t := dimP.Sprint(fmt.Sprintf("%-18s", timeStr))
+		msgDim := dimP.Sprint(msg)
+		fmt.Printf("  %s  %s            %s  %s%s\n", marker, id, t, msgDim, tags)
+	}
 }
 
 // printAllBranches renders the --all tree view.
@@ -118,36 +118,23 @@ func printAllBranches(r *repo) error {
 
 	for branchID, branch := range r.engine.Index.Branches {
 		isCurrent := branchID == r.engine.Index.CurrentBranchID
-		marker := "  "
+
+		// current branch: purple ◆, others: dim ○
 		if isCurrent {
-			marker = colorGreen + "* " + colorReset
+			purpleBoldP.Printf("\n  \u25c6  %s\n", branch.Name)
+		} else {
+			fmt.Printf("\n  %s\u25cb  %s%s\n", colorDim, branch.Name, colorReset)
 		}
-		fmt.Printf("\n%s%s%s%s\n", marker, colorBold, branch.Name, colorReset)
+		hrule(46)
 
 		checkpoints, err := r.engine.ListCheckpoints(branchID)
 		if err != nil || len(checkpoints) == 0 {
-			fmt.Printf("   └── (empty)\n")
+			fmt.Printf("   \u2514\u2500\u2500 (empty)\n")
 			continue
 		}
 
-		for i, cp := range checkpoints {
-			connector := "├──"
-			if i == len(checkpoints)-1 {
-				connector = "└──"
-			}
-			ts := cp.CreatedAt.Local().Format("2006-01-02 15:04")
-			isHead := cp.ID == headCheckpointID
-			headMark := ""
-			if isHead {
-				headMark = colorYellow + " (HEAD)" + colorReset
-			}
-			fmt.Printf("   %s %s%s%s  %s  %q%s\n",
-				connector,
-				colorBold, shortID(cp.ID), colorReset,
-				colorDim+ts+colorReset,
-				truncate(cp.Message, 40),
-				headMark,
-			)
+		for _, cp := range checkpoints {
+			printCheckpointLine(cp, headCheckpointID)
 		}
 	}
 	fmt.Println()
@@ -165,7 +152,7 @@ func truncate(s string, max int) string {
 	if len(s) <= max {
 		return s
 	}
-	return s[:max-1] + "…"
+	return s[:max-1] + "\u2026"
 }
 
 func resolveBranchByName(engine *timeline.TimelineEngine, name string) (string, error) {

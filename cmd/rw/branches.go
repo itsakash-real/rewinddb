@@ -31,13 +31,8 @@ func listBranchesRunE(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	fmt.Printf("%-30s  %-10s  %-8s  %s\n",
-		colorBold+"Branch"+colorReset,
-		colorBold+"Head"+colorReset,
-		colorBold+"Commits"+colorReset,
-		colorBold+"Latest message"+colorReset,
-	)
-	fmt.Println(repeatStr("─", 80))
+	sectionTitle("branches")
+	fmt.Println()
 
 	currentBranchID := r.engine.Index.CurrentBranchID
 
@@ -49,7 +44,7 @@ func listBranchesRunE(cmd *cobra.Command, _ []string) error {
 		count := len(cps)
 
 		// Head checkpoint short ID + message.
-		headShort := "—"
+		headShort := "\u2014"
 		headMsg := ""
 		if branch.HeadCheckpointID != "" {
 			headShort = shortID(branch.HeadCheckpointID)
@@ -58,20 +53,24 @@ func listBranchesRunE(cmd *cobra.Command, _ []string) error {
 			}
 		}
 
-		currentMark := "  "
-		nameColor := ""
 		if isCurrent {
-			currentMark = colorGreen + "* " + colorReset
-			nameColor = colorBold
+			fmt.Printf("  %s\u25c6%s  %s%-26s%s  %s  %s checkpoints  %s%s\n",
+				colorPurple, colorReset,
+				colorPurpleBold, branch.Name, colorReset,
+				cyanP.Sprint(headShort),
+				fmt.Sprintf("%d", count),
+				dimP.Sprint(headMsg),
+				"",
+			)
+		} else {
+			fmt.Printf("  %s\u25cb%s  %-28s  %s  %s checkpoints  %s\n",
+				colorDim, colorReset,
+				branch.Name,
+				dimP.Sprint(headShort),
+				fmt.Sprintf("%d", count),
+				dimP.Sprint(headMsg),
+			)
 		}
-
-		fmt.Printf("%s%s%-28s%s  %-10s  %-8d  %s\n",
-			currentMark,
-			nameColor, branch.Name, colorReset,
-			headShort,
-			count,
-			headMsg,
-		)
 	}
 	return nil
 }
@@ -212,10 +211,3 @@ func resolveBranchByIDPrefix(engine *timeline.TimelineEngine, prefix string) (st
 	}
 }
 
-func repeatStr(s string, n int) string {
-	result := ""
-	for i := 0; i < n; i++ {
-		result += s
-	}
-	return result
-}

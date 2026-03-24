@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/itsakash-real/rewinddb/internal/timeline"
 	"github.com/spf13/cobra"
@@ -28,10 +29,13 @@ func initCmd() *cobra.Command {
 				return fmt.Errorf("init failed: %w", err)
 			}
 
-			branch, _ := engine.Index.CurrentBranch()
-			fmt.Printf("✓ Initialized RewindDB in .rewind/\n")
-			fmt.Printf("  Branch:  %s\n", branch.Name)
-			fmt.Printf("  Index:   %s\n", engine.IndexPath)
+			rewindDir := filepath.Dir(engine.IndexPath)
+
+			sectionTitle("initialized")
+			fmt.Println()
+			kv("directory", rewindDir)
+			kv("branch",    colorPurple+"main"+colorReset)
+			fmt.Println()
 			return nil
 		},
 	}

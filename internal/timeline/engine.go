@@ -114,7 +114,7 @@ func (e *TimelineEngine) SaveCheckpoint(message, snapshotRef string) (*Checkpoin
 			Msg("appended checkpoint to branch head")
 	} else {
 		// ── Detached HEAD: fork a new branch ─────────────────────────────────
-		forkName := fmt.Sprintf("branch-%d", time.Now().UnixNano())
+		forkName := time.Now().Format("branch-2006-01-02-1504")
 		newBranch := NewBranch(forkName, cp.ID)
 		cp.BranchID = newBranch.ID
 		cp.ParentID = currentCPID // preserve lineage across the fork
@@ -307,4 +307,11 @@ func (e *TimelineEngine) GetDAG() map[string][]*Checkpoint {
 
 func (e *TimelineEngine) persistIndex() error {
 	return e.Index.Save(e.IndexPath)
+}
+
+// ForceFlush writes the current in-memory index to disk immediately.
+// Use this after directly mutating Index fields (e.g. CurrentBranchID) that
+// are not covered by a dedicated mutating method.
+func (e *TimelineEngine) ForceFlush() error {
+	return e.persistIndex()
 }

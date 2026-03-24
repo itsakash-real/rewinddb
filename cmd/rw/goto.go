@@ -14,7 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 func gotoCmd() *cobra.Command {
 	var force bool
 
@@ -56,7 +55,7 @@ func gotoCmd() *cobra.Command {
 					}
 					prompt := fmt.Sprintf("Restore to: %q%s? [y/N]", cp.Message, distStr)
 					if !askConfirm(prompt) {
-						fmt.Println("Aborted.")
+						printDim("aborted")
 						return nil
 					}
 				}
@@ -89,10 +88,14 @@ func gotoCmd() *cobra.Command {
 				}
 
 				// ── Output ────────────────────────────────────────────────────────
-				fmt.Printf("✓ Restored to checkpoint %s\n", cp.ID[:12])
-				fmt.Printf("  Message: %q\n", cp.Message)
-				fmt.Printf("  Branch:  %s\n", branch.Name)
-				fmt.Printf("  %d file(s) restored, %d file(s) removed\n", restoredCount, removedCount)
+				sectionTitle("restored")
+				fmt.Println()
+				kv("checkpoint", colorCyan+shortID(cp.ID)+colorReset)
+				kv("message",    fmt.Sprintf("%q", cp.Message))
+				kv("branch",     colorPurple+branch.Name+colorReset)
+				kv("written",    fmt.Sprintf("%s%d file(s)%s", colorBold, restoredCount, colorReset))
+				kv("removed",    fmt.Sprintf("%s%d file(s)%s", colorDim, removedCount, colorReset))
+				fmt.Println()
 				return nil
 			})
 		},
@@ -169,7 +172,10 @@ func autoStashIfDirty(r *repo, targetID string, force bool) error {
 	fmt.Printf("You have unsaved changes in %d file(s).\n", changedCount)
 
 	doStash := force
-	if !force {
+	if force {
+		fmt.Printf("%sWarning: %d file(s) with unsaved changes will be auto-stashed (--force).%s\n",
+			colorYellow, changedCount, colorReset)
+	} else {
 		doStash = askConfirmDefault("Auto-save before restoring? [Y/n]: ", true)
 		if !doStash {
 			fmt.Printf("%sWarning: unsaved changes will be overwritten.%s\n",
@@ -188,7 +194,7 @@ func autoStashIfDirty(r *repo, targetID string, force bool) error {
 		if saveErr != nil {
 			return fmt.Errorf("auto-stash: save checkpoint: %w", saveErr)
 		}
-		fmt.Printf("  Auto-stashed as %s\n", shortID(cp.ID))
+		kv("auto-stashed", colorCyan+shortID(cp.ID)+colorReset)
 	}
 	return nil
 }
@@ -208,7 +214,7 @@ func askConfirmDefault(prompt string, def bool) bool {
 	return response == "y" || response == "yes"
 }
 
-// askConfirm prints prompt and reads a y/yes response from stdin [web:95].
+// askConfirm prints prompt and reads a y/yes response from stdin.
 func askConfirm(prompt string) bool {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(prompt + " ")

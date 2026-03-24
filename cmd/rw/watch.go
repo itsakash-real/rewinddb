@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -49,12 +50,18 @@ func watchCmd() *cobra.Command {
 				return fmt.Errorf("watch: setup: %w", err)
 			}
 
-			ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+			ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 			defer stop()
 
-			// Debounce timer.
+			// Debounce timer — starts stopped; reset after detecting a change.
 			timer := time.NewTimer(interval)
-			timer.Stop()
+			if !timer.Stop() {
+				// Drain in case it fired between creation and Stop.
+				select {
+				case <-timer.C:
+				default:
+				}
+			}
 			pendingChanges := false
 
 			for {
@@ -65,7 +72,8 @@ func watchCmd() *cobra.Command {
 
 				case event, ok := <-watcher.Events:
 					if !ok {
-						return nil
+						// Watcher closed unexpectedly — keep running until Ctrl+C.
+						continue
 					}
 					// Ignore changes inside .rewind/ directory.
 					if strings.HasPrefix(filepath.ToSlash(event.Name),
@@ -79,7 +87,8 @@ func watchCmd() *cobra.Command {
 
 				case watchErr, ok := <-watcher.Errors:
 					if !ok {
-						return nil
+						// Watcher error channel closed — keep running until Ctrl+C.
+						continue
 					}
 					fmt.Printf("watch: watcher error: %v\n", watchErr)
 
@@ -89,12 +98,13 @@ func watchCmd() *cobra.Command {
 					}
 					pendingChanges = false
 					// Auto-save checkpoint.
-					cpID, msg, saveErr := autoSaveWatch(r)
+					cpID, changedFiles, saveErr := autoSaveWatch(r)
 					if saveErr != nil {
 						fmt.Printf("watch: save error: %v\n", saveErr)
-					} else if !quiet {
+					} else if changedFiles > 0 && !quiet {
 						ts := time.Now().Local().Format("15:04:05")
-						fmt.Printf("[%s] Auto-saved: %s — %s\n", ts, shortID(cpID), msg)
+						fmt.Printf("[%s] ✓ Auto-saved %s (%d file(s) changed)\n",
+							ts, shortID(cpID), changedFiles)
 					}
 					// Refresh watcher in case new directories were added.
 					_ = watchDirRecursive(watcher, projectRoot, rewindDir)
@@ -131,8 +141,8 @@ func watchDirRecursive(w *fsnotify.Watcher, root, excludeDir string) error {
 }
 
 // autoSaveWatch performs a scan+save using the loaded repo, generating an auto-message.
-// Returns the new checkpoint ID and the generated message.
-func autoSaveWatch(r *repo) (cpID, message string, err error) {
+// Returns the new checkpoint ID and the number of changed files (0 means nothing changed).
+func autoSaveWatch(r *repo) (cpID string, changedFiles int, err error) {
 	lockPath := filepath.Join(r.cfg.RewindDir, storage.LockFileName)
 	fl := storage.NewFileLock(lockPath)
 
@@ -142,18 +152,19 @@ func autoSaveWatch(r *repo) (cpID, message string, err error) {
 			return fmt.Errorf("scan: %w", scanErr)
 		}
 
-		// Compute diff for auto-message.
+		// Compute diff for auto-message and changed-file count.
 		var dr *diff.DiffResult
 		if prevCP, ok := r.engine.Index.CurrentCheckpoint(); ok && prevCP.SnapshotRef != "" {
 			if prevSnap, loadErr := r.scanner.Load(prevCP.SnapshotRef); loadErr == nil {
 				diffEng := diff.New(r.store)
 				if result, diffErr := diffEng.Compare(prevSnap, snap); diffErr == nil {
 					dr = result
+					changedFiles = result.TotalChanges()
 				}
 			}
 		}
 
-		message = autoMessage(r, dr)
+		message := autoMessage(r, dr)
 
 		snapshotHash, saveErr := r.scanner.Save(snap)
 		if saveErr != nil {
@@ -167,5 +178,5 @@ func autoSaveWatch(r *repo) (cpID, message string, err error) {
 		cpID = cp.ID
 		return nil
 	})
-	return cpID, message, err
+	return cpID, changedFiles, err
 }

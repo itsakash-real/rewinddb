@@ -86,4 +86,3 @@ rw goto, rw diff, and other commands.
 
 	return cmd
 }
-

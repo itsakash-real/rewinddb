@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go build:*)",
+      "Bash(node -e \":*)",
+      "Bash(go fmt:*)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(go vet:*)"
+    ]
+  }
+}
