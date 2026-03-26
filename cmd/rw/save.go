@@ -6,7 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/itsakash-real/rewinddb/internal/diff"
+	"github.com/itsakash-real/rewinddb/internal/merkle"
 	"github.com/itsakash-real/rewinddb/internal/storage"
+	"github.com/itsakash-real/rewinddb/internal/wal"
 	"github.com/spf13/cobra"
 )
 
@@ -37,6 +39,11 @@ func saveCmd() *cobra.Command {
 					r.scanner.Workers = workers
 				}
 
+				// ── Pre-save hook ────────────────────────────────────────────────
+				if err := RunHook(r.cfg.RewindDir, "pre-save", "", messageArg); err != nil {
+					return err
+				}
+
 				// ── Scan the working directory ────────────────────────────────────
 				snap, err := r.scanner.Scan()
 				if err != nil {
@@ -62,16 +69,38 @@ func saveCmd() *cobra.Command {
 					message = autoMessage(r, diffResult)
 				}
 
+				// ── WAL: record intent before any writes ──────────────────────────
+				walPath := filepath.Join(r.cfg.RewindDir, wal.FileName)
+				w, err := wal.Open(walPath)
+				if err != nil {
+					return fmt.Errorf("wal open: %w", err)
+				}
+				if err := w.WriteIntent(message); err != nil {
+					w.Close()
+					return fmt.Errorf("wal intent: %w", err)
+				}
+
 				// ── Persist snapshot objects ──────────────────────────────────────
 				snapshotHash, err := r.scanner.Save(snap)
 				if err != nil {
+					w.Close()
 					return fmt.Errorf("save snapshot: %w", err)
 				}
+				_ = w.WriteObject(snapshotHash)
 
 				// ── Create checkpoint in the DAG ──────────────────────────────────
 				cp, err := r.engine.SaveCheckpoint(message, snapshotHash)
 				if err != nil {
+					w.Close()
 					return fmt.Errorf("save checkpoint: %w", err)
+				}
+
+				// ── WAL: commit (safe to remove on next startup) ──────────────────
+				_ = w.WriteCommit(cp.ID)
+
+				// ── Update Merkle root (best-effort — health can recompute) ───────
+				if root, _, err := merkle.Compute(r.cfg.ObjectsDir); err == nil {
+					_ = merkle.SaveRoot(r.cfg.RewindDir, root)
 				}
 
 				// Attach optional tag.
@@ -85,8 +114,11 @@ func saveCmd() *cobra.Command {
 
 				branch, _ := r.engine.Index.CurrentBranch()
 
+				// ── Post-save hook ───────────────────────────────────────────────
+				_ = RunHook(r.cfg.RewindDir, "post-save", cp.ID, message)
+
 				// ── Background GC every 10 saves ─────────────────────────────────
-				go maybeBackgroundGC(r)
+				maybeBackgroundGC(r.cfg.RewindDir)
 
 				// ── Output ────────────────────────────────────────────────────────
 				if quiet {
@@ -181,8 +213,9 @@ func joinStrings(ss []string, sep string) string {
 
 // maybeBackgroundGC increments the save counter and runs GC in the background
 // every 10th save. It uses .rewind/save-count as a persistent counter file.
-func maybeBackgroundGC(r *repo) {
-	countPath := filepath.Join(r.cfg.RewindDir, saveCountFile)
+// Accepts rewindDir so it does not hold a reference to the caller's *repo.
+func maybeBackgroundGC(rewindDir string) {
+	countPath := filepath.Join(rewindDir, saveCountFile)
 
 	// Read current count.
 	var count int
@@ -196,8 +229,8 @@ func maybeBackgroundGC(r *repo) {
 	_ = os.WriteFile(countPath, []byte(fmt.Sprintf("%d", count)), 0o644)
 
 	if count%10 == 0 {
-		// Fire-and-forget GC in background goroutine.
-		// We need a fresh repo load because the lock is held by saveCmd.
+		// Fire-and-forget GC in background goroutine with a fresh repo
+		// so we don't race with the caller's state.
 		go func() {
 			r2, err := loadRepo()
 			if err != nil {

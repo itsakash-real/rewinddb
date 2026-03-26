@@ -1,14 +1,15 @@
 <div align="center">
 
-# RewindDB
+<img src="website/public/logo.svg" alt="Drift" width="220" />
 
-**Like Ctrl+Z for your entire project — not just one file.**
+**A time-travel state engine for codebases.**
 
-[![Go Version](https://img.shields.io/badge/go-1.22+-00ADD8?style=flat-square&logo=go)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/go-1.25+-00ADD8?style=flat-square&logo=go)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/itsakash-real/rewinddb?style=flat-square)](https://goreportcard.com/report/github.com/itsakash-real/rewinddb)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 
-[Install](#install) · [First 5 Minutes](#your-first-5-minutes) · [Daily Commands](#commands-youll-use-every-day) · [All Commands](#full-command-reference) · [Go SDK](#go-sdk)
+[Install](#install) · [First 5 Minutes](#your-first-5-minutes) · [Daily Commands](#commands-youll-use-every-day) · [All Commands](#full-command-reference) · [Go SDK](#go-sdk) · [Contributing](#contributing)
 
 </div>
 
@@ -18,9 +19,9 @@
 
 You're experimenting. Something works. You change one thing. Now nothing works and you can't get back.
 
-RewindDB is a single binary (`rw`) that saves your **entire project folder** as a checkpoint. You can go back to any checkpoint instantly. It works on any project — React, Python, Rust, anything — and it tracks files that git ignores, like build outputs, configs, and `.env` files.
+Drift is a single binary (`rw`) that saves your **entire project folder** as a checkpoint. You can go back to any checkpoint instantly. It works on any project — React, Python, Rust, anything — and it tracks files that git ignores, like build outputs, configs, and `.env` files.
 
-**It is not a replacement for git.** Git is for sharing code with your team. RewindDB is for the messy part before that — experimenting, breaking things, and getting back safely.
+**It is not a replacement for git.** Git is for sharing code with your team. Drift is for the messy part before that — experimenting, breaking things, and getting back safely.
 
 ---
 
@@ -55,13 +56,27 @@ Verify it works:
 rw version
 ```
 
+### Staying up to date
+
+Run this any time to upgrade to the latest release:
+```bash
+rw upgrade
+```
+
+Drift also checks for updates silently in the background. If a newer version exists, you'll see a one-liner after your next command — nothing intrusive:
+```
+⚡ rw 1.2.0 is available (you have 1.1.0)  →  run rw upgrade
+```
+
+It checks at most once every 24 hours and never blocks your commands.
+
 ---
 
 ## Your First 5 Minutes
 
 Follow these steps in any project folder. Every command is explained.
 
-### Step 1 — Set up RewindDB in your project
+### Step 1 — Set up Drift in your project
 
 ```bash
 cd my-project
@@ -119,7 +134,7 @@ rw save "added login form"
 
 You now have 2 checkpoints. Keep saving as you make progress — treat it like quicksaving a game.
 
-> **No message? No problem.** Just run `rw save` with no message and RewindDB writes one for you based on what changed.
+> **No message? No problem.** Just run `rw save` with no message and Drift writes one for you based on what changed.
 
 ---
 
@@ -225,7 +240,7 @@ rw goto v1.0            # by tag name
 rw goto HEAD~3          # go back 3 steps from current
 ```
 
-> RewindDB warns you if you have unsaved changes before overwriting anything.
+> Drift warns you if you have unsaved changes before overwriting anything.
 
 ---
 
@@ -246,7 +261,7 @@ rw status
 
 ```
   ╭────────────────────────────────────────────────────╮
-  │   ◆  rewinddb                                      │
+  │   ◆  drift                                      │
   │                                                    │
   │   main  ·  a3f2b1c8  ·  5 minutes ago              │
   ╰────────────────────────────────────────────────────╯
@@ -310,7 +325,7 @@ Works for any command: `rw run "python migrate.py"`, `rw run "cargo build"`, etc
 rw watch
 ```
 
-RewindDB watches your project for changes and auto-saves a checkpoint every 30 seconds when files change. You can change the interval:
+Drift watches your project for changes and auto-saves a checkpoint every 30 seconds when files change. You can change the interval:
 
 ```bash
 rw watch --interval 5m    # save every 5 minutes
@@ -335,12 +350,12 @@ rw bisect good a3f2b1c8
 # 3. Tell it a checkpoint you know is broken
 rw bisect bad HEAD
 
-# RewindDB jumps you to the middle checkpoint automatically.
+# Drift jumps you to the middle checkpoint automatically.
 # Test your code. Then:
 rw bisect good    # if this middle checkpoint works
 rw bisect bad     # if this middle checkpoint is broken
 
-# Keep going. RewindDB narrows it down until it finds
+# Keep going. Drift narrows it down until it finds
 # the exact checkpoint where the bug appeared.
 
 # 4. When done:
@@ -351,7 +366,7 @@ rw bisect reset
 
 ## Branching — Trying Two Approaches at Once
 
-When you restore an old checkpoint and save something new from there, RewindDB **automatically creates a new branch** so you don't lose either path.
+When you restore an old checkpoint and save something new from there, Drift **automatically creates a new branch** so you don't lose either path.
 
 ```bash
 # Save a base checkpoint
@@ -362,7 +377,7 @@ rw save "approach A: JWT tokens"      # → id: b2e1a0f4
 
 # Go back to base and try something different
 rw goto a3f2b1c8
-# RewindDB auto-creates a new branch here
+# Drift auto-creates a new branch here
 
 # Try approach B
 rw save "approach B: session cookies" # on new branch
@@ -425,7 +440,7 @@ rw search "login"        # find all checkpoints mentioning login
 
 ## Ignoring Files
 
-RewindDB ignores `node_modules/`, `.git/`, and common junk by default.
+Drift ignores `node_modules/`, `.git/`, and common junk by default.
 
 To auto-add ignores based on your project type (detects Node, Python, Go, Rust, etc.):
 ```bash
@@ -473,7 +488,7 @@ rw stats
 ```
 
 ```
-  ◆  rewinddb stats  ───────────────────────────
+  ◆  drift stats  ───────────────────────────
 
      repository     /my-project
      branch         main
@@ -504,7 +519,7 @@ rw gc              # actually delete it
 
 ## Go SDK
 
-If you want to use RewindDB from Go code — for example, to checkpoint automatically before risky operations in your app:
+If you want to use Drift from Go code — for example, to checkpoint automatically before risky operations in your app:
 
 ```bash
 go get github.com/itsakash-real/rewinddb
@@ -548,7 +563,7 @@ func main() {
 ## FAQ
 
 **Is this the same as git?**
-No. Git tracks code history for collaboration. RewindDB tracks full project state (including files git ignores) for local safety nets. Use both.
+No. Git tracks code history for collaboration. Drift tracks full project state (including files git ignores) for local safety nets. Use both.
 
 **Does it slow my machine down?**
 No. `rw watch` runs in the background and is lightweight. Saving 1000 files takes ~180ms.
@@ -557,16 +572,16 @@ No. `rw watch` runs in the background and is lightweight. Saving 1000 files take
 Only files that changed. If 50 files are the same as last checkpoint, they take zero extra space (stored once, referenced by hash). Snapshots are gzip-compressed.
 
 **What if I save with no message?**
-RewindDB auto-generates one: `"auto: auth.js, db.js (2 file(s) changed)"`.
+Drift auto-generates one: `"auto: auth.js, db.js (2 file(s) changed)"`.
 
 **Can I use it in CI/CD?**
 Yes. `rw save "pre-deploy: ${{ github.sha }}"` works in GitHub Actions.
 
 **Does it work without git?**
-Yes. RewindDB has no dependency on git.
+Yes. Drift has no dependency on git.
 
 **What if `.rewind/` gets corrupted?**
-RewindDB uses crash-safe atomic writes. On startup it auto-recovers from any interrupted saves. You can also run `rw status --verify` to check all objects.
+Drift uses crash-safe atomic writes. On startup it auto-recovers from any interrupted saves. You can also run `rw status --verify` to check all objects.
 
 **Can I ignore files like node_modules?**
 Yes — `rw ignore auto` detects your project type and adds the right patterns. Or add them manually to `.rewindignore`.
@@ -579,7 +594,7 @@ Yes — `rw ignore auto` detects your project type and adds the right patterns. 
 
 | Command | What it does |
 |---|---|
-| `rw init` | Set up RewindDB in the current directory |
+| `rw init` | Set up Drift in the current directory |
 | `rw save [message]` | Save a checkpoint (message optional) |
 | `rw save --tag v1.0` | Save and attach a tag |
 | `rw list` | List checkpoints on current branch |
@@ -657,11 +672,17 @@ Yes — `rw ignore auto` detects your project type and adds the right patterns. 
 | `rw export <id>` | Export checkpoint to `.rwdb` file |
 | `rw import <file>` | Import a `.rwdb` file |
 
+### Updates
+
+| Command | What it does |
+|---|---|
+| `rw upgrade` | Upgrade `rw` to the latest version |
+| `rw version` | Show current version info |
+
 ### Other
 
 | Command | What it does |
 |---|---|
-| `rw version` | Show version info |
 | `rw completion bash` | Generate bash completion script |
 | `rw --debug` | Show internal debug logs |
 
@@ -702,9 +723,9 @@ Measured on Apple M2. Varies by disk speed and file sizes.
 
 ---
 
-## RewindDB vs Git
+## Drift vs Git
 
-| | Git | RewindDB |
+| | Git | Drift |
 |---|---|---|
 | Purpose | Share code with a team | Personal safety net while working |
 | Requires a message | Yes, always | No — auto-generates one |
@@ -719,7 +740,19 @@ Measured on Apple M2. Varies by disk speed and file sizes.
 
 ## Contributing
 
-PRs are welcome. Open an issue before starting anything large so we can agree on direction first. Run `go test ./... -race` before submitting. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Contributions are welcome and appreciated! Whether it's a bug report, feature request, or pull request — every bit helps.
+
+- **Bug reports** — open an issue with steps to reproduce
+- **Feature ideas** — open an issue to discuss before building
+- **Pull requests** — fork, branch, make your change, run `go test ./... -race`, and submit
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide including coding standards, commit conventions, and review process.
+
+---
+
+## Security
+
+If you discover a security vulnerability, please **do not** open a public issue. Instead, email [akashmaurya3160@gmail.com](mailto:akashmaurya3160@gmail.com) with details. We take security seriously and will respond promptly.
 
 ---
 

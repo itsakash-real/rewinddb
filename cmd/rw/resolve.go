@@ -14,9 +14,10 @@ import (
 //
 //  1. "HEAD"         → current checkpoint
 //  2. "HEAD~N"       → N checkpoints back along ParentID chain
-//  3. Tag name       → checkpoint whose Tags slice contains the name
-//  4. Full UUID      → exact match in index
-//  5. 8-char prefix  → unique prefix match
+//  3. "S3", "s12"    → sequential snapshot number
+//  4. Tag name       → checkpoint whose Tags slice contains the name
+//  5. Full UUID      → exact match in index
+//  6. 8-char prefix  → unique prefix match
 func resolveCheckpoint(engine *timeline.TimelineEngine, ref string) (timeline.Checkpoint, error) {
 	upper := strings.ToUpper(ref)
 
@@ -43,7 +44,14 @@ func resolveCheckpoint(engine *timeline.TimelineEngine, ref string) (timeline.Ch
 		return resolveHeadTilde(engine, n)
 	}
 
-	// ── 3. Tag name ───────────────────────────────────────────────────────────
+	// ── 3. S-number (e.g. "S3", "s12") ───────────────────────────────────────
+	if id := engine.Index.ResolveSNumber(ref); id != "" {
+		if cp, ok := engine.Index.Checkpoints[id]; ok {
+			return cp, nil
+		}
+	}
+
+	// ── 4. Tag name ───────────────────────────────────────────────────────────
 	for _, cp := range engine.Index.Checkpoints {
 		for _, tag := range cp.Tags {
 			if tag == ref {
@@ -52,12 +60,12 @@ func resolveCheckpoint(engine *timeline.TimelineEngine, ref string) (timeline.Ch
 		}
 	}
 
-	// ── 4. Exact full ID ──────────────────────────────────────────────────────
+	// ── 5. Exact full ID ──────────────────────────────────────────────────────
 	if cp, ok := engine.Index.Checkpoints[ref]; ok {
 		return cp, nil
 	}
 
-	// ── 5. Prefix match ───────────────────────────────────────────────────────
+	// ── 6. Prefix match ───────────────────────────────────────────────────────
 	var matches []timeline.Checkpoint
 	for id, cp := range engine.Index.Checkpoints {
 		if strings.HasPrefix(id, ref) {

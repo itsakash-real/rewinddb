@@ -3,13 +3,18 @@
 .rewind-test/
 
 # Go build artifacts
+/rw
+/rw.exe
 *.o
 *.a
 *.so
-.DS_Store
 *.exe
 dist/
 bin/
+
+# OS
+.DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
@@ -21,6 +26,16 @@ bin/
 *.out
 coverage.html
 
+# Website
+website/node_modules/
+website/.next/
+website/out/
+
 # Environment
 .env
 .env.local
+.env.*
+
+# Misc
+fix.md
+.claude

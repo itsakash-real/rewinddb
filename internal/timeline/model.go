@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -58,6 +59,11 @@ type Index struct {
 	CurrentCheckpointID string                `json:"current_checkpoint_id,omitempty"`
 	Branches            map[string]Branch     `json:"branches"`
 	Checkpoints         map[string]Checkpoint `json:"checkpoints"`
+
+	// NextSNumber is the next sequential snapshot number to assign.
+	NextSNumber int `json:"next_s_number,omitempty"`
+	// SNumbers maps "S1", "S2", etc. to checkpoint UUIDs.
+	SNumbers map[string]string `json:"s_numbers,omitempty"`
 }
 
 // ─── Constructors ─────────────────────────────────────────────────────────────
@@ -93,6 +99,8 @@ func NewIndex() *Index {
 	return &Index{
 		Branches:    make(map[string]Branch),
 		Checkpoints: make(map[string]Checkpoint),
+		NextSNumber: 1,
+		SNumbers:    make(map[string]string),
 	}
 }
 
@@ -166,6 +174,12 @@ func Load(path string) (*Index, error) {
 	if idx.Checkpoints == nil {
 		idx.Checkpoints = make(map[string]Checkpoint)
 	}
+	if idx.SNumbers == nil {
+		idx.SNumbers = make(map[string]string)
+	}
+	if idx.NextSNumber == 0 {
+		idx.NextSNumber = 1
+	}
 
 	return &idx, nil
 }
@@ -195,7 +209,8 @@ func (idx *Index) AddBranch(b Branch) {
 }
 
 // AddCheckpoint inserts a Checkpoint into the Index, advances the parent
-// branch's HeadCheckpointID, and sets it as the current checkpoint.
+// branch's HeadCheckpointID, sets it as the current checkpoint, and assigns
+// a sequential S-number (S1, S2, ...) for human-readable reference.
 func (idx *Index) AddCheckpoint(c Checkpoint) {
 	idx.Checkpoints[c.ID] = c
 	idx.CurrentCheckpointID = c.ID
@@ -204,4 +219,32 @@ func (idx *Index) AddCheckpoint(c Checkpoint) {
 		b.HeadCheckpointID = c.ID
 		idx.Branches[c.BranchID] = b
 	}
+
+	// Assign S-number if not already assigned.
+	sKey := fmt.Sprintf("S%d", idx.NextSNumber)
+	if idx.SNumbers == nil {
+		idx.SNumbers = make(map[string]string)
+	}
+	idx.SNumbers[sKey] = c.ID
+	idx.NextSNumber++
+}
+
+// SNumberFor returns the S-number label (e.g. "S3") for a checkpoint ID,
+// or empty string if none is assigned.
+func (idx *Index) SNumberFor(checkpointID string) string {
+	for sNum, id := range idx.SNumbers {
+		if id == checkpointID {
+			return sNum
+		}
+	}
+	return ""
+}
+
+// ResolveSNumber resolves an S-number reference (e.g. "S3") to a checkpoint ID.
+// Returns empty string if not found.
+func (idx *Index) ResolveSNumber(ref string) string {
+	if id, ok := idx.SNumbers[strings.ToUpper(ref)]; ok {
+		return id
+	}
+	return ""
 }

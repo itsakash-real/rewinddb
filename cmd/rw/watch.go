@@ -72,8 +72,10 @@ func watchCmd() *cobra.Command {
 
 				case event, ok := <-watcher.Events:
 					if !ok {
-						// Watcher closed unexpectedly — keep running until Ctrl+C.
-						continue
+						// Watcher closed unexpectedly — block until Ctrl+C.
+						<-ctx.Done()
+						fmt.Println("\nStopping watch.")
+						return nil
 					}
 					// Ignore changes inside .rewind/ directory.
 					if strings.HasPrefix(filepath.ToSlash(event.Name),
@@ -87,8 +89,10 @@ func watchCmd() *cobra.Command {
 
 				case watchErr, ok := <-watcher.Errors:
 					if !ok {
-						// Watcher error channel closed — keep running until Ctrl+C.
-						continue
+						// Watcher error channel closed — block until Ctrl+C.
+						<-ctx.Done()
+						fmt.Println("\nStopping watch.")
+						return nil
 					}
 					fmt.Printf("watch: watcher error: %v\n", watchErr)
 
@@ -103,7 +107,7 @@ func watchCmd() *cobra.Command {
 						fmt.Printf("watch: save error: %v\n", saveErr)
 					} else if changedFiles > 0 && !quiet {
 						ts := time.Now().Local().Format("15:04:05")
-						fmt.Printf("[%s] ✓ Auto-saved %s (%d file(s) changed)\n",
+						fmt.Printf("[%s] ✓ Auto-saved checkpoint: %s (%d files changed)\n",
 							ts, shortID(cpID), changedFiles)
 					}
 					// Refresh watcher in case new directories were added.

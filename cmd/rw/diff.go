@@ -49,12 +49,10 @@ against the current HEAD. Supports 8-char prefix matching.`,
 
 			// ── Guard: root checkpoints have no snapshot ──────────────────────
 			if cpA.SnapshotRef == "" {
-				return fmt.Errorf("checkpoint %s is the root checkpoint and has no files to compare\n"+
-					"try: rw diff <id> <other-id>   (pick a non-root checkpoint)", shortID(cpA.ID))
+				return fmt.Errorf("Root checkpoint has no files to compare. Choose a later checkpoint.")
 			}
 			if cpB.SnapshotRef == "" {
-				return fmt.Errorf("checkpoint %s is the root checkpoint and has no files to compare\n"+
-					"try: rw diff <id> <other-id>   (pick a non-root checkpoint)", shortID(cpB.ID))
+				return fmt.Errorf("Root checkpoint has no files to compare. Choose a later checkpoint.")
 			}
 
 			// ── Load snapshots ────────────────────────────────────────────────

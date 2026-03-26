@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="yourusername/rewinddb"
+REPO="itsakash-real/rewinddb"
 BINARY="rw"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 
@@ -19,7 +19,7 @@ VERSION=$(curl -sSf "https://api.github.com/repos/${REPO}/releases/latest" \
   | grep '"tag_name"' | sed 's/.*"tag_name": "\(.*\)".*/\1/')
 
 OS_TITLE=$(echo "$OS" | sed 's/darwin/Darwin/;s/linux/Linux/;s/windows/Windows/')
-ARCHIVE="${BINARY}_${VERSION#v}_${OS_TITLE}_${ARCH}"
+ARCHIVE="rewinddb_${VERSION#v}_${OS_TITLE}_${ARCH}"
 
 case "$OS" in
   windows*) ARCHIVE="${ARCHIVE}.zip" ;;

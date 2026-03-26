@@ -1,0 +1,19 @@
+<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#13101f"/>
+      <stop offset="100%" stop-color="#0d0a1a"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="url(#bg)"/>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="6.5" stroke="url(#g1)" stroke-opacity="0.4"/>
+  <!-- Flowing drift curves -->
+  <path d="M8 20 C12 20, 13 12, 16 12 C19 12, 20 20, 24 20" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M8 16 C12 16, 13 8, 16 8 C19 8, 20 16, 24 16" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round" fill="none" stroke-opacity="0.4"/>
+  <!-- Time dot -->
+  <circle cx="24" cy="20" r="2" fill="url(#g1)"/>
+</svg>

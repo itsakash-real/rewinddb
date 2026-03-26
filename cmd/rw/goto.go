@@ -96,6 +96,12 @@ func gotoCmd() *cobra.Command {
 				kv("written",    fmt.Sprintf("%s%d file(s)%s", colorBold, restoredCount, colorReset))
 				kv("removed",    fmt.Sprintf("%s%d file(s)%s", colorDim, removedCount, colorReset))
 				fmt.Println()
+
+				// ── Dependency change detection ───────────────────────────────
+				if currentSnap != nil {
+					checkDependencyChanges(currentSnap, targetSnap)
+				}
+
 				return nil
 			})
 		},

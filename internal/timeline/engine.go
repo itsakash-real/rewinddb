@@ -3,11 +3,37 @@ package timeline
 import (
 	"errors"
 	"fmt"
+	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/itsakash-real/rewinddb/internal/config"
 	"github.com/rs/zerolog/log"
 )
+
+// Word lists for readable auto-generated branch names.
+var branchAdjectives = []string{
+	"swift", "quiet", "broken", "golden", "hidden", "frozen", "bright",
+	"calm", "bold", "dark", "eager", "gentle", "keen", "rapid", "wild",
+	"warm", "cool", "pale", "deep", "stark", "crisp", "faint", "sharp",
+	"lost", "rare", "slow", "loud", "soft", "thin", "vast",
+}
+
+var branchNouns = []string{
+	"river", "sunset", "falcon", "meadow", "canyon", "breeze", "summit",
+	"forest", "tide", "flame", "spark", "stone", "ember", "ridge", "creek",
+	"frost", "bloom", "cloud", "drift", "grove", "marsh", "brook", "cliff",
+	"dawn", "dune", "leaf", "peak", "pine", "reef", "vale",
+}
+
+// generateBranchName creates a human-readable branch name like "swift-river-mar-9pm".
+func generateBranchName() string {
+	now := time.Now()
+	adj := branchAdjectives[rand.Intn(len(branchAdjectives))]
+	noun := branchNouns[rand.Intn(len(branchNouns))]
+	ts := strings.ToLower(now.Format("Jan-3pm")) // e.g. "mar-9pm"
+	return fmt.Sprintf("%s-%s-%s", adj, noun, ts)
+}
 
 // ─── Sentinel errors ──────────────────────────────────────────────────────────
 
@@ -114,7 +140,7 @@ func (e *TimelineEngine) SaveCheckpoint(message, snapshotRef string) (*Checkpoin
 			Msg("appended checkpoint to branch head")
 	} else {
 		// ── Detached HEAD: fork a new branch ─────────────────────────────────
-		forkName := time.Now().Format("branch-2006-01-02-1504")
+		forkName := generateBranchName()
 		newBranch := NewBranch(forkName, cp.ID)
 		cp.BranchID = newBranch.ID
 		cp.ParentID = currentCPID // preserve lineage across the fork

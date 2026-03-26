@@ -116,7 +116,8 @@ func (s *Scanner) scanCurrentDisk() (map[string]string, error) {
 		}
 		hash, err := hashFileForRestore(path)
 		if err != nil {
-			return nil // best-effort: treat unreadable files as absent
+			log.Warn().Str("path", rel).Err(err).Msg("restore: cannot hash file, treating as absent")
+			return nil
 		}
 		m[rel] = hash
 		return nil

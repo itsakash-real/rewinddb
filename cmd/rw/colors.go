@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/mattn/go-isatty"
+	"github.com/rs/zerolog"
 )
 
 // ─── ANSI codes ───────────────────────────────────────────────────────────────
@@ -29,13 +30,22 @@ var (
 )
 
 func init() {
+	// Suppress debug/info logs early — main() may override via --debug flag.
+	zerolog.SetGlobalLevel(zerolog.WarnLevel)
+
 	noColor := false
 	if os.Getenv("NO_COLOR") != "" {
 		noColor = true
 	} else if !isatty.IsTerminal(os.Stdout.Fd()) && !isatty.IsCygwinTerminal(os.Stdout.Fd()) {
 		noColor = true
 	} else if runtime.GOOS == "windows" {
-		noColor = color.NoColor
+		// Detect legacy Windows CMD (conhost) which doesn't support ANSI.
+		// Windows Terminal and modern terminals set WT_SESSION or TERM.
+		if os.Getenv("WT_SESSION") == "" && os.Getenv("TERM") == "" && os.Getenv("TERM_PROGRAM") == "" {
+			noColor = true
+		} else {
+			noColor = color.NoColor
+		}
 	}
 
 	if noColor {

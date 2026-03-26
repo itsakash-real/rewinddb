@@ -1,61 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" width="860" height="400">
 <defs>
-  <marker id="arr-b" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
-    <path d="M0,0 L0,6 L9,3 z" fill="#58a6ff"/>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0a0e1a"/>
+    <stop offset="100%" stop-color="#111827"/>
+  </linearGradient>
+  <marker id="a-cy" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+    <path d="M0,0 L0,7 L9,3.5 z" fill="#22d3ee"/>
   </marker>
-  <marker id="arr-o" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
-    <path d="M0,0 L0,6 L9,3 z" fill="#f0883e"/>
+  <marker id="a-am" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+    <path d="M0,0 L0,7 L9,3.5 z" fill="#fbbf24"/>
   </marker>
-  <marker id="arr-g" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
-    <path d="M0,0 L0,6 L9,3 z" fill="#8b949e"/>
+  <marker id="a-dim" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+    <path d="M0,0 L0,7 L9,3.5 z" fill="#4b5563"/>
   </marker>
+  <filter id="s">
+    <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.4"/>
+  </filter>
+  <filter id="glow-node">
+    <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#06b6d4" flood-opacity="0.25"/>
+  </filter>
+  <filter id="glow-branch">
+    <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#f59e0b" flood-opacity="0.25"/>
+  </filter>
 </defs>
-<rect width="800" height="360" fill="#0d1117"/>
-<text x="16" y="20" font-family="monospace" font-size="11" fill="#8b949e">timeline-dag.svg</text>
-<text x="80" y="48" font-family="monospace" font-size="11" fill="#8b949e">&#x2500;&#x2500;&#x2500; time </text>
-<line x1="80" y1="42" x2="730" y2="42" stroke="#30363d" stroke-width="1.5" marker-end="url(#arr-g)"/>
-<text x="16" y="116" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="start">main</text>
-<text x="16" y="210" font-family="monospace" font-size="10" fill="#f0883e" text-anchor="start">branch-</text>
-<text x="16" y="222" font-family="monospace" font-size="10" fill="#f0883e" text-anchor="start">17031234</text>
-<line x1="118" y1="112" x2="278" y2="112" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arr-b)"/>
-<line x1="318" y1="112" x2="458" y2="112" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arr-b)"/>
-<line x1="498" y1="112" x2="638" y2="112" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arr-b)"/>
-<circle cx="100" cy="112" r="20" fill="#1c2433" stroke="#58a6ff" stroke-width="2.5"/>
-<text x="100" y="117" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="700">T1</text>
-<text x="100" y="142" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">init</text>
-<text x="100" y="156" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">b7c3a291</text>
-<circle cx="300" cy="112" r="20" fill="#1c2433" stroke="#58a6ff" stroke-width="2.5"/>
-<text x="300" y="117" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="700">T2</text>
-<text x="300" y="142" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">auth added</text>
-<text x="300" y="156" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">a3f2b1c8</text>
-<circle cx="480" cy="112" r="20" fill="#1c2433" stroke="#58a6ff" stroke-width="2.5"/>
-<text x="480" y="117" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="700">T3</text>
-<text x="480" y="142" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">db fixed</text>
-<text x="480" y="156" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">9d1e4f72</text>
-<circle cx="660" cy="112" r="22" fill="#1c2433" stroke="#58a6ff" stroke-width="3"/>
-<circle cx="660" cy="112" r="14" fill="#1c2433" stroke="#58a6ff" stroke-width="1" stroke-dasharray="3,2"/>
-<text x="660" y="117" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="700">T4</text>
-<text x="660" y="142" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">api done</text>
-<text x="660" y="156" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">c2e7d9a1</text>
-<line x1="660" y1="84" x2="660" y2="90" stroke="#58a6ff" stroke-width="1.5"/>
-<rect x="630" y="62" width="60" height="22" rx="4" fill="#1c2433" stroke="#58a6ff" stroke-width="1.5"/>
-<text x="660" y="77" font-family="monospace" font-size="11" fill="#58a6ff" text-anchor="middle" font-weight="700">HEAD</text>
-<line x1="315" y1="126" x2="375" y2="188" stroke="#f0883e" stroke-width="2" marker-end="url(#arr-o)"/>
-<circle cx="300" cy="112" r="5" fill="#f0883e"/>
-<line x1="415" y1="204" x2="545" y2="204" stroke="#f0883e" stroke-width="2.5" marker-end="url(#arr-o)"/>
-<circle cx="395" cy="204" r="20" fill="#1c2433" stroke="#f0883e" stroke-width="2.5"/>
-<text x="395" y="209" font-family="monospace" font-size="11" fill="#f0883e" text-anchor="middle" font-weight="700">T2'</text>
-<text x="395" y="234" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">try parser</text>
-<text x="395" y="248" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">4a1c8d03</text>
-<circle cx="565" cy="204" r="20" fill="#1c2433" stroke="#f0883e" stroke-width="2.5"/>
-<text x="565" y="209" font-family="monospace" font-size="11" fill="#f0883e" text-anchor="middle" font-weight="700">T3'</text>
-<text x="565" y="234" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">parser v2</text>
-<text x="565" y="248" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">7f2e5b19</text>
-<line x1="100" y1="168" x2="300" y2="168" stroke="#30363d" stroke-width="1" stroke-dasharray="3,3"/>
-<text x="200" y="180" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">shared ancestors</text>
-<text x="330" y="165" font-family="sans-serif" font-size="10" fill="#f0883e">branch point</text>
-<rect x="60" y="274" width="680" height="52" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
-<text x="400" y="294" font-family="sans-serif" font-size="12" fill="#e6edf3" text-anchor="middle">When you <tspan font-family="monospace" fill="#58a6ff">rw goto T2</tspan> and save, RewindDB auto-creates a new branch.</text>
-<text x="400" y="314" font-family="sans-serif" font-size="12" fill="#8b949e" text-anchor="middle">Your main timeline stays untouched. No manual branching required.</text>
+
+<rect width="860" height="400" fill="url(#bg)"/>
+<text x="430" y="24" font-family="'Inter',sans-serif" font-size="9" fill="#6b7280" text-anchor="middle" letter-spacing="3">TIMELINE DAG</text>
+
+<!-- Time arrow -->
+<line x1="80" y1="48" x2="780" y2="48" stroke="#374151" stroke-width="1" marker-end="url(#a-dim)"/>
+<text x="100" y="44" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b7280">time</text>
+
+<!-- Branch labels -->
+<rect x="16" y="108" width="52" height="20" rx="6" fill="#083344" stroke="#06b6d4" stroke-width="0.8"/>
+<text x="42" y="122" font-family="'JetBrains Mono',monospace" font-size="10" fill="#22d3ee" text-anchor="middle" font-weight="600">main</text>
+
+<rect x="6" y="208" width="62" height="20" rx="6" fill="#451a03" fill-opacity="0.5" stroke="#f59e0b" stroke-width="0.8"/>
+<text x="37" y="222" font-family="'JetBrains Mono',monospace" font-size="8" fill="#fbbf24" text-anchor="middle">branch-2</text>
+
+<!-- Main branch line segments -->
+<line x1="128" y1="118" x2="278" y2="118" stroke="#06b6d4" stroke-width="2.5" marker-end="url(#a-cy)"/>
+<line x1="328" y1="118" x2="478" y2="118" stroke="#06b6d4" stroke-width="2.5" marker-end="url(#a-cy)"/>
+<line x1="528" y1="118" x2="668" y2="118" stroke="#06b6d4" stroke-width="2.5" marker-end="url(#a-cy)"/>
+
+<!-- T1 -->
+<circle cx="110" cy="118" r="22" fill="#0a0e1a" stroke="#06b6d4" stroke-width="2" filter="url(#glow-node)"/>
+<text x="110" y="123" font-family="'JetBrains Mono',monospace" font-size="12" fill="#22d3ee" text-anchor="middle" font-weight="700">T1</text>
+<text x="110" y="152" font-family="'Inter',sans-serif" font-size="10" fill="#d1d5db" text-anchor="middle">init</text>
+<text x="110" y="166" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6b7280" text-anchor="middle">b7c3a291</text>
+
+<!-- T2 (branch point) -->
+<circle cx="310" cy="118" r="22" fill="#0a0e1a" stroke="#06b6d4" stroke-width="2" filter="url(#glow-node)"/>
+<circle cx="310" cy="118" r="5" fill="#f59e0b"/>
+<text x="310" y="123" font-family="'JetBrains Mono',monospace" font-size="12" fill="#22d3ee" text-anchor="middle" font-weight="700">T2</text>
+<text x="310" y="152" font-family="'Inter',sans-serif" font-size="10" fill="#d1d5db" text-anchor="middle">auth added</text>
+<text x="310" y="166" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6b7280" text-anchor="middle">a3f2b1c8</text>
+
+<!-- T3 -->
+<circle cx="510" cy="118" r="22" fill="#0a0e1a" stroke="#06b6d4" stroke-width="2" filter="url(#glow-node)"/>
+<text x="510" y="123" font-family="'JetBrains Mono',monospace" font-size="12" fill="#22d3ee" text-anchor="middle" font-weight="700">T3</text>
+<text x="510" y="152" font-family="'Inter',sans-serif" font-size="10" fill="#d1d5db" text-anchor="middle">db fixed</text>
+<text x="510" y="166" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6b7280" text-anchor="middle">9d1e4f72</text>
+
+<!-- T4 (HEAD) -->
+<circle cx="700" cy="118" r="24" fill="#0a0e1a" stroke="#06b6d4" stroke-width="3" filter="url(#glow-node)"/>
+<circle cx="700" cy="118" r="16" fill="none" stroke="#06b6d4" stroke-width="1" stroke-dasharray="3,2"/>
+<text x="700" y="123" font-family="'JetBrains Mono',monospace" font-size="12" fill="#22d3ee" text-anchor="middle" font-weight="700">T4</text>
+<text x="700" y="152" font-family="'Inter',sans-serif" font-size="10" fill="#d1d5db" text-anchor="middle">api done</text>
+<text x="700" y="166" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6b7280" text-anchor="middle">c2e7d9a1</text>
+
+<!-- HEAD badge -->
+<rect x="670" y="66" width="60" height="22" rx="6" fill="#083344" stroke="#06b6d4" stroke-width="1.5"/>
+<text x="700" y="81" font-family="'JetBrains Mono',monospace" font-size="10" fill="#22d3ee" text-anchor="middle" font-weight="700">HEAD</text>
+<line x1="700" y1="88" x2="700" y2="94" stroke="#06b6d4" stroke-width="1.2"/>
+
+<!-- Branch fork from T2 -->
+<line x1="326" y1="134" x2="390" y2="200" stroke="#f59e0b" stroke-width="2" marker-end="url(#a-am)"/>
+
+<!-- Branch line -->
+<line x1="430" y1="218" x2="580" y2="218" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#a-am)"/>
+
+<!-- T2' -->
+<circle cx="410" cy="218" r="22" fill="#0a0e1a" stroke="#f59e0b" stroke-width="2" filter="url(#glow-branch)"/>
+<text x="410" y="223" font-family="'JetBrains Mono',monospace" font-size="12" fill="#fbbf24" text-anchor="middle" font-weight="700">T2'</text>
+<text x="410" y="252" font-family="'Inter',sans-serif" font-size="10" fill="#d1d5db" text-anchor="middle">try parser</text>
+<text x="410" y="266" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6b7280" text-anchor="middle">4a1c8d03</text>
+
+<!-- T3' -->
+<circle cx="600" cy="218" r="22" fill="#0a0e1a" stroke="#f59e0b" stroke-width="2" filter="url(#glow-branch)"/>
+<text x="600" y="223" font-family="'JetBrains Mono',monospace" font-size="12" fill="#fbbf24" text-anchor="middle" font-weight="700">T3'</text>
+<text x="600" y="252" font-family="'Inter',sans-serif" font-size="10" fill="#d1d5db" text-anchor="middle">parser v2</text>
+<text x="600" y="266" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6b7280" text-anchor="middle">7f2e5b19</text>
+
+<!-- "branch point" label -->
+<text x="352" y="176" font-family="'Inter',sans-serif" font-size="9" fill="#f59e0b" font-weight="600">branch point</text>
+
+<!-- shared ancestors line -->
+<line x1="110" y1="178" x2="310" y2="178" stroke="#374151" stroke-width="0.8" stroke-dasharray="3,3"/>
+<text x="210" y="192" font-family="'Inter',sans-serif" font-size="9" fill="#6b7280" text-anchor="middle">shared ancestors</text>
+
+<!-- Explanation box -->
+<rect x="80" y="300" width="700" height="62" rx="12" fill="#1f2937" stroke="#374151" stroke-width="1" filter="url(#s)"/>
+<text x="430" y="324" font-family="'Inter',sans-serif" font-size="12" fill="#e5e7eb" text-anchor="middle">
+  When you <tspan font-family="'JetBrains Mono',monospace" fill="#22d3ee" font-weight="600">rw goto T2</tspan> and save, RewindDB auto-creates a new branch.
+</text>
+<text x="430" y="348" font-family="'Inter',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle">Your main timeline stays untouched. No manual branching required.</text>
 </svg>

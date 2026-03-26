@@ -1,73 +1,134 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 680" width="800" height="680">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 740" width="860" height="740">
 <defs>
-  <marker id="arr-b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-    <path d="M0,0 L0,6 L8,3 z" fill="#58a6ff"/>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0a0e1a"/>
+    <stop offset="100%" stop-color="#111827"/>
+  </linearGradient>
+  <marker id="a-cy" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#22d3ee"/>
   </marker>
-  <marker id="arr-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-    <path d="M0,0 L0,6 L8,3 z" fill="#3fb950"/>
+  <marker id="a-em" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#34d399"/>
   </marker>
-  <marker id="arr-o" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-    <path d="M0,0 L0,6 L8,3 z" fill="#f0883e"/>
+  <marker id="a-am" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#fbbf24"/>
   </marker>
-  <marker id="arr-m" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-    <path d="M0,0 L0,6 L8,3 z" fill="#8b949e"/>
+  <marker id="a-vi" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L0,6 L8,3 z" fill="#a78bfa"/>
   </marker>
+  <filter id="s">
+    <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.4"/>
+  </filter>
+  <filter id="glow-cy">
+    <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#06b6d4" flood-opacity="0.3"/>
+  </filter>
 </defs>
-<rect width="800" height="680" fill="#0d1117"/>
-<text x="16" y="20" font-family="monospace" font-size="11" fill="#8b949e">save-flow.svg</text>
-<rect x="250" y="30" width="300" height="48" rx="6" fill="#1c2433" stroke="#58a6ff" stroke-width="2"/>
-<text x="400" y="51" font-family="monospace" font-size="14" fill="#58a6ff" text-anchor="middle" font-weight="700">&#x25B6; rw save "auth working"</text>
-<text x="400" y="68" font-family="sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">acquire LOCK file · load index</text>
-<line x1="400" y1="78" x2="400" y2="106" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr-b)"/>
-<rect x="250" y="108" width="300" height="48" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
-<text x="400" y="127" font-family="sans-serif" font-size="13" fill="#e6edf3" text-anchor="middle" font-weight="600">&#x1F4C1; Scan project files</text>
-<text x="400" y="145" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">walk directory · skip .rewindignore</text>
-<line x1="400" y1="156" x2="400" y2="184" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr-b)"/>
-<rect x="250" y="186" width="300" height="48" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
-<text x="400" y="205" font-family="sans-serif" font-size="13" fill="#e6edf3" text-anchor="middle" font-weight="600">&#x1F511; Hash each file (SHA-256)</text>
-<text x="400" y="223" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">parallel workers · runtime.NumCPU()</text>
-<line x1="400" y1="234" x2="400" y2="262" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr-b)"/>
-<rect x="250" y="264" width="300" height="48" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
-<text x="400" y="283" font-family="sans-serif" font-size="13" fill="#e6edf3" text-anchor="middle" font-weight="600">&#x1F50D; Compare with HEAD snapshot</text>
-<text x="400" y="301" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">diff hashes · identify new objects</text>
-<line x1="400" y1="312" x2="400" y2="336" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr-b)"/>
-<polygon points="400,338 480,368 400,398 320,368" fill="#161b22" stroke="#8b949e" stroke-width="1.5"/>
-<text x="400" y="366" font-family="sans-serif" font-size="12" fill="#e6edf3" text-anchor="middle">Changed?</text>
-<text x="400" y="381" font-family="monospace" font-size="9" fill="#8b949e" text-anchor="middle">any hash differs?</text>
-<text x="294" y="384" font-family="sans-serif" font-size="10" fill="#3fb950">YES</text>
-<line x1="320" y1="368" x2="200" y2="368" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
-<line x1="200" y1="368" x2="200" y2="420" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
-<text x="496" y="362" font-family="sans-serif" font-size="10" fill="#f85149">NO</text>
-<line x1="480" y1="368" x2="620" y2="368" stroke="#f85149" stroke-width="1.5" marker-end="url(#arr-m)"/>
-<rect x="560" y="346" width="180" height="44" rx="6" fill="#161b22" stroke="#f85149" stroke-width="1.5"/>
-<text x="650" y="364" font-family="sans-serif" font-size="12" fill="#f85149" text-anchor="middle">&#x21A9; Nothing changed</text>
-<text x="650" y="380" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">exit 0, no checkpoint</text>
-<rect x="80" y="422" width="240" height="48" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
-<text x="200" y="441" font-family="sans-serif" font-size="12" fill="#3fb950" text-anchor="middle" font-weight="600">&#x1F4BE; Write new objects</text>
-<text x="200" y="458" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">store only changed files · dedup</text>
-<line x1="200" y1="470" x2="200" y2="498" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
-<rect x="80" y="500" width="240" height="48" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
-<text x="200" y="519" font-family="sans-serif" font-size="12" fill="#e6edf3" text-anchor="middle" font-weight="600">&#x1F4F8; Create snapshot JSON</text>
-<text x="200" y="536" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">refs all file hashes · gzip</text>
-<line x1="200" y1="548" x2="200" y2="576" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
-<polygon points="200,578 285,604 200,630 115,604" fill="#161b22" stroke="#8b949e" stroke-width="1.5"/>
-<text x="200" y="601" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">At branch</text>
-<text x="200" y="616" font-family="sans-serif" font-size="11" fill="#e6edf3" text-anchor="middle">head?</text>
-<text x="88" y="600" font-family="sans-serif" font-size="10" fill="#3fb950">YES</text>
-<line x1="115" y1="604" x2="80" y2="604" stroke="#3fb950" stroke-width="1.5"/>
-<line x1="80" y1="604" x2="80" y2="640" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr-g)"/>
-<rect x="30" y="642" width="100" height="28" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1.2"/>
-<text x="80" y="660" font-family="sans-serif" font-size="10" fill="#3fb950" text-anchor="middle">Append to branch</text>
-<text x="272" y="600" font-family="sans-serif" font-size="10" fill="#f0883e">NO</text>
-<line x1="285" y1="604" x2="340" y2="604" stroke="#f0883e" stroke-width="1.5"/>
-<line x1="340" y1="604" x2="340" y2="640" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arr-o)"/>
-<rect x="285" y="642" width="110" height="28" rx="6" fill="#161b22" stroke="#f0883e" stroke-width="1.2"/>
-<text x="340" y="660" font-family="sans-serif" font-size="10" fill="#f0883e" text-anchor="middle">Create new branch</text>
-<rect x="420" y="616" width="250" height="52" rx="6" fill="#1c2433" stroke="#3fb950" stroke-width="2"/>
-<text x="545" y="636" font-family="sans-serif" font-size="13" fill="#3fb950" text-anchor="middle" font-weight="700">&#x2705; Update index.json</text>
-<text x="545" y="652" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">tmp &#x2192; fsync &#x2192; rename (atomic)</text>
-<text x="545" y="664" font-family="monospace" font-size="10" fill="#8b949e" text-anchor="middle">release LOCK · print checkpoint ID</text>
-<line x1="200" y1="630" x2="200" y2="636" stroke="#58a6ff" stroke-width="1.5"/>
-<line x1="200" y1="636" x2="418" y2="636" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+<rect width="860" height="740" fill="url(#bg)"/>
+<text x="430" y="24" font-family="'Inter',sans-serif" font-size="9" fill="#6b7280" text-anchor="middle" letter-spacing="3">SAVE FLOW</text>
+
+<!-- Step 1: Command -->
+<rect x="260" y="38" width="340" height="52" rx="12" fill="#083344" stroke="#06b6d4" stroke-width="2" filter="url(#glow-cy)"/>
+<text x="430" y="60" font-family="'JetBrains Mono',monospace" font-size="14" fill="#22d3ee" text-anchor="middle" font-weight="700">rw save "auth working"</text>
+<text x="430" y="78" font-family="'Inter',sans-serif" font-size="9" fill="#67e8f9" text-anchor="middle" opacity="0.7">acquire LOCK file  ·  load index  ·  WAL intent</text>
+
+<line x1="430" y1="90" x2="430" y2="118" stroke="#22d3ee" stroke-width="1.8" marker-end="url(#a-cy)"/>
+
+<!-- Step 2: Scan -->
+<rect x="260" y="120" width="340" height="50" rx="12" fill="#1f2937" stroke="#374151" stroke-width="1" filter="url(#s)"/>
+<circle cx="284" cy="145" r="11" fill="#083344" stroke="#06b6d4" stroke-width="1.2"/>
+<text x="284" y="149" font-family="'Inter',sans-serif" font-size="10" fill="#22d3ee" text-anchor="middle" font-weight="700">1</text>
+<text x="310" y="140" font-family="'Inter',sans-serif" font-size="12" fill="#e5e7eb" font-weight="600">Scan project files</text>
+<text x="310" y="158" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b7280">walk directory · skip .rewindignore patterns</text>
+
+<line x1="430" y1="170" x2="430" y2="198" stroke="#22d3ee" stroke-width="1.8" marker-end="url(#a-cy)"/>
+
+<!-- Step 3: Hash -->
+<rect x="260" y="200" width="340" height="50" rx="12" fill="#1f2937" stroke="#374151" stroke-width="1" filter="url(#s)"/>
+<circle cx="284" cy="225" r="11" fill="#083344" stroke="#06b6d4" stroke-width="1.2"/>
+<text x="284" y="229" font-family="'Inter',sans-serif" font-size="10" fill="#22d3ee" text-anchor="middle" font-weight="700">2</text>
+<text x="310" y="220" font-family="'Inter',sans-serif" font-size="12" fill="#e5e7eb" font-weight="600">Hash each file (SHA-256)</text>
+<text x="310" y="238" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b7280">parallel workers · runtime.NumCPU()</text>
+
+<line x1="430" y1="250" x2="430" y2="278" stroke="#22d3ee" stroke-width="1.8" marker-end="url(#a-cy)"/>
+
+<!-- Step 4: Compare -->
+<rect x="260" y="280" width="340" height="50" rx="12" fill="#1f2937" stroke="#374151" stroke-width="1" filter="url(#s)"/>
+<circle cx="284" cy="305" r="11" fill="#083344" stroke="#06b6d4" stroke-width="1.2"/>
+<text x="284" y="309" font-family="'Inter',sans-serif" font-size="10" fill="#22d3ee" text-anchor="middle" font-weight="700">3</text>
+<text x="310" y="300" font-family="'Inter',sans-serif" font-size="12" fill="#e5e7eb" font-weight="600">Compare with HEAD snapshot</text>
+<text x="310" y="318" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b7280">diff hashes · identify new / changed objects</text>
+
+<line x1="430" y1="330" x2="430" y2="358" stroke="#22d3ee" stroke-width="1.8" marker-end="url(#a-cy)"/>
+
+<!-- Decision diamond -->
+<polygon points="430,360 520,396 430,432 340,396" fill="#1f2937" stroke="#6b7280" stroke-width="1.2"/>
+<text x="430" y="393" font-family="'Inter',sans-serif" font-size="11" fill="#e5e7eb" text-anchor="middle" font-weight="600">Changed?</text>
+<text x="430" y="408" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6b7280" text-anchor="middle">any hash differs?</text>
+
+<!-- NO branch -->
+<text x="536" y="388" font-family="'Inter',sans-serif" font-size="10" fill="#ef4444" font-weight="600">NO</text>
+<line x1="520" y1="396" x2="620" y2="396" stroke="#ef4444" stroke-width="1.4"/>
+<rect x="622" y="376" width="190" height="40" rx="10" fill="#1f2937" stroke="#ef4444" stroke-width="1.2" filter="url(#s)"/>
+<text x="717" y="393" font-family="'Inter',sans-serif" font-size="11" fill="#ef4444" text-anchor="middle" font-weight="600">Nothing changed</text>
+<text x="717" y="408" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b7280" text-anchor="middle">exit 0, no checkpoint</text>
+
+<!-- YES branch -->
+<text x="312" y="392" font-family="'Inter',sans-serif" font-size="10" fill="#10b981" font-weight="600">YES</text>
+<line x1="340" y1="396" x2="220" y2="396" stroke="#10b981" stroke-width="1.4"/>
+<line x1="220" y1="396" x2="220" y2="440" stroke="#10b981" stroke-width="1.4" marker-end="url(#a-em)"/>
+
+<!-- Step 5: Write objects -->
+<rect x="100" y="442" width="240" height="50" rx="12" fill="#052e16" fill-opacity="0.6" stroke="#10b981" stroke-width="1.2" filter="url(#s)"/>
+<circle cx="124" cy="467" r="11" fill="#052e16" stroke="#10b981" stroke-width="1.2"/>
+<text x="124" y="471" font-family="'Inter',sans-serif" font-size="10" fill="#34d399" text-anchor="middle" font-weight="700">4</text>
+<text x="150" y="462" font-family="'Inter',sans-serif" font-size="12" fill="#34d399" font-weight="600">Write new objects</text>
+<text x="150" y="480" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6ee7b7" opacity="0.7">store only changed files · dedup</text>
+
+<line x1="220" y1="492" x2="220" y2="520" stroke="#10b981" stroke-width="1.4" marker-end="url(#a-em)"/>
+
+<!-- Step 6: Create snapshot JSON -->
+<rect x="100" y="522" width="240" height="50" rx="12" fill="#1f2937" stroke="#374151" stroke-width="1" filter="url(#s)"/>
+<circle cx="124" cy="547" r="11" fill="#083344" stroke="#06b6d4" stroke-width="1.2"/>
+<text x="124" y="551" font-family="'Inter',sans-serif" font-size="10" fill="#22d3ee" text-anchor="middle" font-weight="700">5</text>
+<text x="150" y="542" font-family="'Inter',sans-serif" font-size="12" fill="#e5e7eb" font-weight="600">Create snapshot JSON</text>
+<text x="150" y="560" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b7280">all file hashes · gzip compressed</text>
+
+<line x1="220" y1="572" x2="220" y2="600" stroke="#22d3ee" stroke-width="1.4" marker-end="url(#a-cy)"/>
+
+<!-- Decision: At branch head? -->
+<polygon points="220,602 305,632 220,662 135,632" fill="#1f2937" stroke="#6b7280" stroke-width="1.2"/>
+<text x="220" y="629" font-family="'Inter',sans-serif" font-size="10" fill="#e5e7eb" text-anchor="middle" font-weight="600">At branch</text>
+<text x="220" y="644" font-family="'Inter',sans-serif" font-size="10" fill="#e5e7eb" text-anchor="middle" font-weight="600">head?</text>
+
+<!-- YES: append -->
+<text x="106" y="628" font-family="'Inter',sans-serif" font-size="10" fill="#10b981" font-weight="600">YES</text>
+<line x1="135" y1="632" x2="90" y2="632" stroke="#10b981" stroke-width="1.2"/>
+<line x1="90" y1="632" x2="90" y2="670" stroke="#10b981" stroke-width="1.2" marker-end="url(#a-em)"/>
+<rect x="40" y="672" width="100" height="28" rx="8" fill="#052e16" fill-opacity="0.6" stroke="#10b981" stroke-width="1"/>
+<text x="90" y="691" font-family="'Inter',sans-serif" font-size="10" fill="#34d399" text-anchor="middle" font-weight="600">Append</text>
+
+<!-- NO: new branch -->
+<text x="318" y="628" font-family="'Inter',sans-serif" font-size="10" fill="#f59e0b" font-weight="600">NO</text>
+<line x1="305" y1="632" x2="350" y2="632" stroke="#f59e0b" stroke-width="1.2"/>
+<line x1="350" y1="632" x2="350" y2="670" stroke="#f59e0b" stroke-width="1.2" marker-end="url(#a-am)"/>
+<rect x="295" y="672" width="110" height="28" rx="8" fill="#451a03" fill-opacity="0.4" stroke="#f59e0b" stroke-width="1"/>
+<text x="350" y="691" font-family="'Inter',sans-serif" font-size="10" fill="#fbbf24" text-anchor="middle" font-weight="600">New branch</text>
+
+<!-- Final: Update index -->
+<rect x="460" y="648" width="300" height="56" rx="12" fill="#052e16" fill-opacity="0.6" stroke="#10b981" stroke-width="2" filter="url(#s)"/>
+<text x="610" y="670" font-family="'Inter',sans-serif" font-size="13" fill="#34d399" text-anchor="middle" font-weight="700">Update index.json</text>
+<text x="610" y="686" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6ee7b7" text-anchor="middle" opacity="0.7">tmp -> fsync -> rename (atomic)</text>
+<text x="610" y="698" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6ee7b7" text-anchor="middle" opacity="0.7">WAL commit · release LOCK</text>
+
+<!-- Connect to final step -->
+<line x1="220" y1="662" x2="220" y2="670" stroke="#22d3ee" stroke-width="1"/>
+<line x1="220" y1="670" x2="458" y2="670" stroke="#22d3ee" stroke-width="1.2" marker-end="url(#a-cy)"/>
+
+<!-- WAL annotation -->
+<rect x="640" y="120" width="180" height="44" rx="10" fill="#451a03" fill-opacity="0.3" stroke="#f59e0b" stroke-width="0.8"/>
+<text x="730" y="138" font-family="'Inter',sans-serif" font-size="10" fill="#fbbf24" text-anchor="middle" font-weight="600">WAL protects this flow</text>
+<text x="730" y="154" font-family="'JetBrains Mono',monospace" font-size="8" fill="#fcd34d" text-anchor="middle" opacity="0.7">crash-safe · auto-recovery</text>
+<line x1="640" y1="145" x2="602" y2="145" stroke="#f59e0b" stroke-width="0.6" stroke-dasharray="3,3"/>
 </svg>

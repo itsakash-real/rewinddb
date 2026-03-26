@@ -75,7 +75,7 @@ changelog:
 
 release:
   github:
-    owner: yourusername
+    owner: itsakash-real
     name: rewinddb
   name_template: "RewindDB {{.Tag}}"
   draft: false
@@ -83,9 +83,9 @@ release:
   footer: |
     ## Installation
     ```bash
-    brew install yourusername/tap/rewinddb
+    brew install itsakash-real/tap/rewinddb
     # or
-    curl -sSfL https://raw.githubusercontent.com/yourusername/rewinddb/main/install.sh | sh
+    curl -sSfL https://raw.githubusercontent.com/itsakash-real/rewinddb/main/install.sh | sh
     ```
 
 # Homebrew tap
@@ -93,11 +93,11 @@ brews:
   - name: rewinddb
     ids: [default]
     repository:
-      owner: yourusername
+      owner: itsakash-real
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     directory: Formula
-    homepage: "https://github.com/yourusername/rewinddb"
+    homepage: "https://github.com/itsakash-real/rewinddb"
     description: "A time-travel state engine for codebases — checkpoint, diff, and restore your project in milliseconds"
     license: "MIT"
     skip_upload: auto
@@ -114,9 +114,9 @@ nfpms:
   - id: packages
     package_name: rewinddb
     builds: [rw]
-    vendor: yourusername
-    homepage: "https://github.com/yourusername/rewinddb"
-    maintainer: "Your Name <you@example.com>"
+    vendor: itsakash-real
+    homepage: "https://github.com/itsakash-real/rewinddb"
+    maintainer: "Akash Maurya <akashmaurya3160@gmail.com>"
     description: "A time-travel state engine for codebases"
     license: MIT
     formats: [deb, rpm, apk]

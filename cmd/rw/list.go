@@ -52,7 +52,7 @@ func listCmd() *cobra.Command {
 			sectionTitle(fmt.Sprintf("%s  \u00b7  %d checkpoints", branch.Name, len(checkpoints)))
 			fmt.Println()
 			for _, cp := range checkpoints {
-				printCheckpointLine(cp, headID)
+				printCheckpointLine(cp, headID, r.engine.Index)
 			}
 			if len(checkpoints) == 0 {
 				fmt.Println("  (no checkpoints)")
@@ -84,13 +84,18 @@ func listCmd() *cobra.Command {
 }
 
 // printCheckpointLine renders one checkpoint entry in the new purple style.
-func printCheckpointLine(cp *timeline.Checkpoint, headID string) {
+func printCheckpointLine(cp *timeline.Checkpoint, headID string, idx *timeline.Index) {
 	elapsed := int64(time.Now().Sub(cp.CreatedAt.Local()).Seconds())
 	isHead := cp.ID == headID
 
+	sNum := idx.SNumberFor(cp.ID)
 	idStr := shortID(cp.ID)
+	// Show "S3  d0d2536c" format when S-number is available.
+	if sNum != "" {
+		idStr = fmt.Sprintf("%-4s %s", sNum, shortID(cp.ID))
+	}
 	timeStr := humanTime(elapsed)
-	msg := truncate(cp.Message, 46)
+	msg := truncate(cp.Message, 42)
 
 	tags := ""
 	if len(cp.Tags) > 0 && !(len(cp.Tags) == 1 && cp.Tags[0] == "root") {
@@ -134,7 +139,7 @@ func printAllBranches(r *repo) error {
 		}
 
 		for _, cp := range checkpoints {
-			printCheckpointLine(cp, headCheckpointID)
+			printCheckpointLine(cp, headCheckpointID, r.engine.Index)
 		}
 	}
 	fmt.Println()

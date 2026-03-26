@@ -1,0 +1,28 @@
+<svg viewBox="0 0 150 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#13101f"/>
+      <stop offset="100%" stop-color="#0d0a1a"/>
+    </linearGradient>
+    <linearGradient id="text-grad" x1="60" y1="0" x2="150" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#e8e8f0"/>
+      <stop offset="100%" stop-color="#a0a0b8"/>
+    </linearGradient>
+  </defs>
+  <!-- Icon mark -->
+  <rect width="48" height="48" rx="11" fill="url(#bg)"/>
+  <rect x="0.75" y="0.75" width="46.5" height="46.5" rx="10.25" stroke="url(#g1)" stroke-opacity="0.4"/>
+  <!-- Flowing drift curves -->
+  <path d="M11 30 C17 30, 19 18, 24 18 C29 18, 31 30, 37 30" stroke="url(#g1)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M11 24 C17 24, 19 12, 24 12 C29 12, 31 24, 37 24" stroke="url(#g1)" stroke-width="3.5" stroke-linecap="round" fill="none" stroke-opacity="0.4"/>
+  <!-- Time dot -->
+  <circle cx="37" cy="30" r="3" fill="url(#g1)"/>
+
+  <!-- Wordmark: Drift -->
+  <text x="60" y="31" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="19" fill="url(#text-grad)" letter-spacing="-0.3">Drift</text>
+</svg>

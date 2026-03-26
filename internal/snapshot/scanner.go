@@ -24,9 +24,10 @@ import (
 // Scanner walks a project directory, hashes every non-ignored file, and
 // produces Snapshot values. It delegates object persistence to an ObjectStore.
 type Scanner struct {
-	ProjectRoot string
-	Store       *storage.ObjectStore
-	Workers     int
+	ProjectRoot    string
+	Store          *storage.ObjectStore
+	Workers        int
+	ProtectedFiles []string // paths that should never be overwritten during restore
 }
 
 // New returns a Scanner.
@@ -156,24 +157,44 @@ func (sc *Scanner) Scan() (*timeline.Snapshot, error) {
 // ─── Save ─────────────────────────────────────────────────────────────────────
 
 // Save persists a Snapshot produced by Scan:
-//  1. Each file's raw content is written to the object store (keyed by file hash).
+//  1. Each file's raw content is written to the object store (keyed by file hash)
+//     using parallel workers for throughput.
 //  2. The Snapshot struct is serialised to JSON and written to the object store
 //     (keyed by snapshot hash).
 //
 // Returns the snapshot hash, which is the lookup key for Load.
 func (sc *Scanner) Save(snap *timeline.Snapshot) (string, error) {
+	workers := runtime.NumCPU()
+	if sc.Workers > 0 {
+		workers = sc.Workers
+	}
+
+	g, ctx := errgroup.WithContext(context.Background())
+	g.SetLimit(workers)
+
 	for _, entry := range snap.Files {
-		absPath := filepath.Join(sc.ProjectRoot, filepath.FromSlash(entry.Path))
-		storedHash, err := sc.Store.WriteFile(absPath)
-		if err != nil {
-			return "", fmt.Errorf("snapshot.Save: store file %s: %w", entry.Path, err)
-		}
-		if storedHash != entry.Hash {
-			// Paranoia check: file changed between Scan and Save.
-			return "", fmt.Errorf("snapshot.Save: hash mismatch for %s: expected %s got %s",
-				entry.Path, entry.Hash, storedHash)
-		}
-		log.Debug().Str("file", entry.Path).Str("hash", storedHash).Msg("stored object")
+		entry := entry // capture loop var
+		g.Go(func() error {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			default:
+			}
+			absPath := filepath.Join(sc.ProjectRoot, filepath.FromSlash(entry.Path))
+			storedHash, err := sc.Store.WriteFile(absPath)
+			if err != nil {
+				return fmt.Errorf("snapshot.Save: store file %s: %w", entry.Path, err)
+			}
+			if storedHash != entry.Hash {
+				return fmt.Errorf("snapshot.Save: hash mismatch for %s: expected %s got %s",
+					entry.Path, entry.Hash, storedHash)
+			}
+			log.Debug().Str("file", entry.Path).Str("hash", storedHash).Msg("stored object")
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		return "", err
 	}
 
 	data, err := marshalSnapshot(snap)
@@ -308,8 +329,20 @@ func (sc *Scanner) Restore(snap *timeline.Snapshot) error {
 
 	ignores := loadIgnoreList(sc.ProjectRoot)
 
+	// Build protected set for O(1) lookups.
+	protectedSet := make(map[string]struct{}, len(sc.ProtectedFiles))
+	for _, p := range sc.ProtectedFiles {
+		protectedSet[p] = struct{}{}
+	}
+
 	// Phase 1: write/restore every file in the snapshot.
 	for _, entry := range snap.Files {
+		// Skip protected files — never overwrite them.
+		if _, isProtected := protectedSet[entry.Path]; isProtected {
+			log.Debug().Str("file", entry.Path).Msg("skipping protected file")
+			continue
+		}
+
 		absPath := filepath.Join(sc.ProjectRoot, filepath.FromSlash(entry.Path))
 
 		content, err := sc.Store.Read(entry.Hash)
@@ -365,6 +398,10 @@ func (sc *Scanner) Restore(snap *timeline.Snapshot) error {
 		rel = filepath.ToSlash(rel)
 		// Skip ignored files (C5 fix: use ignores.matches instead of undefined shouldIgnoreFile).
 		if ignores.matches(rel) {
+			return nil
+		}
+		// Skip protected files from deletion.
+		if _, isProtected := protectedSet[rel]; isProtected {
 			return nil
 		}
 		if _, keep := targetPaths[rel]; !keep {
