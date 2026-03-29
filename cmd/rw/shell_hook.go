@@ -45,12 +45,12 @@ func shellHookCmd() *cobra.Command {
 func shellSetupCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "shell-setup",
-		Short: "Print instructions to add RewindDB to your shell prompt",
+		Short: "Print instructions to add Nimbi to your shell prompt",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println(`To add RewindDB to your shell prompt, add this to your ~/.bashrc or ~/.zshrc:
+			fmt.Println(`To add Nimbi to your shell prompt, add this to your ~/.bashrc or ~/.zshrc:
 
-  # RewindDB prompt
+  # Nimbi prompt
   export PROMPT_COMMAND='__rw_ps1() { RW_STATUS=$(rw _shell_hook 2>/dev/null); }; __rw_ps1'
   # Then add $RW_STATUS to your PS1, for example:
   # PS1='\u@\h:\w $RW_STATUS\$ '

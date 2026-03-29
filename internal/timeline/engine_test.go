@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

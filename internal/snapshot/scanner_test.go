@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/itsakash-real/rewinddb/internal/snapshot"
-	"github.com/itsakash-real/rewinddb/internal/storage"
+	"github.com/itsakash-real/nimbi/internal/snapshot"
+	"github.com/itsakash-real/nimbi/internal/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

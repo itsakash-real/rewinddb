@@ -8,54 +8,51 @@ export default {
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       colors: {
-        bg: '#050508',
-        surface: '#0e0e12',
-        border: '#1c1c24',
-        'border-light': '#2a2a36',
-        purple: {
-          DEFAULT: '#a78bfa',
-          dim: '#7c3aed',
-          bright: '#c4b5fd',
-          glow: '#8b5cf6',
+        bg: '#0a0a0a',
+        surface: '#111111',
+        'surface-hover': '#161616',
+        border: '#1a1a1a',
+        'border-hover': '#2a2a2a',
+        accent: {
+          DEFAULT: '#7dd3fc',
+          hover: '#38bdf8',
+          dim: 'rgba(125, 211, 252, 0.08)',
         },
-        cyan: { DEFAULT: '#67e8f9', dim: '#0891b2' },
-        green: { DEFAULT: '#4ade80', dim: '#16a34a' },
-        red: { DEFAULT: '#f87171' },
         text: {
-          DEFAULT: '#e8e8f0',
-          muted: '#6b6b80',
-          dim: '#3a3a50',
+          DEFAULT: '#f0f0f0',
+          secondary: '#b0b0b0',
+          muted: '#94a3b8',
         },
+        success: '#4ade80',
+        warning: '#fbbf24',
+        error: '#f87171',
       },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-glow':
-          'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139,92,246,0.15), transparent)',
-        'purple-glow':
-          'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(139,92,246,0.08), transparent)',
+      boxShadow: {
+        'glow-sm': '0 0 16px -2px rgba(56, 189, 248, 0.25)',
+        'glow-md': '0 0 24px -4px rgba(56, 189, 248, 0.35)',
+        'glow-lg': '0 0 40px -8px rgba(56, 189, 248, 0.5)',
+        'glow-button': '0 0 20px -5px rgba(56, 189, 248, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
+      },
+      maxWidth: {
+        content: '1000px',
       },
       animation: {
-        'fade-up': 'fadeUp 0.6s ease forwards',
         blink: 'blink 1s step-end infinite',
-        'gradient-x': 'gradientX 4s ease infinite',
-        float: 'float 6s ease-in-out infinite',
+        'marquee-left': 'marqueeLeft 60s linear infinite',
+        'marquee-right': 'marqueeRight 60s linear infinite',
       },
       keyframes: {
-        fadeUp: {
-          from: { opacity: 0, transform: 'translateY(24px)' },
-          to: { opacity: 1, transform: 'translateY(0)' },
-        },
         blink: {
           '0%, 100%': { opacity: 1 },
           '50%': { opacity: 0 },
         },
-        gradientX: {
-          '0%, 100%': { backgroundPosition: '0% 50%' },
-          '50%': { backgroundPosition: '100% 50%' },
+        marqueeLeft: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-8px)' },
+        marqueeRight: {
+          '0%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0)' },
         },
       },
     },

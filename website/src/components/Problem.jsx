@@ -1,92 +1,59 @@
-import { motion } from 'framer-motion'
-
-const PAINS = [
-  {
-    icon: '💥',
-    title: 'You changed one config.',
-    body: 'Now the whole thing is on fire. You have no idea which file did it. Git shows nothing because you never committed.',
-  },
-  {
-    icon: '🤖',
-    title: 'AI wrote 80 lines of "improvements."',
-    body: "It looked great. You accepted it. Now nothing compiles. There's no obvious undo. Ctrl+Z doesn't go back that far.",
-  },
-  {
-    icon: '🪴',
-    title: 'The experiment spiral.',
-    body: 'You try approach A. Breaks. Try approach B. Also breaks. Now you\'ve lost the version that kind of worked.',
-  },
-  {
-    icon: '😭',
-    title: '"It worked 20 minutes ago."',
-    body: "Classic. You know it was working. You just don't know when it stopped. And you didn't save anything.",
-  },
-]
-
-const fade = {
-  hidden: { opacity: 0, y: 24 },
-  show: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.5 },
-  }),
-}
-
 export default function Problem() {
   return (
-    <section className="py-28 relative">
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <div className="inline-block text-xs font-mono text-purple-DEFAULT border border-purple-glow/30 bg-purple-glow/5 rounded-full px-3 py-1 mb-4">
-            the problem
+    <section className="py-32">
+      <div className="max-w-content mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-16 items-start">
+          {/* Left — the story */}
+          <div>
+            <p className="text-[11px] font-mono text-text-muted uppercase tracking-[0.2em] mb-6">
+              Why this exists
+            </p>
+            <blockquote className="text-[clamp(1.3rem,3vw,1.7rem)] text-text leading-[1.5] tracking-[-0.01em] font-light">
+              <p className="mb-6">
+                You're experimenting. Something works.
+                <br />
+                You change one thing.
+                <br />
+                <span className="text-text-secondary">Now nothing works and you can't get back.</span>
+              </p>
+              <p className="mb-6">
+                Git commits felt too heavy mid-experiment.
+                <br />
+                I didn't want a commit.
+                <br />
+                <span className="text-text-secondary">I wanted a quicksave.</span>
+              </p>
+              <p className="text-accent/80">So I built this.</p>
+            </blockquote>
+            <p className="text-sm text-text-muted mt-8">
+              &mdash; Akash
+            </p>
           </div>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4 text-gradient-white">
-            Every developer knows this feeling.
-          </h2>
-          <p className="text-text-muted text-lg max-w-xl mx-auto">
-            Git is great — for commits. But commits are heavy. Between commits, you're flying blind.
-          </p>
-        </motion.div>
 
-        {/* Pain cards */}
-        <div className="grid sm:grid-cols-2 gap-4">
-          {PAINS.map((p, i) => (
-            <motion.div
-              key={p.title}
-              custom={i}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              variants={fade}
-              className="group p-6 rounded-2xl bg-surface border border-border hover:border-border-light transition-all duration-300"
-            >
-              <div className="text-3xl mb-4">{p.icon}</div>
-              <h3 className="font-semibold text-text text-lg mb-2">{p.title}</h3>
-              <p className="text-text-muted text-sm leading-relaxed">{p.body}</p>
-            </motion.div>
-          ))}
+          {/* Right — pain points */}
+          <div className="space-y-10 lg:pt-16">
+            {[
+              {
+                label: 'AI-generated code broke everything',
+                detail: 'rw save before pasting. rw undo if it breaks. One command back to working.',
+              },
+              {
+                label: 'Lost a working state mid-refactor',
+                detail: 'rw undo --n 3 takes you back 3 checkpoints. No ID needed.',
+              },
+              {
+                label: 'Build script corrupted your project',
+                detail: 'rw run wraps any command. Fails? Automatically rolled back.',
+              },
+            ].map((p, i) => (
+              <div key={p.label}>
+                <h3 className="text-sm font-medium text-text mb-1.5">{p.label}</h3>
+                <p className="text-sm text-text-muted leading-relaxed">{p.detail}</p>
+                {i < 2 && <div className="h-px bg-border mt-10" />}
+              </div>
+            ))}
+          </div>
         </div>
-
-        {/* Callout */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 text-center"
-        >
-          <p className="text-2xl font-semibold text-text">
-            Git can't save you here.{' '}
-            <span className="text-gradient">Drift can.</span>
-          </p>
-        </motion.div>
       </div>
     </section>
   )

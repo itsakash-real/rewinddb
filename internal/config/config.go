@@ -17,7 +17,7 @@ const (
 	IndexFileName    = "index.json"
 )
 
-// Config holds all resolved paths for a RewindDB repository.
+// Config holds all resolved paths for a Nimbi repository.
 type Config struct {
 	// RewindDir is the root .rewind/ directory (analogous to .git/).
 	RewindDir string
@@ -116,7 +116,7 @@ func Init() (*Config, error) {
 	}
 	f.Close()
 
-	log.Info().Str("rewind_dir", rewindDir).Msg("initialized new RewindDB repository")
+	log.Info().Str("rewind_dir", rewindDir).Msg("initialized new Nimbi repository")
 	return cfg, nil
 }
 
@@ -132,4 +132,4 @@ func buildConfig(rewindDir string) *Config {
 }
 
 // ErrNotInitialized is returned when no .rewind/ directory can be located.
-var ErrNotInitialized = errors.New("not a RewindDB repository (no .rewind/ directory found)")
+var ErrNotInitialized = errors.New("not a Nimbi repository (no .rewind/ directory found)")

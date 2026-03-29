@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/itsakash-real/rewinddb/internal/wal"
+	"github.com/itsakash-real/nimbi/internal/wal"
 )
 
 func TestWAL_CompleteRoundtrip(t *testing.T) {

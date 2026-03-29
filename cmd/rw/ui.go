@@ -8,8 +8,8 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/itsakash-real/rewinddb/internal/storage"
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/itsakash-real/nimbi/internal/storage"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 	"github.com/spf13/cobra"
 )
 
@@ -142,7 +142,7 @@ func (m uiModel) View() string {
 	var b strings.Builder
 
 	// Title bar.
-	title := uiTitle.Render(fmt.Sprintf(" Drift  ─  %s branch ", m.branchName))
+	title := uiTitle.Render(fmt.Sprintf(" Nimbi  ─  %s branch ", m.branchName))
 	b.WriteString(title + "\n\n")
 
 	// Checkpoint list.

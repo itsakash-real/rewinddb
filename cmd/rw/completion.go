@@ -13,7 +13,7 @@ func completionCmd(rootCmd *cobra.Command) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "completion [bash|zsh|fish|powershell]",
 		Short: "Generate shell completion scripts",
-		Long: `Generate shell completion scripts for RewindDB.
+		Long: `Generate shell completion scripts for Nimbi.
 
 Bash:
   # Add to ~/.bashrc:

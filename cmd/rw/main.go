@@ -31,7 +31,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:          "rw",
-		Short:        "Drift — a time-travel state engine for codebases",
+		Short:        "Nimbi — a time-travel state engine for codebases",
 		SilenceUsage: true,
 		CompletionOptions: cobra.CompletionOptions{
 			DisableDefaultCmd: false,
@@ -58,7 +58,7 @@ func main() {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println()
-			purpleBoldP.Println("  \u25c6  drift")
+			purpleBoldP.Println("  \u25c6  nimbi")
 			dimP.Println("  time-travel for your codebase")
 			fmt.Println()
 			fmt.Printf("  %susage%s   rw <command> [flags]\n\n", colorPurpleDim, colorReset)

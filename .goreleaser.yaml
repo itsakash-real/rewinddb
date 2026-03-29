@@ -77,7 +77,7 @@ release:
   github:
     owner: itsakash-real
     name: rewinddb
-  name_template: "RewindDB {{.Tag}}"
+  name_template: "Nimbi {{.Tag}}"
   draft: false
   prerelease: auto
   footer: |
@@ -85,7 +85,7 @@ release:
     ```bash
     brew install itsakash-real/tap/rewinddb
     # or
-    curl -sSfL https://raw.githubusercontent.com/itsakash-real/rewinddb/main/install.sh | sh
+    curl -sSfL https://raw.githubusercontent.com/itsakash-real/nimbi/main/install.sh | sh
     ```
 
 # Homebrew tap
@@ -97,7 +97,7 @@ brews:
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     directory: Formula
-    homepage: "https://github.com/itsakash-real/rewinddb"
+    homepage: "https://github.com/itsakash-real/nimbi"
     description: "A time-travel state engine for codebases — checkpoint, diff, and restore your project in milliseconds"
     license: "MIT"
     skip_upload: auto
@@ -115,7 +115,7 @@ nfpms:
     package_name: rewinddb
     builds: [rw]
     vendor: itsakash-real
-    homepage: "https://github.com/itsakash-real/rewinddb"
+    homepage: "https://github.com/itsakash-real/nimbi"
     maintainer: "Akash Maurya <akashmaurya3160@gmail.com>"
     description: "A time-travel state engine for codebases"
     license: MIT

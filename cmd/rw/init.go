@@ -6,14 +6,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 	"github.com/spf13/cobra"
 )
 
 func initCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "init",
-		Short: "Initialize a new RewindDB repository in the current directory",
+		Short: "Initialize a new Nimbi repository in the current directory",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cwd, err := os.Getwd()
@@ -24,7 +24,7 @@ func initCmd() *cobra.Command {
 			engine, err := timeline.Init(cwd)
 			if err != nil {
 				if errors.Is(err, timeline.ErrAlreadyInitialized) {
-					return fmt.Errorf("already a RewindDB repository — .rewind/ already exists")
+					return fmt.Errorf("already a Nimbi repository — .rewind/ already exists")
 				}
 				return fmt.Errorf("init failed: %w", err)
 			}

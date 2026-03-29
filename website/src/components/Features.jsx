@@ -1,105 +1,69 @@
 import { motion } from 'framer-motion'
+import { Home, Clock, GitBranch, Shield, Zap, Package } from 'lucide-react'
 
 const FEATURES = [
   {
-    icon: '⚡',
-    title: 'Instant checkpoints',
-    body: '~180ms to snapshot 1,000 files using parallel SHA-256 hashing across all CPU cores.',
-    tag: 'Performance',
+    icon: Home,
+    title: 'Runs Locally',
+    body: 'Mac, Windows, or Linux. Single binary, no daemon, no server, no account. Your data stays yours.',
+    color: '#38bdf8',
   },
   {
-    icon: '🌿',
-    title: 'Auto-branching timelines',
-    body: 'Go back to an old checkpoint and save something new? Drift auto-creates a branch. Both timelines preserved.',
-    tag: 'Smart',
+    icon: Clock,
+    title: 'Instant Checkpoints',
+    body: 'rw save. Entire project saved — binaries, configs, build artifacts. No staging, no commit message needed.',
+    color: '#6366f1',
   },
   {
-    icon: '🔍',
-    title: 'Zero duplication',
-    body: 'Same file in 10 checkpoints? Stored once. Content-addressable storage means only changed files take space.',
-    tag: 'Storage',
+    icon: Shield,
+    title: 'Auto-Rollback',
+    body: 'rw run wraps any command. Checkpoint before, rollback on failure. Build scripts, migrations, tests.',
+    color: '#34d399',
   },
   {
-    icon: '🛡️',
-    title: 'Safe by default',
-    body: 'Warns before overwriting. Auto-stashes unsaved changes. Atomic writes — a crash mid-save leaves nothing corrupted.',
-    tag: 'Safety',
+    icon: Package,
+    title: 'Tracks Everything',
+    body: 'node_modules, .env, compiled binaries, game assets. Nimbi tracks what git ignores. Dedup keeps storage tiny.',
+    color: '#f59e0b',
   },
   {
-    icon: '🤖',
-    title: 'Runs before risky commands',
-    body: '`rw run "npm run build"` checkpoints before running. Fails? Rolled back automatically. Passes? Saves a "✓ passed" checkpoint.',
-    tag: 'Automation',
+    icon: GitBranch,
+    title: 'Auto-Branching',
+    body: 'Restore an old checkpoint and save? New branch auto-created. Both timelines preserved.',
+    color: '#ec4899',
   },
   {
-    icon: '🐛',
-    title: 'Bisect to find bugs',
-    body: 'Binary-search your checkpoint history to find exactly when a bug appeared. Like git bisect, but for full project state.',
-    tag: 'Debug',
-  },
-  {
-    icon: '👁️',
-    title: 'Auto-save daemon',
-    body: '`rw watch` runs in the background and saves automatically when files change. Never think about saving again.',
-    tag: 'Workflow',
-  },
-  {
-    icon: '📦',
-    title: 'Export & share states',
-    body: 'Export any checkpoint as a `.rwdb` file. Send it to a teammate. They can import the exact state — including untracked files.',
-    tag: 'Sharing',
-  },
-  {
-    icon: '🌐',
-    title: 'Works with anything',
-    body: 'React, Python, Go, Rust, Rails, Laravel — any language, any framework. Even plain folders with no build system.',
-    tag: 'Universal',
+    icon: Zap,
+    title: 'Blazing Fast',
+    body: '~180ms for 1000 files. Content-addressable store with SHA-256 dedup and gzip compression.',
+    color: '#38bdf8',
   },
 ]
 
 export default function Features() {
   return (
-    <section className="py-28">
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <div className="inline-block text-xs font-mono text-purple-DEFAULT border border-purple-glow/30 bg-purple-glow/5 rounded-full px-3 py-1 mb-4">
-            features
-          </div>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-gradient-white mb-4">
-            Everything you need.
-            <br />
-            Nothing you don't.
+    <section className="py-24">
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="scroll-reveal text-center mb-14">
+          <h2 className="text-[28px] md:text-[48px] font-bold tracking-[-0.02em] text-text mb-3">
+            What It Does
           </h2>
-          <p className="text-text-muted text-lg max-w-lg mx-auto">
-            No config. No cloud account. No background services eating RAM. One binary, drop it in your PATH.
-          </p>
-        </motion.div>
+        </div>
 
-        {/* Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
             <motion.div
               key={f.title}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: (i % 3) * 0.08, duration: 0.5 }}
-              className="group p-5 rounded-2xl bg-surface border border-border hover:border-border-light hover:bg-[#11111a] transition-all duration-300"
+              viewport={{ once: true, margin: '-30px' }}
+              transition={{ duration: 0.35, delay: i * 0.08 }}
+              className="scroll-reveal p-6 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(56,189,248,0.3)] hover:bg-[rgba(56,189,248,0.04)] transition-all duration-250 min-h-[160px]"
+              style={{ transitionDelay: `${i * 80}ms` }}
             >
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-2xl">{f.icon}</span>
-                <span className="text-[10px] font-mono text-text-muted border border-border rounded-full px-2 py-0.5">
-                  {f.tag}
-                </span>
-              </div>
-              <h3 className="font-semibold text-text mb-1.5">{f.title}</h3>
-              <p className="text-text-muted text-sm leading-relaxed">{f.body}</p>
+              <f.icon size={28} style={{ color: f.color }} className="mb-3" />
+              <h3 className="text-[17px] font-semibold text-white mb-2">{f.title}</h3>
+              <p className="text-[14px] text-[#94a3b8] leading-relaxed">{f.body}</p>
             </motion.div>
           ))}
         </div>

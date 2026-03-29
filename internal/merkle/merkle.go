@@ -1,4 +1,4 @@
-// Package merkle implements a binary Merkle tree over the RewindDB object
+// Package merkle implements a binary Merkle tree over the Nimbi object
 // store. The tree provides integrity verification: any single-byte corruption
 // in any stored object changes the root hash, and a bisect over the tree
 // identifies the exact object that was modified.

@@ -4,76 +4,63 @@ const SEQUENCE = [
   {
     cmd: 'rw init',
     outputLines: [
-      { text: '  ◆  initialized  ──────────────────────', color: 'purple' },
-      { text: '', color: 'dim' },
-      { text: '     directory    .rewind/', color: 'dim' },
-      { text: '     branch       main', color: 'dim' },
+      { text: '  initialized /', color: 'text' },
+      { text: '  directory   .rewind/', color: 'muted' },
+      { text: '  branch      main', color: 'muted' },
     ],
   },
   {
     cmd: 'rw save "auth working"',
     outputLines: [
-      { text: '  ◆  checkpoint saved  ─────────────────', color: 'purple' },
-      { text: '', color: 'dim' },
-      { text: '     id       a3f2b1c8', color: 'cyan' },
-      { text: '     message  "auth working"', color: 'text' },
-      { text: '     files    24 tracked  ·  0 changed', color: 'dim' },
-      { text: '     saved    just now', color: 'dim' },
+      { text: '  checkpoint saved', color: 'text' },
+      { text: '  id       a3f2b1c8', color: 'muted' },
+      { text: '  message  "auth working"', color: 'muted' },
+      { text: '  files    24 tracked', color: 'muted' },
     ],
   },
   {
-    cmd: '# edit some files, break everything...',
-    outputLines: [],
-    comment: true,
-  },
-  {
-    cmd: 'rw status',
+    cmd: 'rw run "npm run build"',
     outputLines: [
-      { text: '  ~  src/auth.js', color: 'yellow' },
-      { text: '  ~  src/db.js', color: 'yellow' },
-      { text: '  +  src/broken.js', color: 'green' },
-      { text: '', color: 'dim' },
-      { text: '  →  run rw save or rw undo', color: 'dim' },
+      { text: '  checkpoint saved: a3f2b1c8', color: 'success' },
+      { text: '  running: npm run build', color: 'muted' },
+      { text: '  command failed (exit 1)', color: 'error' },
+      { text: '  rolling back...', color: 'muted' },
+      { text: '  rolled back to a3f2b1c8', color: 'success' },
     ],
   },
   {
-    cmd: 'rw undo',
+    cmd: 'rw goto HEAD~3',
     outputLines: [
-      { text: '  ✓  restored to a3f2b1c8', color: 'green' },
-      { text: '     1 checkpoint back · 3 files written', color: 'dim' },
+      { text: '  restored', color: 'text' },
+      { text: '  checkpoint  a3f2b1c8', color: 'muted' },
+      { text: '  written     3 file(s)', color: 'muted' },
     ],
   },
 ]
 
 const COLOR_MAP = {
-  purple: 'text-purple-bright',
-  cyan: 'text-cyan',
-  green: 'text-green',
-  yellow: 'text-yellow-300',
-  dim: 'text-text-muted',
-  text: 'text-text',
-  comment: 'text-text-muted italic',
+  accent: 'text-accent',
+  success: 'text-success',
+  error: 'text-error',
+  muted: 'text-text-muted',
+  text: 'text-text-secondary',
 }
 
-const TYPING_SPEED = 40
-const PAUSE_AFTER_CMD = 300
-const PAUSE_AFTER_OUTPUT = 1800
-const RESTART_DELAY = 2000
+const TYPING_SPEED = 30
+const PAUSE_AFTER_CMD = 250
+const PAUSE_AFTER_OUTPUT = 1200
+const RESTART_DELAY = 3000
 
 export default function TerminalDemo({ className = '' }) {
   const [lines, setLines] = useState([])
   const [currentCmdText, setCurrentCmdText] = useState('')
-  const [phase, setPhase] = useState('typing') // typing | output | pause
+  const [phase, setPhase] = useState('typing')
   const [seqIdx, setSeqIdx] = useState(0)
   const [outputIdx, setOutputIdx] = useState(0)
   const bottomRef = useRef(null)
   const timeoutRef = useRef(null)
 
-  const clear = () => clearTimeout(timeoutRef.current)
-
-  useEffect(() => {
-    return () => clear()
-  }, [])
+  useEffect(() => () => clearTimeout(timeoutRef.current), [])
 
   useEffect(() => {
     const step = SEQUENCE[seqIdx]
@@ -85,16 +72,8 @@ export default function TerminalDemo({ className = '' }) {
           setCurrentCmdText(full.slice(0, currentCmdText.length + 1))
         }, TYPING_SPEED)
       } else {
-        // Done typing — commit command line
         timeoutRef.current = setTimeout(() => {
-          setLines((prev) => [
-            ...prev,
-            {
-              type: 'cmd',
-              text: full,
-              comment: step.comment,
-            },
-          ])
+          setLines((prev) => [...prev, { type: 'cmd', text: full }])
           setCurrentCmdText('')
           setPhase('output')
           setOutputIdx(0)
@@ -106,16 +85,11 @@ export default function TerminalDemo({ className = '' }) {
       const outLines = step.outputLines
       if (outputIdx < outLines.length) {
         timeoutRef.current = setTimeout(() => {
-          setLines((prev) => [
-            ...prev,
-            { type: 'out', ...outLines[outputIdx] },
-          ])
+          setLines((prev) => [...prev, { type: 'out', ...outLines[outputIdx] }])
           setOutputIdx((i) => i + 1)
-        }, 80)
+        }, 50)
       } else {
-        timeoutRef.current = setTimeout(() => {
-          setPhase('pause')
-        }, PAUSE_AFTER_OUTPUT)
+        timeoutRef.current = setTimeout(() => setPhase('pause'), PAUSE_AFTER_OUTPUT)
       }
     }
 
@@ -125,7 +99,6 @@ export default function TerminalDemo({ className = '' }) {
         setSeqIdx(next)
         setPhase('typing')
       } else {
-        // Restart
         timeoutRef.current = setTimeout(() => {
           setLines([])
           setSeqIdx(0)
@@ -141,58 +114,48 @@ export default function TerminalDemo({ className = '' }) {
   }, [lines, currentCmdText])
 
   return (
-    <div className={`rounded-xl border border-border overflow-hidden glow-purple ${className}`}>
-      {/* Window chrome */}
-      <div className="flex items-center gap-2 px-4 py-3 bg-surface border-b border-border">
+    <div className={`rounded-xl border border-border overflow-hidden ${className}`}>
+      {/* Chrome — minimal */}
+      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#0d0d0d] border-b border-border">
         <div className="flex gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
-          <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-          <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white/[0.06]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white/[0.06]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-white/[0.06]" />
         </div>
-        <div className="flex-1 flex justify-center">
-          <span className="text-xs text-text-muted font-mono">~/my-project</span>
-        </div>
+        <span className="text-[11px] text-text-muted font-mono ml-3">~/my-project</span>
       </div>
 
-      {/* Terminal body */}
-      <div className="bg-[#080810] p-5 font-mono text-sm min-h-[320px] max-h-[420px] overflow-y-auto">
+      {/* Body */}
+      <div className="bg-[#080808] p-5 font-mono text-[13px] min-h-[280px] max-h-[380px] overflow-y-auto leading-[1.7]">
         {lines.map((line, i) => (
-          <div key={i} className="leading-relaxed">
+          <div key={i}>
             {line.type === 'cmd' ? (
-              <div className="flex items-start gap-2 mb-1">
-                <span className="text-purple-DEFAULT select-none mt-0.5">❯</span>
-                <span className={line.comment ? 'text-text-muted italic' : 'text-text'}>
-                  {line.text}
-                </span>
+              <div className="flex items-start gap-2 mt-1 mb-0.5">
+                <span className="text-text-muted select-none">$</span>
+                <span className="text-text">{line.text}</span>
               </div>
             ) : (
-              <div
-                className={`mb-0.5 ${
-                  COLOR_MAP[line.color] || 'text-text'
-                }`}
-              >
+              <div className={`${COLOR_MAP[line.color] || 'text-text'}`}>
                 {line.text || '\u00a0'}
               </div>
             )}
           </div>
         ))}
 
-        {/* Currently typing command */}
         {phase === 'typing' && (
-          <div className="flex items-start gap-2">
-            <span className="text-purple-DEFAULT select-none mt-0.5">❯</span>
+          <div className="flex items-start gap-2 mt-1">
+            <span className="text-text-muted select-none">$</span>
             <span className="text-text">
               {currentCmdText}
-              <span className="animate-blink text-purple-DEFAULT">▋</span>
+              <span className="animate-blink text-accent/70">_</span>
             </span>
           </div>
         )}
 
-        {/* Idle cursor when pausing */}
         {phase === 'pause' && seqIdx === SEQUENCE.length - 1 && (
-          <div className="flex items-start gap-2 mt-1">
-            <span className="text-purple-DEFAULT select-none">❯</span>
-            <span className="animate-blink text-purple-DEFAULT">▋</span>
+          <div className="flex items-start gap-2 mt-2">
+            <span className="text-text-muted select-none">$</span>
+            <span className="animate-blink text-accent/70">_</span>
           </div>
         )}
 

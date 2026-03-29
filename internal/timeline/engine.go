@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/itsakash-real/rewinddb/internal/config"
+	"github.com/itsakash-real/nimbi/internal/config"
 	"github.com/rs/zerolog/log"
 )
 
@@ -66,7 +66,7 @@ func New(indexPath string) (*TimelineEngine, error) {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
-// Init bootstraps a brand-new RewindDB repository under projectRoot.
+// Init bootstraps a brand-new Nimbi repository under projectRoot.
 // It creates the .rewind/ directory layout, a "main" branch, a synthetic
 // root checkpoint, and writes the initial index.json.
 // Returns ErrAlreadyInitialized if the repository already exists.

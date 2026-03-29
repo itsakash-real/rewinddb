@@ -1,12 +1,12 @@
-# 🔁 RewindDB Architecture
+# 🔁 Nimbi Architecture
 
-This document is intended for contributors and developers who want to understand how **RewindDB** works internally. It assumes familiarity with **Go**, **content-addressable storage**, and **DAG data structures**.
+This document is intended for contributors and developers who want to understand how **Nimbi** works internally. It assumes familiarity with **Go**, **content-addressable storage**, and **DAG data structures**.
 
 ---
 
 ## 📦 System Overview
 
-RewindDB is organized into **five layers**, with strict dependency rules — lower layers never import from higher ones.
+Nimbi is organized into **five layers**, with strict dependency rules — lower layers never import from higher ones.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -253,7 +253,7 @@ These rules are **non-negotiable**:
 
 ## 🚀 Summary
 
-RewindDB is designed as a **Git-like time machine for your filesystem**, with:
+Nimbi is designed as a **Git-like time machine for your filesystem**, with:
 
 * Immutable storage
 * Efficient snapshotting

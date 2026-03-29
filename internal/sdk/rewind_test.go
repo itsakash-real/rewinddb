@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/itsakash-real/rewinddb/internal/sdk"
+	"github.com/itsakash-real/nimbi/internal/sdk"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -45,7 +45,7 @@ func TestNew_FailsOnUninitializedDirectory(t *testing.T) {
 	root := t.TempDir()
 	_, err := sdk.New(root)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not a RewindDB repository")
+	assert.Contains(t, err.Error(), "not a Nimbi repository")
 }
 
 func TestNew_LoadsExistingRepository(t *testing.T) {

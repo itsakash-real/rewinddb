@@ -1,8 +1,8 @@
-# RewindDB Makefile
+# Nimbi Makefile
 # Usage: make [target]
 
 BINARY      := rw
-MODULE      := github.com/itsakash-real/rewinddb
+MODULE      := github.com/itsakash-real/nimbi
 CMD_PKG     := ./cmd/rw
 VERSION     ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 BUILD_TIME  := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -137,7 +137,7 @@ clean:
 
 help:
 	@echo ""
-	@echo "RewindDB build targets:"
+	@echo "Nimbi build targets:"
 	@echo ""
 	@echo "  make build         Build binary for current OS/arch"
 	@echo "  make build-all     Cross-compile for all release targets"

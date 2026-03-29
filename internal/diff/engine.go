@@ -7,9 +7,9 @@ import (
 	"unicode/utf8"
 
 	"github.com/aymanbagabas/go-udiff"
-	"github.com/itsakash-real/rewinddb/internal/snapshot"
-	"github.com/itsakash-real/rewinddb/internal/storage"
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/itsakash-real/nimbi/internal/snapshot"
+	"github.com/itsakash-real/nimbi/internal/storage"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 	"github.com/rs/zerolog/log"
 )
 

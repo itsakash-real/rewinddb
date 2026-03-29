@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/itsakash-real/rewinddb/internal/merkle"
+	"github.com/itsakash-real/nimbi/internal/merkle"
 )
 
 func TestBuild_Empty(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/itsakash-real/rewinddb/internal/storage"
+	"github.com/itsakash-real/nimbi/internal/storage"
 	"github.com/spf13/cobra"
 )
 

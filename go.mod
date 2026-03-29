@@ -1,4 +1,4 @@
-module github.com/itsakash-real/rewinddb
+module github.com/itsakash-real/nimbi
 
 go 1.25.0
 

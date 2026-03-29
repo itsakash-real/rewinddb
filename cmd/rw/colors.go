@@ -23,7 +23,7 @@ var (
 	colorBold   = "\033[1m"
 	colorDim    = "\033[2m"
 
-	// Purple / violet — primary RewindDB brand color.
+	// Purple / violet — primary Nimbi brand color.
 	colorPurple     = "\033[95m"       // bright magenta
 	colorPurpleDim  = "\033[38;5;141m" // soft lavender
 	colorPurpleBold = "\033[1;95m"     // bold bright magenta

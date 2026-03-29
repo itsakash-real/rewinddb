@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/itsakash-real/rewinddb/internal/merkle"
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/itsakash-real/nimbi/internal/merkle"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 	"github.com/spf13/cobra"
 )
 

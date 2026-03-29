@@ -19,7 +19,7 @@ Add to your shell config:
   fish:       rw shell-init --shell fish | source
   powershell: Invoke-Expression (rw shell-init --shell powershell)
 
-Shows nothing if not in a RewindDB repository.`,
+Shows nothing if not in a Nimbi repository.`,
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			switch shell {
@@ -40,7 +40,7 @@ Shows nothing if not in a RewindDB repository.`,
 	return cmd
 }
 
-const bashPromptScript = `# RewindDB prompt integration
+const bashPromptScript = `# Nimbi prompt integration
 __rw_prompt() {
   local id
   id=$(rw _shell_hook 2>/dev/null)
@@ -56,7 +56,7 @@ else
 fi
 `
 
-const fishPromptScript = `# RewindDB prompt integration
+const fishPromptScript = `# Nimbi prompt integration
 function fish_right_prompt
   set -l id (rw _shell_hook 2>/dev/null)
   if test -n "$id"
@@ -65,7 +65,7 @@ function fish_right_prompt
 end
 `
 
-const powershellPromptScript = `# RewindDB prompt integration
+const powershellPromptScript = `# Nimbi prompt integration
 function prompt {
   $id = & rw _shell_hook 2>$null
   $loc = Get-Location

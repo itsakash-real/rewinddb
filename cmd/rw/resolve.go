@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 )
 
 // resolveCheckpoint resolves a checkpoint reference to a Checkpoint value.

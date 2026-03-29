@@ -1,5 +1,5 @@
-// Package sdk provides a clean programmatic API over RewindDB internals.
-// It is the recommended entry point for embedding RewindDB into Go applications.
+// Package sdk provides a clean programmatic API over Nimbi internals.
+// It is the recommended entry point for embedding Nimbi into Go applications.
 package sdk
 
 import (
@@ -12,11 +12,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/itsakash-real/rewinddb/internal/config"
-	diffpkg "github.com/itsakash-real/rewinddb/internal/diff"
-	"github.com/itsakash-real/rewinddb/internal/snapshot"
-	"github.com/itsakash-real/rewinddb/internal/storage"
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/itsakash-real/nimbi/internal/config"
+	diffpkg "github.com/itsakash-real/nimbi/internal/diff"
+	"github.com/itsakash-real/nimbi/internal/snapshot"
+	"github.com/itsakash-real/nimbi/internal/storage"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 	"github.com/rs/zerolog/log"
 )
 
@@ -72,7 +72,7 @@ type Client struct {
 	diffEngine *diffpkg.Engine
 }
 
-// New loads an existing RewindDB repository rooted at projectRoot.
+// New loads an existing Nimbi repository rooted at projectRoot.
 // Returns an error if the project has not been initialised (rw init).
 func New(projectRoot string) (*Client, error) {
 	absRoot, err := filepath.Abs(projectRoot)
@@ -85,7 +85,7 @@ func New(projectRoot string) (*Client, error) {
 	cfg, err := config.LoadStrict(absRoot)
 	if err != nil {
 		if errors.Is(err, config.ErrNotInitialized) {
-			return nil, fmt.Errorf("sdk.New: %s is not a RewindDB repository — call sdk.Init first", absRoot)
+			return nil, fmt.Errorf("sdk.New: %s is not a Nimbi repository — call sdk.Init first", absRoot)
 		}
 		return nil, fmt.Errorf("sdk.New: load config: %w", err)
 	}
@@ -103,7 +103,7 @@ func MustNew(projectRoot string) *Client {
 	return c
 }
 
-// Init initialises a new RewindDB repository at projectRoot and returns a
+// Init initialises a new Nimbi repository at projectRoot and returns a
 // ready Client. Returns an error if already initialised.
 func Init(projectRoot string) (*Client, error) {
 	absRoot, err := filepath.Abs(projectRoot)

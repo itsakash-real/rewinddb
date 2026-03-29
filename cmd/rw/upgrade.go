@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	githubRepo     = "itsakash-real/rewinddb"
+	githubRepo     = "itsakash-real/nimbi"
 	githubAPI      = "https://api.github.com/repos/" + githubRepo + "/releases/latest"
 	versionCacheFile = "version-check.json"
 	versionCheckTTL  = 24 * time.Hour
@@ -174,7 +174,7 @@ func fetchLatestRelease() (*githubRelease, error) {
 	client := &http.Client{Timeout: 5 * time.Second}
 	req, _ := http.NewRequest("GET", githubAPI, nil)
 	req.Header.Set("Accept", "application/vnd.github+json")
-	req.Header.Set("User-Agent", "rewinddb/"+Version)
+	req.Header.Set("User-Agent", "nimbi/"+Version)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -182,6 +182,9 @@ func fetchLatestRelease() (*githubRelease, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == 404 {
+		return nil, fmt.Errorf("no releases found yet — this is the first version")
+	}
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("GitHub API returned %d", resp.StatusCode)
 	}

@@ -31,8 +31,8 @@ func manCmd(rootCmd *cobra.Command) *cobra.Command {
 				Title:   "RW",
 				Section: "1",
 				Date:    &now,
-				Source:  fmt.Sprintf("RewindDB %s", Version),
-				Manual:  "RewindDB Manual",
+				Source:  fmt.Sprintf("Nimbi %s", Version),
+				Manual:  "Nimbi Manual",
 			}
 
 			if err := doc.GenManTree(rootCmd, header, outputDir); err != nil {

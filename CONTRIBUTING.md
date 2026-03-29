@@ -1,6 +1,6 @@
 ## 🤝 Contributing
 
-First of all — thank you for considering contributing to **RewindDB**.
+First of all — thank you for considering contributing to **Nimbi**.
 Every bug fix, feature, idea, or improvement genuinely makes this project better.
 
 ---
@@ -36,7 +36,7 @@ A little coordination upfront prevents wasted effort.
 #### 🧠 Understand the Architecture
 
 * Read `ARCHITECTURE.md` before modifying core components
-* RewindDB relies on:
+* Nimbi relies on:
 
   * Content-addressable storage
   * Atomic writes
@@ -209,5 +209,5 @@ There are no bad questions — confusion often means documentation can improve.
 
 ### 🚀 Final Note
 
-Every contribution moves **RewindDB** forward.
+Every contribution moves **Nimbi** forward.
 Thank you for being part of the project.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="itsakash-real/rewinddb"
+REPO="itsakash-real/nimbi"
 BINARY="rw"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 
@@ -28,7 +28,7 @@ esac
 
 URL="https://github.com/${REPO}/releases/download/${VERSION}/${ARCHIVE}"
 
-echo "→ Downloading RewindDB ${VERSION} for ${OS}/${ARCH}"
+echo "→ Downloading Nimbi ${VERSION} for ${OS}/${ARCH}"
 TMP=$(mktemp -d)
 curl -sSfL "$URL" -o "${TMP}/${ARCHIVE}"
 
@@ -43,5 +43,5 @@ echo "→ Installing to ${INSTALL_DIR}/${BINARY}"
 install -m 0755 "${BINARY}" "${INSTALL_DIR}/${BINARY}"
 rm -rf "$TMP"
 
-echo "✓ RewindDB ${VERSION} installed"
+echo "✓ Nimbi ${VERSION} installed"
 rw version

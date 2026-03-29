@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	diffpkg "github.com/itsakash-real/rewinddb/internal/diff"
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	diffpkg "github.com/itsakash-real/nimbi/internal/diff"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 	"github.com/spf13/cobra"
 )
 

@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/itsakash-real/rewinddb/internal/diff"
-	"github.com/itsakash-real/rewinddb/internal/merkle"
-	"github.com/itsakash-real/rewinddb/internal/storage"
-	"github.com/itsakash-real/rewinddb/internal/wal"
+	"github.com/itsakash-real/nimbi/internal/diff"
+	"github.com/itsakash-real/nimbi/internal/merkle"
+	"github.com/itsakash-real/nimbi/internal/storage"
+	"github.com/itsakash-real/nimbi/internal/wal"
 	"github.com/spf13/cobra"
 )
 

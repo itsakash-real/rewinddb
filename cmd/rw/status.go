@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	diffpkg "github.com/itsakash-real/rewinddb/internal/diff"
+	diffpkg "github.com/itsakash-real/nimbi/internal/diff"
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +38,7 @@ func statusCmd() *cobra.Command {
 			}
 
 			boxTop(52)
-			boxLine("  "+purpleBoldP.Sprint("\u25c6  rewinddb"), 52)
+			boxLine("  "+purpleBoldP.Sprint("\u25c6  nimbi"), 52)
 			boxLine("", 52)
 			boxLine("  "+headLine, 52)
 			boxBottom(52)

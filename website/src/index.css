@@ -2,92 +2,281 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
+/* ─── Base ─── */
+html {
+  font-size: 18px;
+  scroll-behavior: smooth;
 }
 
-html {
-  scroll-behavior: auto;
+/* Global minimum text sizes */
+p, span, li, td, th, label, div {
+  font-size: inherit;
 }
 
 body {
-  background-color: #050508;
-  color: #e8e8f0;
-  font-family: 'Inter', system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #060d14;
+  color: #f0f0f0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  line-height: 1.7;
+  position: relative;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0e0e12; }
-::-webkit-scrollbar-thumb { background: #2a2a36; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #3a3a50; }
-
-/* Selection */
-::selection { background: rgba(139, 92, 246, 0.3); color: #e8e8f0; }
-
-/* Code text */
-code, .font-mono {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-}
-
-/* Glow utilities */
-.glow-purple {
-  box-shadow: 0 0 40px rgba(139, 92, 246, 0.15), 0 0 80px rgba(139, 92, 246, 0.05);
-}
-
-.glow-purple-sm {
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
-}
-
-.text-gradient {
-  background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 40%, #7c3aed 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gradient-white {
-  background: linear-gradient(135deg, #ffffff 0%, #e8e8f0 60%, #a0a0b8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Terminal cursor */
-.cursor::after {
-  content: '▋';
-  animation: blink 1s step-end infinite;
-  color: #a78bfa;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* Noise texture overlay */
-.noise::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  opacity: 0.4;
+/* ─── Canvas background ─── */
+#nimbi-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
   pointer-events: none;
 }
 
-/* Grid background */
-.bg-grid {
-  background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 40px 40px;
+/* Content above canvas background */
+#root {
+  position: relative;
+  z-index: 1;
 }
 
-/* Border gradient */
-.border-gradient {
-  border: 1px solid transparent;
-  background: linear-gradient(#0e0e12, #0e0e12) padding-box,
-              linear-gradient(135deg, rgba(167,139,250,0.3), rgba(103,232,249,0.1), rgba(167,139,250,0.1)) border-box;
+/* All major content sections above canvas */
+main, footer, header, nav, section, article {
+  position: relative;
+}
+
+/* ─── Text selection ─── */
+::selection {
+  background-color: rgba(56, 189, 248, 0.35);
+  color: #ffffff;
+}
+::-moz-selection {
+  background-color: rgba(56, 189, 248, 0.35);
+  color: #ffffff;
+}
+
+/* ─── Scrollbar ─── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56,189,248,0.3) #060d14;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #060d14; }
+::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(56,189,248,0.6); }
+
+/* ─── Fonts ─── */
+code, .font-mono {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 15px;
+}
+
+/* ─── Focus states ─── */
+*:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ─── Headings ─── */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.02em;
+}
+
+/* ─── Links ─── */
+a {
+  text-decoration: none;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+a:hover {
+  text-decoration-color: #38bdf8;
+}
+
+/* ─── Cursor ─── */
+button, [role="button"], a {
+  cursor: pointer;
+}
+pre, code {
+  cursor: text;
+}
+
+/* ─── Page fade in ─── */
+@keyframes pageFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+body {
+  animation: pageFadeIn 0.2s ease;
+}
+
+/* ─── Logo hero animations ─── */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+    filter: drop-shadow(0 0 8px rgba(56,189,248,0.3));
+  }
+  50% {
+    transform: translateY(-8px);
+    filter: drop-shadow(0 0 20px rgba(56,189,248,0.7));
+  }
+}
+
+.logo-hero {
+  animation: float 3s ease-in-out infinite;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  will-change: transform, filter;
+}
+.logo-hero:hover {
+  animation-duration: 5s;
+  filter: drop-shadow(0 0 24px rgba(56,189,248,0.8));
+}
+
+@keyframes logoBurst {
+  0%   { transform: scale(1); }
+  20%  { transform: scale(1.25); }
+  50%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+.logo-clicked {
+  animation: logoBurst 0.4s ease-out !important;
+  filter: drop-shadow(0 0 30px rgba(255,255,255,0.8)) drop-shadow(0 0 40px rgba(56,189,248,0.9)) !important;
+}
+
+/* ─── Timeline head pulse ─── */
+@keyframes headPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(56,189,248,0.4); }
+  50% { box-shadow: 0 0 16px rgba(56,189,248,0.8); }
+}
+.timeline-head-pulse {
+  animation: headPulse 2s ease-in-out infinite;
+}
+
+/* ─── Hero tagline gradient ─── */
+.hero-tagline {
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Hero "losing" gradient ─── */
+.hero-losing-gradient {
+  background: linear-gradient(135deg, #38bdf8, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── CTA primary button ─── */
+.cta-primary {
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  box-shadow: 0 0 30px rgba(56,189,248,0.25);
+  position: relative;
+  overflow: hidden;
+}
+.cta-primary:hover {
+  filter: brightness(1.15);
+  transform: scale(1.02);
+}
+.cta-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: none;
+}
+.cta-primary:hover::after {
+  animation: shimmer 0.6s ease forwards;
+}
+@keyframes shimmer {
+  to { left: 100%; }
+}
+
+/* ─── Scroll reveal ─── */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Command tooltip ─── */
+.cmd-tooltip {
+  position: relative;
+}
+.cmd-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -36px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: #0d1117;
+  border: 1px solid rgba(56,189,248,0.3);
+  color: #94a3b8;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+.cmd-tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ─── What Happens Next flow arrows ─── */
+@keyframes flowArrow {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(4px); opacity: 1; }
+}
+.flow-arrow {
+  animation: flowArrow 1.5s ease-in-out infinite;
+  color: #38bdf8;
+}
+
+/* ─── Docs code blocks with browser chrome ─── */
+.docs-code-block {
+  position: relative;
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.docs-code-block::before {
+  content: '';
+  display: block;
+  padding: 14px 16px 10px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='12'%3E%3Ccircle cx='6' cy='6' r='5' fill='%23ff5f57'/%3E%3Ccircle cx='24' cy='6' r='5' fill='%23febc2e'/%3E%3Ccircle cx='42' cy='6' r='5' fill='%2328c840'/%3E%3C/svg%3E") no-repeat 16px center;
+  background-size: 52px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  height: 40px;
+  box-sizing: border-box;
+}
+
+/* ─── Mobile ─── */
+@media (max-width: 640px) {
+  .logo-hero {
+    width: 270px !important;
+    height: 270px !important;
+  }
+  h1 {
+    font-size: 40px !important;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 641px) {
+  h1 {
+    font-size: 56px !important;
+  }
 }

@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/itsakash-real/rewinddb/internal/storage"
+	"github.com/itsakash-real/nimbi/internal/storage"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )

@@ -1,35 +1,38 @@
 import { Link } from 'react-router-dom'
-import { LogoMark } from './Logo'
-
-const GITHUB = 'https://github.com/itsakash-real/rewinddb'
 
 export default function Footer() {
   return (
-    <footer className="border-t border-border py-12">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5">
-            <LogoMark className="w-7 h-7" />
-            <span className="font-semibold text-text">Drift</span>
-          </Link>
-
-          {/* Links */}
-          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-text-muted">
-            <Link to="/" className="hover:text-text transition-colors">Home</Link>
-            <Link to="/docs" className="hover:text-text transition-colors">Docs</Link>
-            <Link to="/install" className="hover:text-text transition-colors">Install</Link>
-            <a href={GITHUB} target="_blank" rel="noopener noreferrer" className="hover:text-text transition-colors">GitHub</a>
-            <a href={`${GITHUB}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" className="hover:text-text transition-colors">MIT License</a>
+    <footer className="border-t border-border/50">
+      <div className="max-w-4xl mx-auto px-6 py-10">
+        <div className="flex flex-col items-center gap-4">
+          <nav className="flex flex-wrap items-center justify-center gap-4 text-[14px] text-text-muted">
+            <Link to="/docs" className="hover:text-[#38bdf8] hover:underline transition-colors">Docs</Link>
+            <span className="text-border">&middot;</span>
+            <Link to="/install" className="hover:text-[#38bdf8] hover:underline transition-colors">Install</Link>
+            <span className="text-border">&middot;</span>
+            <Link to="/changelog" className="hover:text-[#38bdf8] hover:underline transition-colors">Changelog</Link>
+            <span className="text-border">&middot;</span>
+            <Link to="/roadmap" className="hover:text-[#38bdf8] hover:underline transition-colors">Roadmap</Link>
+            <span className="text-border">&middot;</span>
+            <a href="https://github.com/itsakash-real/nimbi" target="_blank" rel="noopener noreferrer" className="hover:text-[#38bdf8] hover:underline transition-colors">GitHub</a>
           </nav>
 
-          {/* Right */}
-          <div className="text-sm text-text-muted text-center sm:text-right">
-            <div>Built in Go · Open Source</div>
-            <div className="mt-0.5 text-xs text-text-dim">
-              &copy; {new Date().getFullYear()} Drift
-            </div>
-          </div>
+          <p className="text-[12px] text-text-muted text-center">
+            Built by{' '}
+            <a
+              href="https://github.com/itsakash-real"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#38bdf8] transition-colors"
+            >
+              Akash
+            </a>
+            . Free and open source. MIT License.
+          </p>
+
+          <p className="text-[10px] text-text-muted/50">
+            &copy; {new Date().getFullYear()} Nimbi
+          </p>
         </div>
       </div>
     </footer>

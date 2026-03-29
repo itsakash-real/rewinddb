@@ -26,7 +26,7 @@ func versionCmd() *cobra.Command {
 				fmt.Println(Version)
 				return
 			}
-			fmt.Printf("RewindDB %s (%s/%s)\n", Version, runtime.GOOS, runtime.GOARCH)
+			fmt.Printf("Nimbi %s (%s/%s)\n", Version, runtime.GOOS, runtime.GOARCH)
 			fmt.Printf("Built:    %s\n", BuildTime)
 			fmt.Printf("Go:       %s\n", GoVersion)
 		},

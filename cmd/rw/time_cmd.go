@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/itsakash-real/rewinddb/internal/storage"
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/itsakash-real/nimbi/internal/storage"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 	"github.com/spf13/cobra"
 )
 

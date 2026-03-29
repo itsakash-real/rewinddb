@@ -6,7 +6,7 @@ import { Copy, Check, Menu, X } from 'lucide-react'
 const NAV = [
   { id: 'getting-started', label: 'Getting started' },
   { id: 'core-commands', label: 'Core commands' },
-  { id: 'advanced', label: 'Advanced features' },
+  { id: 'advanced', label: 'Advanced' },
   { id: 'sdk', label: 'Go SDK' },
   { id: 'ignore', label: '.rewindignore' },
   { id: 'faq', label: 'FAQ' },
@@ -14,18 +14,18 @@ const NAV = [
 
 function Section({ id, title, children }) {
   return (
-    <section id={id} className="scroll-mt-24 mb-16">
-      <h2 className="text-2xl font-bold text-text mb-6 pb-4 border-b border-border">{title}</h2>
-      <div className="space-y-4 text-text-muted leading-relaxed">{children}</div>
+    <section id={id} className="scroll-mt-24 mb-20">
+      <h2 className="text-[28px] font-semibold text-text mb-8 pb-3 border-b border-border border-l-[3px] border-l-[#38bdf8] pl-4">{title}</h2>
+      <div className="space-y-4 text-[#94a3b8] leading-[1.8] text-[16px]">{children}</div>
     </section>
   )
 }
 
 function Cmd({ code, desc }) {
   return (
-    <div className="flex flex-col sm:flex-row gap-3 p-4 rounded-xl border border-border bg-surface">
-      <code className="font-mono text-sm text-purple-bright shrink-0 sm:w-64">{code}</code>
-      <span className="text-sm text-text-muted">{desc}</span>
+    <div className="flex flex-col sm:flex-row gap-3 py-3 border-b border-border/50 last:border-0">
+      <code className="font-mono text-[14px] text-[#38bdf8]/80 shrink-0 sm:w-56">{code}</code>
+      <span className="text-[14px] text-[#94a3b8]">{desc}</span>
     </div>
   )
 }
@@ -41,16 +41,16 @@ function Code({ children }) {
   }
 
   return (
-    <div className="relative group my-4">
-      <pre className="p-4 pr-12 rounded-xl border border-border bg-[#080810] font-mono text-sm text-text overflow-x-auto">
+    <div className="relative group my-5 docs-code-block">
+      <pre className="p-5 pr-12 font-mono text-[14px] text-text-secondary overflow-x-auto leading-[1.7]">
         {children}
       </pre>
       <button
         onClick={copy}
-        className="absolute top-3 right-3 p-1.5 rounded-lg border border-border bg-surface opacity-0 group-hover:opacity-100 text-text-muted hover:text-text transition-all"
+        className="absolute top-3 right-3 p-1.5 rounded-md border border-border bg-surface opacity-0 group-hover:opacity-100 text-text-muted hover:text-text transition-all"
         title="Copy"
       >
-        {copied ? <Check size={13} className="text-green" /> : <Copy size={13} />}
+        {copied ? <Check size={12} className="text-success" /> : <Copy size={12} />}
       </button>
     </div>
   )
@@ -61,15 +61,12 @@ export default function Docs() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const observerRef = useRef(null)
 
-  // Scroll-spy via IntersectionObserver
   useEffect(() => {
     const sections = NAV.map((n) => document.getElementById(n.id)).filter(Boolean)
-
     observerRef.current = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting)
         if (visible.length > 0) {
-          // Pick the topmost visible section
           const topmost = visible.reduce((a, b) =>
             a.boundingClientRect.top < b.boundingClientRect.top ? a : b
           )
@@ -78,7 +75,6 @@ export default function Docs() {
       },
       { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
     )
-
     sections.forEach((s) => observerRef.current.observe(s))
     return () => observerRef.current?.disconnect()
   }, [])
@@ -91,27 +87,25 @@ export default function Docs() {
 
   return (
     <div className="min-h-screen pt-24 pb-20">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-content mx-auto px-6">
 
-        {/* Mobile TOC toggle */}
+        {/* Mobile TOC */}
         <div className="lg:hidden mb-6">
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border bg-surface text-sm text-text-muted hover:text-text transition-colors"
+            className="flex items-center gap-2 text-[16px] text-text-muted hover:text-text transition-colors"
           >
-            {mobileOpen ? <X size={15} /> : <Menu size={15} />}
+            {mobileOpen ? <X size={14} /> : <Menu size={14} />}
             {mobileOpen ? 'Close' : 'On this page'}
           </button>
           {mobileOpen && (
-            <div className="mt-2 p-3 rounded-xl border border-border bg-surface space-y-0.5">
+            <div className="mt-3 space-y-0.5">
               {NAV.map((n) => (
                 <button
                   key={n.id}
                   onClick={() => scrollTo(n.id)}
-                  className={`block w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                    active === n.id
-                      ? 'bg-purple-glow/10 text-purple-bright'
-                      : 'text-text-muted hover:text-text hover:bg-surface/50'
+                  className={`block w-full text-left px-3 py-2.5 rounded text-[15px] transition-colors ${
+                    active === n.id ? 'text-[#38bdf8] bg-[rgba(56,189,248,0.1)] font-medium' : 'text-[#94a3b8] hover:text-white'
                   }`}
                 >
                   {n.label}
@@ -121,21 +115,18 @@ export default function Docs() {
           )}
         </div>
 
-        <div className="lg:grid lg:grid-cols-[220px_1fr] lg:gap-12">
+        <div className="lg:grid lg:grid-cols-[200px_1fr] lg:gap-16">
           {/* Sidebar */}
           <aside className="hidden lg:block">
-            <div className="sticky top-24 space-y-0.5">
-              <p className="text-xs font-mono text-text-muted uppercase tracking-widest mb-4 px-3">
-                Documentation
-              </p>
+            <div className="sticky top-24 space-y-1">
               {NAV.map((n) => (
                 <button
                   key={n.id}
                   onClick={() => scrollTo(n.id)}
-                  className={`block w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                  className={`block w-full text-left px-3 py-2.5 text-[14px] rounded transition-all duration-150 ${
                     active === n.id
-                      ? 'bg-purple-glow/10 border border-purple-glow/20 text-purple-bright'
-                      : 'text-text-muted hover:text-text hover:bg-surface/50'
+                      ? 'text-[#38bdf8] bg-[rgba(56,189,248,0.1)] border-l-2 border-l-[#38bdf8] font-medium'
+                      : 'text-[#94a3b8] hover:text-white'
                   }`}
                 >
                   {n.label}
@@ -146,112 +137,125 @@ export default function Docs() {
 
           {/* Content */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.3 }}
+            className="max-w-2xl"
           >
-            <h1 className="text-4xl font-bold text-gradient-white mb-2">Documentation</h1>
-            <p className="text-text-muted text-lg mb-12">Everything you need to use Drift effectively.</p>
+            <h1 className="text-[48px] font-bold text-text mb-2 tracking-tight">Documentation</h1>
+            <p className="text-[18px] text-text-muted mb-16">Everything you need to use Nimbi.</p>
 
             <Section id="getting-started" title="Getting started">
-              <p>Install Drift (<Link to="/install" className="text-purple-DEFAULT underline underline-offset-2">full install guide</Link>), then run these three commands in any project:</p>
+              <p>
+                <Link to="/install" className="text-text-secondary underline underline-offset-2 hover:text-[#38bdf8] transition-colors">Install Nimbi</Link>, then:
+              </p>
               <Code>{`cd my-project
-rw init                          # set up Drift (run once)
+rw init                          # set up (once per project)
 rw save "everything is working"  # save a checkpoint
-rw undo                          # go back if something breaks`}</Code>
-              <p>That's the core loop. Everything else is optional.</p>
+rw undo                          # go back if you break it`}</Code>
+              <p>That's the core loop.</p>
             </Section>
 
             <Section id="core-commands" title="Core commands">
-              <div className="space-y-2">
-                <Cmd code="rw init" desc="Initialize Drift in the current directory. Creates .rewind/ folder." />
-                <Cmd code="rw save [message]" desc="Save a checkpoint. Message is optional — auto-generated if omitted." />
-                <Cmd code="rw list" desc="List checkpoints on the current branch." />
-                <Cmd code="rw list --all" desc="List checkpoints on all branches." />
-                <Cmd code="rw goto <id>" desc="Restore to any checkpoint by ID, tag name, or HEAD~N." />
-                <Cmd code="rw undo [--n N]" desc="Go back N checkpoints (default 1). No ID needed." />
-                <Cmd code="rw diff <id1> <id2>" desc="Show file-level diff between two checkpoints." />
-                <Cmd code="rw status" desc="Show current branch, HEAD, and what's changed on disk." />
-                <Cmd code="rw gc" desc="Remove objects no checkpoint references. Use --dry-run to preview." />
+              <div>
+                <Cmd code="rw init" desc="Initialize in the current directory." />
+                <Cmd code="rw save [message]" desc="Checkpoint. Message auto-generated if omitted." />
+                <Cmd code="rw list" desc="Show checkpoints on current branch." />
+                <Cmd code="rw list --all" desc="Show all branches." />
+                <Cmd code="rw goto <id>" desc="Restore by ID, tag, or HEAD~N." />
+                <Cmd code="rw undo [--n N]" desc="Go back N steps. Default 1." />
+                <Cmd code="rw diff <a> <b>" desc="File-level diff between checkpoints." />
+                <Cmd code="rw status" desc="Current branch, HEAD, changed files." />
+                <Cmd code='rw run "cmd"' desc="Run with auto-checkpoint and rollback." />
+                <Cmd code="rw watch" desc="Auto-save daemon for background use." />
+                <Cmd code="rw bisect" desc="Binary search to find when a bug appeared." />
+                <Cmd code="rw tag <name>" desc="Tag current checkpoint." />
+                <Cmd code="rw search <q>" desc="Search messages and tags." />
+                <Cmd code="rw stats" desc="Timeline and storage stats." />
+                <Cmd code="rw gc" desc="Remove unreferenced objects." />
+                <Cmd code="rw upgrade" desc="Self-update." />
               </div>
             </Section>
 
-            <Section id="advanced" title="Advanced features">
-              <h3 className="text-lg font-semibold text-text mt-6 mb-3">rw run — Safe command execution</h3>
-              <p>Checkpoints before running a command. Rolls back automatically if it fails:</p>
+            <Section id="advanced" title="Advanced">
+              <h3 className="text-[20px] font-medium text-text mt-6 mb-3">rw run</h3>
+              <p>Checkpoints before running. Rolls back on failure.</p>
               <Code>{`rw run "npm run build"
 rw run "python migrate.py"
 rw run "cargo test"`}</Code>
 
-              <h3 className="text-lg font-semibold text-text mt-8 mb-3">rw watch — Auto-save daemon</h3>
-              <p>Watches for file changes and auto-saves in the background:</p>
-              <Code>{`rw watch               # default: 30s debounce
-rw watch --interval 5m # save at most every 5 minutes
-rw watch --quiet       # suppress per-save output`}</Code>
+              <h3 className="text-[20px] font-medium text-text mt-10 mb-3">rw watch</h3>
+              <p>Auto-saves when files change.</p>
+              <Code>{`rw watch               # 30s debounce
+rw watch --interval 5m # every 5 minutes
+rw watch --quiet`}</Code>
 
-              <h3 className="text-lg font-semibold text-text mt-8 mb-3">rw bisect — Find when a bug appeared</h3>
+              <h3 className="text-[20px] font-medium text-text mt-10 mb-3">rw bisect</h3>
               <Code>{`rw bisect start
-rw bisect good <last-known-good-id>
+rw bisect good <id>
 rw bisect bad HEAD
-# test code at each midpoint, then:
-rw bisect good    # or: rw bisect bad
-# repeat until it finds the exact checkpoint
+# test, then: rw bisect good / bad
+# repeat until found
 rw bisect reset`}</Code>
 
-              <h3 className="text-lg font-semibold text-text mt-8 mb-3">rw session — Group work into sessions</h3>
+              <h3 className="text-[20px] font-medium text-text mt-10 mb-3">rw session</h3>
               <Code>{`rw session start "feature: dark mode"
-# ... work, save checkpoints freely ...
+# work, save checkpoints...
 rw session end
 rw session list
-rw session restore "feature: dark mode"  # jump back to start`}</Code>
+rw session restore "feature: dark mode"`}</Code>
 
-              <h3 className="text-lg font-semibold text-text mt-8 mb-3">rw export / import — Share states</h3>
+              <h3 className="text-[20px] font-medium text-text mt-10 mb-3">rw export / import</h3>
               <Code>{`rw export a3f2b1c8 --output bug-repro.rwdb
 rw import bug-repro.rwdb`}</Code>
             </Section>
 
             <Section id="sdk" title="Go SDK">
-              <p>Embed Drift in any Go application:</p>
-              <Code>{`import "github.com/itsakash-real/rewinddb/internal/sdk"
+              <p>Embed Nimbi in Go applications.</p>
+              <Code>{`import "github.com/itsakash-real/nimbi/internal/sdk"
 
 client, err := sdk.New("/path/to/project")
 
-// Save a checkpoint
-id, err := client.Save("before processing payment")
-
-// Restore by ID, tag, or relative ref
+id, err := client.Save("before payment processing")
 err = client.Goto("HEAD~2")
 
-// Check working directory state
 status, err := client.Status()
 fmt.Printf("modified: %d\\n", len(status.ModifiedFiles))`}</Code>
             </Section>
 
             <Section id="ignore" title=".rewindignore">
-              <p>Drift ignores <code className="font-mono text-xs text-purple-bright">node_modules/</code>, <code className="font-mono text-xs text-purple-bright">.git/</code>, and common build artifacts by default.</p>
-              <p>Auto-detect patterns for your project type:</p>
-              <Code>{`rw ignore auto   # detects Node, Python, Go, Rust, etc.`}</Code>
-              <p>Add your own:</p>
-              <Code>{`rw ignore add "dist/"
-rw ignore add "*.log"
-rw ignore add ".env.local"`}</Code>
-              <p>Or edit <code className="font-mono text-xs text-purple-bright">.rewindignore</code> directly — same format as <code className="font-mono text-xs text-purple-bright">.gitignore</code> with <code className="font-mono text-xs text-purple-bright">**</code> glob support.</p>
+              <p>
+                <code className="font-mono text-[14px] text-[#38bdf8]/70">node_modules/</code>,{' '}
+                <code className="font-mono text-[14px] text-[#38bdf8]/70">.git/</code>, and common build artifacts are ignored by default.
+              </p>
+              <Code>{`rw ignore auto          # auto-detect patterns
+rw ignore add "dist/"
+rw ignore add "*.log"`}</Code>
+              <p>
+                Or edit <code className="font-mono text-[14px] text-[#38bdf8]/70">.rewindignore</code> directly. Same syntax as <code className="font-mono text-[14px] text-[#38bdf8]/70">.gitignore</code>.
+              </p>
             </Section>
 
             <Section id="faq" title="FAQ">
-              {[
-                { q: 'Does this replace git?', a: 'No. Git is for collaboration and shared history. Drift is for your local safety net between commits. Use both.' },
-                { q: 'What does it actually store?', a: 'Every file is stored by its SHA-256 hash. If the same file appears in 10 checkpoints, it is stored once. Snapshots are gzip-compressed.' },
-                { q: 'What if .rewind/ gets large?', a: 'Run rw gc to remove objects no checkpoint references. Run rw gc --dry-run first to see how much it will free.' },
-                { q: 'Does it work in CI/CD?', a: 'Yes. rw save "pre-deploy: ${{ github.sha }}" works in GitHub Actions and any other CI system.' },
-                { q: 'Does it need git to work?', a: 'No. Drift has no dependency on git.' },
-                { q: 'Is my data safe?', a: 'Everything uses atomic writes (write temp file → fsync → rename). A crash mid-save leaves nothing corrupted. On startup, Drift auto-recovers any interrupted operations.' },
-              ].map((item) => (
-                <div key={item.q} className="p-4 rounded-xl border border-border bg-surface">
-                  <h3 className="font-semibold text-text mb-1.5">{item.q}</h3>
-                  <p className="text-sm">{item.a}</p>
-                </div>
-              ))}
+              <div className="space-y-6">
+                {[
+                  { q: 'Is this the same as git?', a: 'No. Git is for collaboration. Nimbi is your local safety net between commits.' },
+                  { q: 'Does it slow my machine down?', a: 'No. Only runs when called. No daemon, no network. Saves in ~180ms.' },
+                  { q: 'What does it store?', a: 'Files stored by SHA-256 hash. Same file in 10 checkpoints = stored once.' },
+                  { q: 'What if I save with no message?', a: 'Auto-generates one based on changed files.' },
+                  { q: 'Can I use it in CI/CD?', a: 'Yes. Works in GitHub Actions and any CI system.' },
+                  { q: 'Does it need git?', a: 'No. Completely independent.' },
+                  { q: 'What if .rewind/ gets corrupted?', a: 'rw health checks integrity. rw repair auto-fixes. WAL prevents corruption.' },
+                  { q: 'Difference between undo and goto?', a: 'undo goes back N steps (no ID needed). goto jumps to a specific checkpoint.' },
+                  { q: 'Storage usage?', a: 'Minimal. Content-addressable dedup. rw gc reclaims unused space.' },
+                  { q: 'Windows support?', a: 'Yes. Download rw.exe. Colors work in Windows Terminal.' },
+                ].map((item) => (
+                  <div key={item.q}>
+                    <h3 className="text-[18px] font-medium text-text mb-1">{item.q}</h3>
+                    <p className="text-[16px] text-text-muted">{item.a}</p>
+                  </div>
+                ))}
+              </div>
             </Section>
           </motion.div>
         </div>

@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/itsakash-real/rewinddb/internal/merkle"
-	"github.com/itsakash-real/rewinddb/internal/wal"
+	"github.com/itsakash-real/nimbi/internal/merkle"
+	"github.com/itsakash-real/nimbi/internal/wal"
 	"github.com/spf13/cobra"
 )
 

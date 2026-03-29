@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/itsakash-real/rewinddb/internal/diff"
-	"github.com/itsakash-real/rewinddb/internal/storage"
+	"github.com/itsakash-real/nimbi/internal/diff"
+	"github.com/itsakash-real/nimbi/internal/storage"
 	"github.com/spf13/cobra"
 )
 

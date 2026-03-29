@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/rs/zerolog/log"
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 )
 
 // RestoreResult holds metrics from a delta-based Restore operation.

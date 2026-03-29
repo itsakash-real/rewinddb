@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/itsakash-real/rewinddb/internal/timeline"
+	"github.com/itsakash-real/nimbi/internal/timeline"
 )
 
 // magicCompressed is a 4-byte header that identifies gzip-compressed objects.

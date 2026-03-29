@@ -1,7 +1,7 @@
 //go:build ignore
 // +build ignore
 
-// Basic RewindDB SDK usage example.
+// Basic Nimbi SDK usage example.
 // Run from the repo root:
 //
 //	go run examples/basic/main.go
@@ -12,7 +12,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/itsakash-real/rewinddb/internal/sdk"
+	"github.com/itsakash-real/nimbi/internal/sdk"
 )
 
 func main() {
@@ -29,12 +29,12 @@ func main() {
 import "fmt"
 
 func main() {
-	fmt.Println("Hello, RewindDB!")
+	fmt.Println("Hello, Nimbi!")
 }`)
 	writeFile(projectDir, "go.mod", "module example\n\ngo 1.22\n")
 	writeFile(projectDir, "README.md", "# My Project\n")
 
-	// ── 2. Initialise a RewindDB repository ───────────────────────────────────
+	// ── 2. Initialise a Nimbi repository ───────────────────────────────────
 	fmt.Println("── Initializing repository ──────────────────────────────")
 	client, err := sdk.Init(projectDir)
 	must(err)
@@ -58,7 +58,7 @@ func main() {
 	if len(os.Args) > 1 {
 		fmt.Printf("Hello, %s!\n", os.Args[1])
 	} else {
-		fmt.Println("Hello, RewindDB!")
+		fmt.Println("Hello, Nimbi!")
 	}
 }`)
 	writeFile(projectDir, "internal/greet.go", `package internal

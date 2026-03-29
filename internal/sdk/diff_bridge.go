@@ -1,6 +1,6 @@
 package sdk
 
-import diffpkg "github.com/itsakash-real/rewinddb/internal/diff"
+import diffpkg "github.com/itsakash-real/nimbi/internal/diff"
 
 // DiffEngine is a thin re-export of the internal diff engine methods so that
 // SDK consumers don't need to import internal/diff directly.

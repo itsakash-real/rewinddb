@@ -1,4 +1,4 @@
-// Package wal implements a minimal Write-Ahead Log for the RewindDB save
+// Package wal implements a minimal Write-Ahead Log for the Nimbi save
 // pipeline. Its purpose is crash-safety: if the process dies mid-save, the
 // next startup can detect the incomplete operation and clean up gracefully.
 //
