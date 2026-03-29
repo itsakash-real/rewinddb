@@ -5,10 +5,10 @@
 **Save your project. Break things. Go back instantly.**
 
 [![Go Version](https://img.shields.io/badge/go-1.22+-00ADD8?style=flat-square&logo=go)](https://golang.org)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 
-[Install](#install) · [First 5 Minutes](#your-first-5-minutes) · [FAQ](#faq) · [Commands](#commands-youll-use-every-day) · [All Commands](#full-command-reference) · [Go SDK](#go-sdk) · [Contributing](#contributing)
+[Install](#install) · [First 5 Minutes](#your-first-5-minutes) · [FAQ](#faq) · [Commands](#commands-youll-use-every-day) · [Contributing](#contributing)
 
 </div>
 
@@ -548,158 +548,7 @@ rw gc              # actually delete it
 
 ---
 
-## Go SDK
 
-If you want to use Nimbi from Go code — for example, to checkpoint automatically before risky operations in your app:
-
-```bash
-go get github.com/itsakash-real/nimbi
-```
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/itsakash-real/nimbi/internal/sdk"
-)
-
-func main() {
-    client, err := sdk.New("/path/to/project")
-    if err != nil {
-        panic(err)
-    }
-
-    // Save a checkpoint
-    _, err = client.Save("before processing payment")
-    if err != nil {
-        panic(err)
-    }
-
-    // Restore to a checkpoint by ID, tag, or "HEAD~2"
-    err = client.Goto("before processing payment")
-
-    // Check what's changed
-    status, _ := client.Status()
-    fmt.Printf("modified: %d  added: %d  removed: %d\n",
-        len(status.ModifiedFiles),
-        len(status.AddedFiles),
-        len(status.RemovedFiles),
-    )
-}
-```
-
----
-
-## Full Command Reference
-
-### Basics
-
-| Command | What it does |
-|---|---|
-| `rw init` | Set up Nimbi in the current directory |
-| `rw save [message]` | Save a checkpoint (message optional) |
-| `rw save --tag v1.0` | Save and attach a tag |
-| `rw list` | List checkpoints on current branch |
-| `rw list --all` | List checkpoints on all branches |
-| `rw list --n 5` | Show only the last 5 |
-| `rw status` | Show what's changed since last save |
-| `rw status --verify` | Also verify all stored objects |
-
-### Going Back
-
-| Command | What it does |
-|---|---|
-| `rw goto <id>` | Restore to a checkpoint by ID |
-| `rw goto <tag>` | Restore by tag name |
-| `rw goto HEAD~3` | Go back 3 steps from current |
-| `rw undo` | Go back 1 checkpoint (no ID needed) |
-| `rw undo --n 3` | Go back 3 checkpoints |
-| `rw undo --force` | Skip confirmation |
-
-### Comparing
-
-| Command | What it does |
-|---|---|
-| `rw diff <id1> <id2>` | Show what changed between two checkpoints |
-| `rw diff HEAD HEAD~1` | Compare current vs previous |
-| `rw diff --stat` | Show summary only (no line diffs) |
-
-### Branches & Tags
-
-| Command | What it does |
-|---|---|
-| `rw branches` | List all branches |
-| `rw branches branch <name>` | Create a named branch at HEAD |
-| `rw branches switch <name>` | Switch to a branch |
-| `rw tag <name>` | Tag the current checkpoint |
-| `rw tag <name> <id>` | Tag any checkpoint |
-
-### Power Features
-
-| Command | What it does |
-|---|---|
-| `rw run "command"` | Checkpoint before, rollback on failure |
-| `rw watch` | Auto-save on file changes |
-| `rw watch --interval 5m` | Auto-save every 5 minutes |
-| `rw bisect start` | Start binary-search for a bad checkpoint |
-| `rw bisect good [id]` | Mark checkpoint as working |
-| `rw bisect bad [id]` | Mark checkpoint as broken |
-| `rw bisect reset` | End bisect, restore original HEAD |
-
-### Sessions & Search
-
-| Command | What it does |
-|---|---|
-| `rw session start "name"` | Start a named session |
-| `rw session end` | End current session |
-| `rw session list` | List all sessions |
-| `rw session restore "name"` | Jump to session start |
-| `rw search "keyword"` | Search checkpoint messages and tags |
-
-### Files to Ignore
-
-| Command | What it does |
-|---|---|
-| `rw ignore auto` | Auto-add patterns for your project type |
-| `rw ignore add "pattern"` | Add a pattern to `.rewindignore` |
-| `rw ignore list` | Show current patterns |
-
-### Storage
-
-| Command | What it does |
-|---|---|
-| `rw stats` | Show timeline and storage info |
-| `rw gc` | Delete unreferenced objects |
-| `rw gc --dry-run` | Preview what would be deleted |
-| `rw export <id>` | Export checkpoint to `.rwdb` file |
-| `rw import <file>` | Import a `.rwdb` file |
-
-### Updates
-
-| Command | What it does |
-|---|---|
-| `rw upgrade` | Upgrade to the latest version |
-| `rw version` | Show current version info |
-
-### Staying up to date
-
-Run `rw upgrade` any time to get the latest release. Nimbi also checks for updates silently in the background. If a newer version exists, you'll see a one-liner after your next command — nothing intrusive:
-
-```
-⚡ rw 1.2.0 is available (you have 1.1.0)  →  run rw upgrade
-```
-
-It checks at most once every 24 hours and never blocks your commands.
-
-### Other
-
-| Command | What it does |
-|---|---|
-| `rw completion bash` | Generate bash completion script |
-| `rw --debug` | Show internal debug logs |
-
----
 
 ## Performance
 
@@ -731,23 +580,7 @@ Measured on Apple M2. Varies by disk speed and file sizes.
 
 ## Architecture
 
-![System Architecture](./docs/diagrams/system-architecture.svg)
-
-## How Timelines Work
-
-![Timeline DAG](./docs/diagrams/timeline-dag.svg)
-
-## What Happens When You Save
-
-![Save Flow](./docs/diagrams/save-flow.svg)
-
-## How Storage Works (Deduplication)
-
-![Object Store](./docs/diagrams/object-store.svg)
-
-## What Happens When You Restore
-
-![Goto Restore](./docs/diagrams/goto-restore.svg)
+For deep dives into how Nimbi stores data, handles content-defined chunking (deduplication), and manages timelines, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ---
 
@@ -773,4 +606,4 @@ If you discover a security vulnerability, please **do not** open a public issue.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Apache 2.0 — see [LICENSE](LICENSE).
