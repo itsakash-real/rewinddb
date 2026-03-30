@@ -3,12 +3,12 @@ const ROW1 = [
   { handle: '@sana_builds', text: 'This is what git should have been for solo devs. Binary files as first-class citizens.' },
   { handle: '@rustacean99', text: 'rw run is black magic. Failed build, auto rollback. Wrap every risky command in it.' },
   { handle: '@priya_codes', text: 'Set up in 2 minutes. rw save, rw undo. Already can\'t code without it.' },
-  { handle: '@the_refactorer', text: 'Finally something that works on my Godot project. Git hates binary assets. RewindDB doesn\'t care.' },
+  { handle: '@the_refactorer', text: 'Finally something that works on my Godot project. Git hates binary assets. Nimbi doesn\'t care.' },
   { handle: '@lucasm_eng', text: 'Auto-branching when you restore an old checkpoint is genius. Both timelines preserved.' },
 ]
 
 const ROW2 = [
-  { handle: '@0xdevguy', text: 'RewindDB + AI coding = absolute safety net. Break everything. Restore anything.' },
+  { handle: '@0xdevguy', text: 'Nimbi + AI coding = absolute safety net. Break everything. Restore anything.' },
   { handle: '@amelia_fullstack', text: 'rw bisect found exactly which checkpoint introduced the bug. Like git bisect for your whole project.' },
   { handle: '@tobiaswerk', text: '1000 files saved in 180ms. Faster than thinking about whether to commit.' },
   { handle: '@nina_writes_code', text: 'rw watch in background means I never lose more than 30 seconds of work.' },

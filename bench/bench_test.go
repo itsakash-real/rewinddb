@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/yourusername/rewinddb/internal/sdk"
+	"github.com/itsakash-real/nimbi/sdk"
 )
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────

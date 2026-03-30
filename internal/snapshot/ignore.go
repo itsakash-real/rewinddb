@@ -91,3 +91,18 @@ func (il *ignoreList) matches(relPath string) bool {
 	}
 	return false
 }
+
+// IgnoreList is the exported wrapper around ignoreList for use by cmd code.
+type IgnoreList struct {
+	inner *ignoreList
+}
+
+// LoadIgnoreListPublic returns an exported IgnoreList for the given project root.
+func LoadIgnoreListPublic(projectRoot string) *IgnoreList {
+	return &IgnoreList{inner: loadIgnoreList(projectRoot)}
+}
+
+// Matches returns true if the given relative path should be ignored.
+func (il *IgnoreList) Matches(relPath string) bool {
+	return il.inner.matches(relPath)
+}

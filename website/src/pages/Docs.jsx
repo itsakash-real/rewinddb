@@ -104,9 +104,8 @@ export default function Docs() {
                 <button
                   key={n.id}
                   onClick={() => scrollTo(n.id)}
-                  className={`block w-full text-left px-3 py-2.5 rounded text-[15px] transition-colors ${
-                    active === n.id ? 'text-[#38bdf8] bg-[rgba(56,189,248,0.1)] font-medium' : 'text-[#94a3b8] hover:text-white'
-                  }`}
+                  className={`block w-full text-left px-3 py-2.5 rounded text-[15px] transition-colors ${active === n.id ? 'text-[#38bdf8] bg-[rgba(56,189,248,0.1)] font-medium' : 'text-[#94a3b8] hover:text-white'
+                    }`}
                 >
                   {n.label}
                 </button>
@@ -123,11 +122,10 @@ export default function Docs() {
                 <button
                   key={n.id}
                   onClick={() => scrollTo(n.id)}
-                  className={`block w-full text-left px-3 py-2.5 text-[14px] rounded transition-all duration-150 ${
-                    active === n.id
+                  className={`block w-full text-left px-3 py-2.5 text-[14px] rounded transition-all duration-150 ${active === n.id
                       ? 'text-[#38bdf8] bg-[rgba(56,189,248,0.1)] border-l-2 border-l-[#38bdf8] font-medium'
                       : 'text-[#94a3b8] hover:text-white'
-                  }`}
+                    }`}
                 >
                   {n.label}
                 </button>

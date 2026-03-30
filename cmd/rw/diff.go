@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
 	diffpkg "github.com/itsakash-real/nimbi/internal/diff"
 	"github.com/itsakash-real/nimbi/internal/timeline"
@@ -10,12 +13,15 @@ import (
 
 func diffCmd() *cobra.Command {
 	var stat bool
+	var categorize bool
 
 	cmd := &cobra.Command{
 		Use:   "diff <id1> [id2]",
 		Short: "Show file-level diff between two checkpoints",
 		Long: `Compare two checkpoints. If only one ID is given, it is compared
-against the current HEAD. Supports 8-char prefix matching.`,
+against the current HEAD. Supports 8-char prefix matching.
+
+Use --categorize to see which files git would track vs files only nimbi tracks.`,
 		Args: cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			r, err := loadRepo()
@@ -89,34 +95,26 @@ against the current HEAD. Supports 8-char prefix matching.`,
 				return nil
 			}
 
+			// ── --categorize: git-tracked vs nimbi-only ───────────────────────
+			if categorize {
+				projectRoot := parentDir(r.cfg.RewindDir)
+				printCategorizedDiff(result, projectRoot)
+
+				// Text diffs for modified
+				if len(result.Modified) > 0 {
+					fmt.Printf("\n%s── Text diffs ──%s\n", colorBold, colorReset)
+					printTextDiffs(diffEng, result)
+				}
+				return nil
+			}
+
 			// ── Full pretty-print ─────────────────────────────────────────────
 			fmt.Print(diffEng.PrettyPrint(result))
 
 			// ── Per-file text diff for modified text files ────────────────────
 			if len(result.Modified) > 0 {
 				fmt.Printf("\n%s── Text diffs ──%s\n", colorBold, colorReset)
-				for _, fd := range result.Modified {
-					textDiff, err := diffEng.TextDiff(fd.OldHash, fd.NewHash)
-					if err != nil || textDiff == "binary files differ" || textDiff == "(files are identical)" {
-						fmt.Printf("\n%s%s%s: %s\n", colorBold, fd.Path, colorReset,
-							firstLine(textDiff, "binary files differ"))
-						continue
-					}
-					fmt.Printf("\n%s%s%s\n", colorBold, fd.Path, colorReset)
-					// Colour unified diff lines: + green, - red, @@ cyan.
-					for _, line := range splitLines(textDiff) {
-						switch {
-						case len(line) > 0 && line[0] == '+':
-							fmt.Printf("%s%s%s\n", colorGreen, line, colorReset)
-						case len(line) > 0 && line[0] == '-':
-							fmt.Printf("%s%s%s\n", colorRed, line, colorReset)
-						case len(line) > 1 && line[:2] == "@@":
-							fmt.Printf("%s%s%s\n", colorCyan, line, colorReset)
-						default:
-							fmt.Println(line)
-						}
-					}
-				}
+				printTextDiffs(diffEng, result)
 			}
 
 			return nil
@@ -124,7 +122,175 @@ against the current HEAD. Supports 8-char prefix matching.`,
 	}
 
 	cmd.Flags().BoolVar(&stat, "stat", false, "print only the summary line")
+	cmd.Flags().BoolVar(&categorize, "categorize", false, "separate files git would show vs files only nimbi tracks")
 	return cmd
+}
+
+// printCategorizedDiff separates diff output into git-tracked vs nimbi-only files.
+func printCategorizedDiff(result *diffpkg.DiffResult, projectRoot string) {
+	gitIgnored := loadGitIgnorePatterns(projectRoot)
+
+	// Classify changes.
+	type changeEntry struct {
+		symbol string // "+", "~", "-"
+		path   string
+		reason string // for nimbi-only files
+		color  string
+	}
+
+	var gitChanges []changeEntry
+	var nimbiOnly []changeEntry
+
+	// Added files.
+	for _, f := range result.Added {
+		if isPathGitIgnored(f.Path, gitIgnored) {
+			nimbiOnly = append(nimbiOnly, changeEntry{"+", f.Path, reasonForFile(f.Path), colorGreen})
+		} else {
+			gitChanges = append(gitChanges, changeEntry{"+", f.Path, "", colorGreen})
+		}
+	}
+
+	// Removed files.
+	for _, f := range result.Removed {
+		if isPathGitIgnored(f.Path, gitIgnored) {
+			nimbiOnly = append(nimbiOnly, changeEntry{"-", f.Path, reasonForFile(f.Path), colorRed})
+		} else {
+			gitChanges = append(gitChanges, changeEntry{"-", f.Path, "", colorRed})
+		}
+	}
+
+	// Modified files.
+	for _, fd := range result.Modified {
+		if isPathGitIgnored(fd.Path, gitIgnored) {
+			nimbiOnly = append(nimbiOnly, changeEntry{"~", fd.Path, reasonForFile(fd.Path), colorYellow})
+		} else {
+			gitChanges = append(gitChanges, changeEntry{"~", fd.Path, "", colorYellow})
+		}
+	}
+
+	// Print git-tracked changes.
+	if len(gitChanges) > 0 {
+		fmt.Printf("%s%sfiles git would show:%s\n", colorBold, colorDim, colorReset)
+		for _, c := range gitChanges {
+			fmt.Printf("  %s%s%s  %s\n", c.color, c.symbol, colorReset, c.path)
+		}
+	}
+
+	// Print nimbi-only changes.
+	if len(nimbiOnly) > 0 {
+		if len(gitChanges) > 0 {
+			fmt.Println()
+		}
+		fmt.Printf("%s%sfiles ONLY nimbi tracks:%s\n", colorBold, colorCyan, colorReset)
+		for _, c := range nimbiOnly {
+			fmt.Printf("  %s%s%s  %-30s %s← %s%s\n",
+				c.color, c.symbol, colorReset,
+				c.path,
+				colorDim, c.reason, colorReset)
+		}
+	}
+
+	if len(gitChanges) == 0 && len(nimbiOnly) == 0 {
+		fmt.Println("No changes between snapshots.")
+	}
+}
+
+// loadGitIgnorePatterns reads .gitignore and returns the raw patterns.
+func loadGitIgnorePatterns(projectRoot string) []string {
+	path := filepath.Join(projectRoot, ".gitignore")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+
+	var patterns []string
+	for _, line := range strings.Split(string(data), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		patterns = append(patterns, line)
+	}
+	return patterns
+}
+
+// isPathGitIgnored heuristically checks if a path matches .gitignore patterns.
+func isPathGitIgnored(relPath string, patterns []string) bool {
+	for _, pattern := range patterns {
+		clean := strings.TrimSuffix(strings.TrimPrefix(pattern, "/"), "/")
+
+		// Direct match.
+		if clean == relPath || clean == filepath.Dir(relPath) {
+			return true
+		}
+
+		// Prefix match for directories.
+		if strings.HasSuffix(pattern, "/") {
+			dir := strings.TrimSuffix(pattern, "/")
+			if strings.HasPrefix(relPath, dir+"/") || relPath == dir {
+				return true
+			}
+		}
+
+		// Wildcard match.
+		if strings.HasPrefix(pattern, "*") {
+			suffix := strings.TrimPrefix(pattern, "*")
+			if strings.HasSuffix(relPath, suffix) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// reasonForFile returns a human-readable reason why a file is nimbi-only.
+func reasonForFile(path string) string {
+	lower := strings.ToLower(path)
+
+	switch {
+	case strings.HasPrefix(lower, ".env"):
+		return "environment config"
+	case strings.Contains(lower, "config/local"):
+		return "local config"
+	case strings.Contains(lower, "secret"):
+		return "secrets file"
+	case strings.HasSuffix(lower, ".exe") || strings.HasSuffix(lower, ".dll") || strings.HasSuffix(lower, ".so"):
+		return "compiled binary"
+	case strings.HasPrefix(lower, "build/") || strings.HasPrefix(lower, "dist/") || strings.HasPrefix(lower, "out/"):
+		return "build output"
+	case strings.HasSuffix(lower, ".log"):
+		return "log file"
+	case strings.HasSuffix(lower, ".db") || strings.HasSuffix(lower, ".sqlite"):
+		return "database file"
+	default:
+		return "not in git"
+	}
+}
+
+// printTextDiffs prints per-file text diffs for modified files.
+func printTextDiffs(diffEng *diffpkg.Engine, result *diffpkg.DiffResult) {
+	for _, fd := range result.Modified {
+		textDiff, err := diffEng.TextDiff(fd.OldHash, fd.NewHash)
+		if err != nil || textDiff == "binary files differ" || textDiff == "(files are identical)" {
+			fmt.Printf("\n%s%s%s: %s\n", colorBold, fd.Path, colorReset,
+				firstLine(textDiff, "binary files differ"))
+			continue
+		}
+		fmt.Printf("\n%s%s%s\n", colorBold, fd.Path, colorReset)
+		// Colour unified diff lines: + green, - red, @@ cyan.
+		for _, line := range splitLines(textDiff) {
+			switch {
+			case len(line) > 0 && line[0] == '+':
+				fmt.Printf("%s%s%s\n", colorGreen, line, colorReset)
+			case len(line) > 0 && line[0] == '-':
+				fmt.Printf("%s%s%s\n", colorRed, line, colorReset)
+			case len(line) > 1 && line[:2] == "@@":
+				fmt.Printf("%s%s%s\n", colorCyan, line, colorReset)
+			default:
+				fmt.Println(line)
+			}
+		}
+	}
 }
 
 // splitLines splits a string on "\n", preserving empty lines.

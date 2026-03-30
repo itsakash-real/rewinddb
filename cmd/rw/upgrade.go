@@ -196,25 +196,17 @@ func fetchLatestRelease() (*githubRelease, error) {
 	return &rel, nil
 }
 
-// platformAssetName returns the archive filename for the current OS/arch
-// using the target version. Matches goreleaser naming: rewinddb_1.0.0_Linux_x86_64.tar.gz
+// platformAssetName returns the binary filename for the current OS/arch
+// using the release naming convention: nimbi-linux-amd64, nimbi-windows-amd64.exe
 func platformAssetName(version string) string {
 	goos := runtime.GOOS
 	goarch := runtime.GOARCH
 
-	// strings.Title is deprecated; capitalize manually.
-	osName := strings.ToUpper(goos[:1]) + goos[1:]
-	archName := goarch
-	if goarch == "amd64" {
-		archName = "x86_64"
-	}
-
-	ext := ".tar.gz"
+	name := fmt.Sprintf("nimbi-%s-%s", goos, goarch)
 	if goos == "windows" {
-		ext = ".zip"
+		name += ".exe"
 	}
-
-	return fmt.Sprintf("rewinddb_%s_%s_%s%s", version, osName, archName, ext)
+	return name
 }
 
 // downloadToTemp downloads url to a temp file and returns the path.

@@ -54,8 +54,8 @@ Breaking these guarantees means the PR will not be merged.
 
 ```bash
 # Fork and clone
-git clone https://github.com/YOUR_USERNAME/rewinddb.git
-cd rewinddb
+git clone https://github.com/YOUR_USERNAME/nimbi.git
+cd nimbi
 
 # Install dependencies
 go mod tidy

@@ -9,7 +9,7 @@ import (
 
 // These variables are stamped at build time via -ldflags.
 var (
-	Version   = "dev"
+	Version   = "0.1.0"
 	BuildTime = "unknown"
 	GoVersion = runtime.Version()
 )
@@ -26,9 +26,9 @@ func versionCmd() *cobra.Command {
 				fmt.Println(Version)
 				return
 			}
-			fmt.Printf("Nimbi %s (%s/%s)\n", Version, runtime.GOOS, runtime.GOARCH)
-			fmt.Printf("Built:    %s\n", BuildTime)
-			fmt.Printf("Go:       %s\n", GoVersion)
+			fmt.Printf("Nimbi v%s\n", Version)
+			fmt.Printf("  %s · %s/%s\n", GoVersion, runtime.GOOS, runtime.GOARCH)
+			fmt.Printf("  built %s\n", BuildTime)
 		},
 	}
 

@@ -8,7 +8,7 @@ const GITHUB_PROFILE = 'https://github.com/itsakash-real'
 
 const INSTALL_TABS = [
   { id: 'one-liner', label: 'One-liner', cmd: 'curl -sSL https://raw.githubusercontent.com/itsakash-real/nimbi/main/install.sh | bash' },
-  { id: 'brew', label: 'brew', cmd: 'brew install itsakash-real/nimbi/rw' },
+  { id: 'brew', label: 'brew', cmd: 'brew install itsakash-real/tap/rw' },
   { id: 'go', label: 'Go', cmd: 'go install github.com/itsakash-real/nimbi/cmd/rw@latest' },
 ]
 

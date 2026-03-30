@@ -35,7 +35,7 @@ func statsCmd() *cobra.Command {
 				}
 			}
 
-			sectionTitle("rewinddb stats")
+			sectionTitle("nimbi stats")
 			fmt.Println()
 			kv("repository", projectRoot)
 			kv("branch",     colorPurple+branch.Name+colorReset)

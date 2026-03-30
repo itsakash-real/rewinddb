@@ -32,7 +32,7 @@ const METHODS = [
     label: 'macOS',
     content: (
       <div>
-        <CopyBlock code="brew install itsakash-real/nimbi/rw" />
+        <CopyBlock code="brew install itsakash-real/tap/rw" />
         <CopyBlock code="rw version" />
       </div>
     ),
@@ -53,10 +53,11 @@ const METHODS = [
     content: (
       <div>
         <p className="text-text-muted text-[16px] mb-4">
-          Download <code className="font-mono text-[14px] text-text-secondary">rw.exe</code> from{' '}
+          Download <code className="font-mono text-[14px] text-text-secondary">nimbi-windows-amd64.exe</code> from{' '}
           <a href="https://github.com/itsakash-real/nimbi/releases" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#38bdf8] transition-colors">Releases</a>.
-          Add to PATH. Colors require Windows Terminal.
+          Rename to <code className="font-mono text-[14px] text-text-secondary">rw.exe</code> and add to PATH. Colors require Windows Terminal.
         </p>
+        <p className="text-text-muted text-[15px]">Or install with Go:</p>
         <CopyBlock code="go install github.com/itsakash-real/nimbi/cmd/rw@latest" />
       </div>
     ),
@@ -76,7 +77,7 @@ const METHODS = [
     label: 'Source',
     content: (
       <div>
-        <CopyBlock code="git clone https://github.com/itsakash-real/nimbi && cd nimbi && make build" />
+        <CopyBlock code="git clone https://github.com/itsakash-real/nimbi && cd nimbi && go build -o rw ./cmd/rw" />
       </div>
     ),
   },

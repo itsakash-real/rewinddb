@@ -12,12 +12,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/itsakash-real/nimbi/internal/sdk"
+	"github.com/itsakash-real/nimbi/sdk"
 )
 
 func main() {
 	// ── 1. Set up a temporary project directory ───────────────────────────────
-	projectDir, err := os.MkdirTemp("", "rewinddb-example-*")
+	projectDir, err := os.MkdirTemp("", "nimbi-example-*")
 	must(err)
 	defer os.RemoveAll(projectDir)
 

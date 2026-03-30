@@ -99,7 +99,7 @@ brews:
     directory: Formula
     homepage: "https://github.com/itsakash-real/nimbi"
     description: "A time-travel state engine for codebases — checkpoint, diff, and restore your project in milliseconds"
-    license: "MIT"
+    license: "Apache-2.0"
     skip_upload: auto
     test: |
       system "#{bin}/rw", "version"
@@ -118,7 +118,7 @@ nfpms:
     homepage: "https://github.com/itsakash-real/nimbi"
     maintainer: "Akash Maurya <akashmaurya3160@gmail.com>"
     description: "A time-travel state engine for codebases"
-    license: MIT
+    license: Apache-2.0
     formats: [deb, rpm, apk]
     bindir: /usr/bin
     section: utils

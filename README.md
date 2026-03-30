@@ -2,46 +2,123 @@
 
 <img src="logo.png" alt="Nimbi" width="220" />
 
-**Save your project. Break things. Go back instantly.**
+**Your code works. You change one thing. Now it doesn't. Get it back instantly.**
 
 [![Go Version](https://img.shields.io/badge/go-1.22+-00ADD8?style=flat-square&logo=go)](https://golang.org)
-[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 
-[Install](#install) · [First 5 Minutes](#your-first-5-minutes) · [FAQ](#faq) · [Commands](#commands-youll-use-every-day) · [Contributing](#contributing)
+[What It Does](#what-it-does) · [The Killer Feature](#the-killer-feature) · [What Git Misses](#what-git-misses) · [Install](#install) · [Commands](#commands)
 
 </div>
 
 ---
 
-## What is this?
+## What It Does
 
-I built this because I kept losing working states while experimenting with AI-generated code.
+You're experimenting with code. Something works. You change one thing. Everything breaks and you can't get back.
 
-You're experimenting. Something works. You change one thing. Now nothing works and you can't get back.
+Nimbi is a single binary that saves your **entire project folder** as a checkpoint — so you can go back to any working state instantly.
 
-Nimbi is a single binary (`rw`) that saves your **entire project folder** as a checkpoint. You can go back to any checkpoint instantly. It works on any project — React, Python, Rust, anything — and it tracks files that git ignores, like build outputs, configs, and `.env` files.
+```
+rw save "everything works"       ← save the current state
+rw save "trying new auth flow"   ← keep experimenting
+rw undo                          ← broke it? go back instantly
+```
 
-**It is not a replacement for git.** Git is for sharing code with your team. Nimbi is for the messy part before that — experimenting, breaking things, and getting back safely.
+**It's not a replacement for git.** Git is for sharing code with your team. Nimbi is for the messy part *before* that — experimenting, breaking things, and getting back safely.
 
 ---
 
-**Common scenario:**
-You've been coding for an hour. You try something.
-Everything breaks. You can't get back.
+## The Killer Feature
 
-With Nimbi: `rw undo`. Done.
+### `rw run` — auto-rollback on failure
+
+This is the thing no other tool does. Wrap any risky command and Nimbi protects you automatically:
+
+```bash
+rw run "npm run build"
+```
+
+```
+✓ checkpoint saved
+  running: npm run build...
+─────────────────────────────────────
+  ... build output ...
+─────────────────────────────────────
+✗ command failed (exit 1)
+  rolling back to pre-run checkpoint...
+✓ rolled back to a3f2b1c8
+```
+
+**What just happened:**
+1. Nimbi saved a checkpoint *before* running your command
+2. Your command ran and failed
+3. Nimbi automatically restored your project to the pre-run state
+
+No git workflow does this. No rclone does this. **Your failed database migration never leaves your project half-broken.**
+
+Works for anything:
+```bash
+rw run "python migrate.py"       # failed migration → auto-rollback
+rw run "cargo build"             # broken build → auto-rollback
+rw run "npm run deploy"          # bad deploy → auto-rollback
+```
+
+---
+
+## What Git Misses
+
+Git only tracks files you tell it to. Nimbi tracks your **full project state** — including the files git ignores that break everything when they change:
+
+```
+rw status
+
+  tracking   847 files
+  ignoring   43,821 files (node_modules, .git, dist)
+
+  worth saving:
+    .env.local          ← not in git (API keys)
+    build/server        ← compiled binary (10-min build)
+    config/local.json   ← local config (not in git)
+```
+
+When you `rw diff`, you see what git can't:
+
+```
+rw diff HEAD~1
+
+  files git would show:
+    ~ src/auth.js
+
+  files ONLY nimbi tracks:
+    ~ .env.local         ← API key changed
+    ~ build/server       ← binary updated
+    + config/local.json  ← new local config
+```
+
+**That `.env.local` change is why your app is broken. Git wouldn't have shown you that.**
+
+---
+
+## vs Git / vs Backup Tools
+
+| | Git | rclone / rsync | **Nimbi** |
+|---|---|---|---|
+| Named checkpoints with messages | ✓ | ✗ | ✓ |
+| Diff between any two states | ✓ | ✗ | ✓ |
+| Tracks `.env`, binaries, build output | ✗ | ✓ | ✓ |
+| Auto-rollback on failed commands | ✗ | ✗ | **✓** |
+| Auto-branches when you time-travel | ✗ | ✗ | **✓** |
+| Timeline with named sessions | ✗ | ✗ | **✓** |
+
+**Git** is for sharing code with your team. **rclone/rsync** are backup tools — no timeline, no diff, no rollback. **Nimbi** gives you named checkpoints, diff between any two states, and auto-rollback on failed commands. Different problems entirely.
 
 ---
 
 ## Install
 
-**macOS**
-```bash
-brew install itsakash-real/tap/rewinddb
-```
-
-**Linux**
+**macOS / Linux**
 ```bash
 curl -sSL https://raw.githubusercontent.com/itsakash-real/nimbi/main/install.sh | bash
 ```
@@ -51,13 +128,13 @@ curl -sSL https://raw.githubusercontent.com/itsakash-real/nimbi/main/install.sh 
 go install github.com/itsakash-real/nimbi/cmd/rw@latest
 ```
 
-**Windows** — download `rw.exe` from [Releases](https://github.com/itsakash-real/nimbi/releases). Colors work in Windows Terminal.
+**Windows** — download `nimbi-windows-amd64.exe` from [Releases](https://github.com/itsakash-real/nimbi/releases).
 
 **Build from source**
 ```bash
 git clone https://github.com/itsakash-real/nimbi
-cd rewinddb
-make build
+cd nimbi
+go build -o rw ./cmd/rw
 ```
 
 Verify it works:
@@ -66,18 +143,16 @@ rw version
 ```
 
 ```
-  Nimbi v0.1.0
+Nimbi v0.1.0
   go1.22 · darwin/arm64
-  built 2026-03-23
+  built 2026-03-30
 ```
 
 ---
 
 ## Your First 5 Minutes
 
-Follow these steps in any project folder. Every command is explained.
-
-### Step 1 — Set up Nimbi in your project
+### 1. Initialize
 
 ```bash
 cd my-project
@@ -89,111 +164,83 @@ rw init
 
      directory      /my-project/.rewind
      branch         main
+
+  ✓ Detected: Node.js project
+    Auto-ignoring: node_modules/, dist/, .next/, coverage/
+    Tracking: .env, .env.local
+
+  run 'rw save "first checkpoint"' to get started
 ```
 
-This creates a hidden `.rewind/` folder where all your checkpoints are stored. You only do this once per project.
+Nimbi auto-detects your project type and ignores the right things — so you never have to think about it.
+
+### 2. Save a checkpoint
+
+```bash
+rw save "everything working before I touch auth"
+```
+
+### 3. Break something, go back
+
+```bash
+rw undo           # go back 1 checkpoint
+rw goto a3f2b1c8  # go back to a specific checkpoint
+```
+
+That's the core loop: **save → work → break → undo.**
 
 ---
 
-### Step 2 — Save your first checkpoint
+## Commands
 
-```bash
-rw save "everything working before I touch anything"
-```
+### Save & Restore
 
-```
-  ◆  checkpoint saved  ─────────────────────────
+| Command | What it does | So that... |
+|---|---|---|
+| `rw save "msg"` | Save the current project state | ...you have a checkpoint to return to |
+| `rw save` | Save with auto-generated message | ...you never skip saving because of a message |
+| `rw undo` | Go back 1 checkpoint | ...you can recover from a mistake instantly |
+| `rw undo --n 3` | Go back 3 checkpoints | ...you can jump further back in time |
+| `rw goto <id>` | Restore to a specific checkpoint | ...you can pick exactly which state to return to |
 
-     id             a3f2b1c8
-     message        "everything working before I touch anything"
-     branch         main
-     files          24 tracked  ·  0 changed
-     saved          just now
-```
+### Inspect
 
-The `id` (`a3f2b1c8`) is how you refer to this checkpoint later. You don't need to memorize it — you can always run `rw list` to see it.
+| Command | What it does | So that... |
+|---|---|---|
+| `rw status` | Show tracked files, changes, and what git misses | ...you know exactly what nimbi is protecting |
+| `rw list` | Show your checkpoint history | ...you can pick which one to go back to |
+| `rw diff <a> <b>` | Compare two checkpoints | ...you can see exactly what changed |
+| `rw diff <a> <b> --categorize` | Diff split by git-tracked vs nimbi-only | ...you see what git would have missed |
 
----
+### Protect
 
-### Step 3 — Make some changes, then save again
+| Command | What it does | So that... |
+|---|---|---|
+| `rw run "cmd"` | Run command with auto-rollback on failure | ...a failed migration never leaves you half-broken |
+| `rw watch` | Auto-save every 30s when files change | ...you never lose work even if you forget to save |
+| `rw bisect start` | Binary search for the checkpoint that broke things | ...you find exactly when the bug was introduced |
 
-Edit a few files. Then:
+### Organize
 
-```bash
-rw save "added login form"
-```
+| Command | What it does | So that... |
+|---|---|---|
+| `rw save "msg" --tag v1` | Tag a checkpoint with a name | ...you can jump back to `rw goto v1` |
+| `rw branches` | List experiment branches | ...you never lose an experiment trying a different approach |
+| `rw session start "feature"` | Group work into a named session | ...you can restore an entire work session later |
+| `rw search "JWT"` | Search checkpoint messages | ...you can find that one checkpoint you need |
 
-```
-  ◆  checkpoint saved  ─────────────────────────
+### Manage
 
-     id             b2e1a0f4
-     message        "added login form"
-     branch         main
-     files          24 tracked  ·  3 changed
-     saved          just now
-```
-
-You now have 2 checkpoints. Keep saving as you make progress — treat it like quicksaving a game.
-
-> **No message? No problem.** Just run `rw save` with no message and Nimbi writes one for you based on what changed.
-
----
-
-### Step 4 — See your checkpoints
-
-```bash
-rw list
-```
-
-```
-  ╭────────────────────────────────────────────────────╮
-  │   ◆  main  ·  2 checkpoints                       │
-  ╰────────────────────────────────────────────────────╯
-
-  ◆  b2e1a0f4  HEAD   2 minutes ago       "added login form"
-  ○  a3f2b1c8          5 minutes ago       "everything working before I touch anything"
-```
-
-- `◆` means that's where you are right now (HEAD)
-- `○` means an older checkpoint
-- The short ID on the left is what you use to go back
-
----
-
-### Step 5 — Break something, then go back
-
-You made some changes that broke everything. Go back to any checkpoint:
-
-```bash
-rw goto a3f2b1c8
-```
-
-```
-Restore to: "everything working before I touch anything"? [y/N]: y
-
-  ◆  restored  ─────────────────────────────────
-
-     checkpoint     a3f2b1c8
-     message        "everything working before I touch anything"
-     written        3 file(s)
-     removed        0 file(s)
-```
-
-Your project is now exactly as it was when you saved that checkpoint. 3 files were restored, everything else was untouched.
-
-**Even simpler — just go back one step without knowing any ID:**
-
-```bash
-rw undo
-```
-
-```
-  ✓  restored to a3f2b1c8 (1 checkpoint(s) back)
-```
-
----
-
-That's the core loop: **save → work → break → undo.** Everything else is bonus.
+| Command | What it does | So that... |
+|---|---|---|
+| `rw ignore auto` | Auto-detect and ignore `node_modules` etc. | ...your checkpoints aren't bloated |
+| `rw gc` | Clean up unreferenced objects | ...your `.rewind/` folder stays small |
+| `rw export <id>` | Export a checkpoint to a `.rwdb` file | ...you can share "the exact state where it crashes" |
+| `rw import <file>` | Import a checkpoint from a `.rwdb` file | ...you can load someone else's exact state |
+| `rw health` | Check repository integrity (SHA-256 verification) | ...you know your checkpoints are intact |
+| `rw repair` | Auto-fix corruption from interrupted saves | ...you recover from disk errors or crashes |
+| `rw upgrade` | Self-update to the latest version | ...you're always on the latest |
+| `rw version` | Print version and build info | ...you know exactly what you're running |
 
 ---
 
@@ -203,10 +250,10 @@ That's the core loop: **save → work → break → undo.** Everything else is b
 No. Git tracks code history for collaboration. Nimbi tracks full project state (including files git ignores) for local safety nets. Use both.
 
 **Does it slow my machine down?**
-No. `rw watch` runs in the background and is lightweight. Saving 1000 files takes ~180ms.
+No. `rw watch` is lightweight. Saving 1,000 files takes ~180ms. Restoring only writes files that actually changed.
 
 **What does it actually store?**
-Only files that changed. If 50 files are the same as last checkpoint, they take zero extra space (stored once, referenced by hash). Snapshots are gzip-compressed.
+Only files that changed. If 50 files are the same as last checkpoint, they take zero extra space (stored once, referenced by hash). Everything is gzip-compressed.
 
 **What if I save with no message?**
 Nimbi auto-generates one: `"auto: auth.js, db.js (2 file(s) changed)"`.
@@ -214,367 +261,24 @@ Nimbi auto-generates one: `"auto: auth.js, db.js (2 file(s) changed)"`.
 **Can I use it in CI/CD?**
 Yes. `rw save "pre-deploy: ${{ github.sha }}"` works in GitHub Actions.
 
-**Does it work without git?**
-Yes. Nimbi has no dependency on git.
-
 **What if `.rewind/` gets corrupted?**
-Nimbi uses crash-safe atomic writes. On startup it auto-recovers from any interrupted saves. You can also run `rw status --verify` to check all objects.
+Nimbi uses crash-safe atomic writes. On startup it auto-recovers from interrupted saves. Run `rw status --verify` to check all objects.
 
 **Can I ignore files like node_modules?**
-Yes — `rw ignore auto` detects your project type and adds the right patterns. Or add them manually to `.rewindignore`.
+On `rw init`, Nimbi auto-detects your project type and ignores the right things. You can also run `rw ignore auto` or edit `.rewindignore` manually.
 
 ---
-
-## Commands You'll Use Every Day
-
-### `rw save` — Save the current state
-
-```bash
-rw save "message describing what works right now"
-```
-
-Save with no message (auto-generates one from what changed):
-```bash
-rw save
-```
-
-Save and tag it with a name you can use later:
-```bash
-rw save "login complete" --tag v1.0
-```
-
----
-
-### `rw list` — See your history
-
-```bash
-rw list
-```
-
-Show all branches:
-```bash
-rw list --all
-```
-
-Show only the last 5:
-```bash
-rw list --n 5
-```
-
----
-
-### `rw goto` — Go back to any checkpoint
-
-```bash
-rw goto a3f2b1c8        # by short ID
-rw goto v1.0            # by tag name
-rw goto HEAD~3          # go back 3 steps from current
-```
-
-> Nimbi warns you if you have unsaved changes before overwriting anything.
-
----
-
-### `rw undo` — Go back without knowing the ID
-
-```bash
-rw undo           # go back 1 checkpoint
-rw undo --n 3     # go back 3 checkpoints
-```
-
----
-
-### `rw status` — See what's changed since your last save
-
-```bash
-rw status
-```
-
-```
-  ╭────────────────────────────────────────────────────╮
-  │   ◆  nimbi                                      │
-  │                                                    │
-  │   main  ·  a3f2b1c8  ·  5 minutes ago              │
-  ╰────────────────────────────────────────────────────╯
-
-     checkpoints    2 on branch  ·  2 total
-     storage        6 objects  ·  4.2 KB
-
-  ◆  working directory  ────────────────────────
-
-  ~  src/auth.js         ← modified
-  +  src/newfile.js      ← added (not yet saved)
-
-  →  run rw save "message" to checkpoint
-```
-
-- `~` means modified
-- `+` means new file not in any checkpoint yet
-- `-` means deleted since last checkpoint
-
----
-
-### `rw diff` — See exactly what changed between two checkpoints
-
-```bash
-rw diff a3f2b1c8 b2e1a0f4     # compare two specific checkpoints
-rw diff HEAD HEAD~1             # compare current vs previous
-rw diff HEAD~3 HEAD             # compare 3 steps ago vs now
-```
-
----
-
-## Protecting Yourself Before Risky Things
-
-### Before running a command that might break things
-
-```bash
-rw run "npm run build"
-```
-
-This automatically:
-1. Saves a checkpoint before running
-2. Runs the command
-3. If it **fails** → rolls back to the pre-run checkpoint automatically
-4. If it **succeeds** → saves another checkpoint marked as passing
-
-```
-  ✓  pre-run checkpoint saved: a3f2b1c8
-     running: npm run build
-  ✗  command failed (exit 1)
-     rolling back...
-  ✓  rolled back to a3f2b1c8
-```
-
-Works for any command: `rw run "python migrate.py"`, `rw run "cargo build"`, etc.
-
----
-
-### Auto-save while you work (set and forget)
-
-```bash
-rw watch
-```
-
-Nimbi watches your project for changes and auto-saves a checkpoint every 30 seconds when files change. You can change the interval:
-
-```bash
-rw watch --interval 5m    # save every 5 minutes
-rw watch --interval 1m    # save every minute
-```
-
-Press `Ctrl+C` to stop. Good for long work sessions where you don't want to think about saving.
-
----
-
-## Finding Bugs in Your History
-
-If something broke and you don't know when, use `rw bisect`. It binary-searches your checkpoint history — like `git bisect` but for full project state.
-
-```bash
-# 1. Start bisecting
-rw bisect start
-
-# 2. Tell it a checkpoint you know was working
-rw bisect good a3f2b1c8
-
-# 3. Tell it a checkpoint you know is broken
-rw bisect bad HEAD
-
-# Nimbi jumps you to the middle checkpoint automatically.
-# Test your code. Then:
-rw bisect good    # if this middle checkpoint works
-rw bisect bad     # if this middle checkpoint is broken
-
-# Keep going. Nimbi narrows it down until it finds
-# the exact checkpoint where the bug appeared.
-
-# 4. When done:
-rw bisect reset
-```
-
----
-
-## Branching — Trying Two Approaches at Once
-
-When you restore an old checkpoint and save something new from there, Nimbi **automatically creates a new branch** so you don't lose either path.
-
-```bash
-# Save a base checkpoint
-rw save "base: login working"         # → id: a3f2b1c8
-
-# Try approach A
-rw save "approach A: JWT tokens"      # → id: b2e1a0f4
-
-# Go back to base and try something different
-rw goto a3f2b1c8
-# Nimbi auto-creates a new branch here
-
-# Try approach B
-rw save "approach B: session cookies" # on new branch
-
-# See both timelines
-rw list --all
-```
-
-Both approaches are preserved. You can switch between them:
-
-```bash
-rw branches                      # list all branches
-rw branches switch main          # go back to main branch
-rw branches branch my-experiment # create a named branch manually
-```
-
----
-
-## Keeping Things Organized
-
-### Tag a checkpoint with a name
-
-```bash
-rw tag stable          # tag current checkpoint as "stable"
-rw tag v2.0 b2e1a0f4   # tag a specific checkpoint
-```
-
-Then use the name instead of the ID:
-```bash
-rw goto stable
-rw diff stable HEAD
-```
-
----
-
-### Group work into a named session
-
-```bash
-rw session start "feature: dark mode"
-# ... work for 2 hours, save checkpoints freely ...
-rw session end
-
-# Later, jump back to where that session started
-rw session restore "feature: dark mode"
-
-# See all your sessions
-rw session list
-```
-
----
-
-### Search your checkpoint history
-
-```bash
-rw search "JWT"          # find all checkpoints mentioning JWT
-rw search "login"        # find all checkpoints mentioning login
-```
-
----
-
-## Ignoring Files
-
-Nimbi ignores `node_modules/`, `.git/`, and common junk by default.
-
-To auto-add ignores based on your project type (detects Node, Python, Go, Rust, etc.):
-```bash
-rw ignore auto
-```
-
-To add your own:
-```bash
-rw ignore add "dist/"
-rw ignore add "*.log"
-rw ignore add ".env.local"
-```
-
-To see what's currently ignored:
-```bash
-rw ignore list
-```
-
-You can also edit `.rewindignore` in your project root directly — same format as `.gitignore`.
-
----
-
-## Sharing a Checkpoint With Someone Else
-
-Export any checkpoint to a file:
-```bash
-rw export a3f2b1c8 --output bug-repro.rwdb
-```
-
-Someone else imports it into their copy of the project:
-```bash
-rw import bug-repro.rwdb
-```
-
-Useful for: "here's the exact state where it crashes on my machine."
-
----
-
-## Storage & Cleanup
-
-### Check what's in your repo
-
-```bash
-rw stats
-```
-
-```
-  ◆  nimbi stats  ───────────────────────────
-
-     repository     /my-project
-     branch         main
-     head           a3f2b1c8  "everything working"
-
-  timeline
-  ────────────────────────────────────────
-     checkpoints    12
-     branches       2
-
-  storage
-  ────────────────────────────────────────
-     objects        84
-     size           2.4 MB
-     compression    gzip compressed
-```
-
-### Clean up unreferenced objects
-
-Over time, deleted branches and old objects can take up space. GC removes them:
-
-```bash
-rw gc --dry-run    # see what WOULD be deleted (safe to run)
-rw gc              # actually delete it
-```
-
----
-
-
 
 ## Performance
 
 | Operation | ~Time | Notes |
 |---|---|---|
 | Save (1,000 files) | ~180ms | Parallel SHA-256 hashing |
-| Restore (10% of files changed) | ~40ms | Only writes what actually changed |
+| Restore (10% changed) | ~40ms | Only writes what actually changed |
 | Status check | ~60ms | Skips re-hashing unchanged files |
 | GC | ~90ms | One pass over the object store |
 
 Measured on Apple M2. Varies by disk speed and file sizes.
-
----
-
-## Nimbi vs Git
-
-| | Git | Nimbi |
-|---|---|---|
-| Purpose | Share code with a team | Personal safety net while working |
-| Requires a message | Yes, always | No — auto-generates one |
-| Tracks `node_modules`, binaries, `.env` | No | Yes |
-| Auto-branches when you time-travel | No | Yes |
-| Rollback on script failure | No | `rw run "cmd"` |
-| Works in CI/CD | Yes | Yes |
-| Works without internet | Yes | Yes (fully local) |
-| Collaboration | Yes | No |
 
 ---
 
@@ -586,24 +290,20 @@ For deep dives into how Nimbi stores data, handles content-defined chunking (ded
 
 ## Contributing
 
-Contributions are welcome and appreciated! Whether it's a bug report, feature request, or pull request — every bit helps.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
 
 - **Bug reports** — open an issue with steps to reproduce
-- **Feature ideas** — open an issue to discuss before building
-- **Pull requests** — fork, branch, make your change, run `go test ./... -race`, and submit
-
-No contribution is too small — even fixing a typo in the docs is appreciated.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide including coding standards, commit conventions, and review process.
+- **Feature ideas** — open an issue first to align on direction
+- **Pull requests** — fork, branch, run `go test ./... -race`, submit
 
 ---
 
 ## Security
 
-If you discover a security vulnerability, please **do not** open a public issue. Instead, use [GitHub's private vulnerability reporting](https://github.com/itsakash-real/nimbi/security) to report it securely. We take security seriously and will respond promptly.
+If you discover a security vulnerability, please **do not** open a public issue. Instead, use [GitHub's private vulnerability reporting](https://github.com/itsakash-real/nimbi/security).
 
 ---
 
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).

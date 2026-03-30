@@ -29,11 +29,11 @@ build:
 
 build-all:
 	@echo "→ Cross-compiling for all targets"
-	GOOS=linux   GOARCH=amd64  go build $(GOFLAGS) -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/$(BINARY)-linux-amd64   $(CMD_PKG)
-	GOOS=linux   GOARCH=arm64  go build $(GOFLAGS) -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/$(BINARY)-linux-arm64   $(CMD_PKG)
-	GOOS=darwin  GOARCH=amd64  go build $(GOFLAGS) -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/$(BINARY)-darwin-amd64  $(CMD_PKG)
-	GOOS=darwin  GOARCH=arm64  go build $(GOFLAGS) -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/$(BINARY)-darwin-arm64  $(CMD_PKG)
-	GOOS=windows GOARCH=amd64  go build $(GOFLAGS) -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/$(BINARY)-windows-amd64.exe $(CMD_PKG)
+	GOOS=linux   GOARCH=amd64  go build $(GOFLAGS) -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/nimbi-linux-amd64   $(CMD_PKG)
+	GOOS=linux   GOARCH=arm64  go build $(GOFLAGS) -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/nimbi-linux-arm64   $(CMD_PKG)
+	GOOS=darwin  GOARCH=amd64  go build $(GOFLAGS) -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/nimbi-darwin-amd64  $(CMD_PKG)
+	GOOS=darwin  GOARCH=arm64  go build $(GOFLAGS) -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/nimbi-darwin-arm64  $(CMD_PKG)
+	GOOS=windows GOARCH=amd64  go build $(GOFLAGS) -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/nimbi-windows-amd64.exe $(CMD_PKG)
 
 ## ── Test ─────────────────────────────────────────────────────────────────────
 

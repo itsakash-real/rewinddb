@@ -1,4 +1,4 @@
-# RewindDB test artifacts
+# Nimbi test artifacts
 .rewind/
 .rewind-test/
 
@@ -39,3 +39,6 @@ website/out/
 # Misc
 fix.md
 .claude
+build_errors.txt
+build_out.txt
+nimbi.exe
